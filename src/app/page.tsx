@@ -1,4 +1,6 @@
-import { Navbar, Footer, EmergencyBanner } from "@/components/layout-elements";
+import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
+import { EmergencyBanner } from "@/components/emergency-banner";
 import { Hero, FeaturedResources, HowItWorks, InsightsPreview, NewsTeaser, EventsTeaser, CTASection } from "@/components/sections";
 
 export default function Home() {
