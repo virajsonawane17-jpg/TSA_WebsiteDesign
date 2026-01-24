@@ -190,13 +190,13 @@ export default function DirectoryPage() {
                             </div>
                           </div>
 
-                          <div className="flex flex-wrap gap-2 pt-2">
-                            {resource.audiences.slice(0, 3).map(aud => (
-                              <span key={aud} className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 px-2 py-0.5 bg-muted rounded">
-                                {aud}
-                              </span>
-                            ))}
-                          </div>
+                            <div className="flex flex-wrap gap-2 pt-2">
+                              {resource.audiences.map(aud => (
+                                <span key={aud} className="text-[10px] font-bold uppercase tracking-widest text-secondary bg-secondary/5 px-2 py-0.5 rounded-full border border-secondary/10">
+                                  {aud}
+                                </span>
+                              ))}
+                            </div>
 
                           <div className="flex gap-3 pt-4">
                             <Link href={`/resources/${resource.id}`} className="flex-grow">

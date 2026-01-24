@@ -21,8 +21,9 @@ import {
   Navigation
 } from "lucide-react";
 import Link from "next/link";
-import { TAMPA_RESOURCES } from "@/lib/resources";
+import { TAMPA_RESOURCES, TAMPA_NEWS, TAMPA_EVENTS } from "@/lib/resources";
 import { useState } from "react";
+import { Newspaper, Calendar as CalendarIcon, Ticket } from "lucide-react";
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -30,6 +31,128 @@ const fadeIn = {
   viewport: { once: true },
   transition: { duration: 0.6 }
 };
+
+export function NewsTeaser() {
+  const latestNews = TAMPA_NEWS.slice(0, 3);
+  
+  return (
+    <section className="bg-primary/5 py-24">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+          <div className="max-w-2xl">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-heading text-primary mb-4">Tampa Community Pulse</h2>
+            <p className="text-lg text-muted-foreground">
+              Stay updated with the latest developments, housing initiatives, and local successes in the Tampa area.
+            </p>
+          </div>
+          <Link href="/news">
+            <Button variant="outline" className="border-secondary text-secondary hover:bg-secondary hover:text-white">
+              View All News <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {latestNews.map((news, idx) => (
+            <motion.div
+              key={news.id}
+              variants={fadeIn}
+              initial="initial"
+              whileInView="animate"
+              transition={{ delay: idx * 0.1 }}
+            >
+              <Card className="h-full border-none shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+                <div className="h-48 overflow-hidden relative">
+                  <img src={news.imageUrl} alt={news.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <Badge className="absolute top-4 left-4 bg-secondary">{news.category}</Badge>
+                </div>
+                <CardHeader className="pb-2">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                    <CalendarIcon className="h-3 w-3" />
+                    <span>{news.date}</span>
+                  </div>
+                  <CardTitle className="text-lg font-bold leading-tight group-hover:text-secondary transition-colors">
+                    {news.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground line-clamp-2 italic mb-4">"{news.excerpt}"</p>
+                  <Link href="/news" className="text-secondary text-sm font-bold flex items-center group/link">
+                    Read more <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover/link:translate-x-1" />
+                  </Link>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function EventsTeaser() {
+  const upcomingEvents = TAMPA_EVENTS.slice(0, 3);
+  
+  return (
+    <section className="py-24 bg-background">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+          <div className="max-w-2xl">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-heading text-primary mb-4">Upcoming Community Events</h2>
+            <p className="text-lg text-muted-foreground">
+              Mark your calendar for festivals, career fairs, and community workshops happening this month.
+            </p>
+          </div>
+          <Link href="/events">
+            <Button variant="outline" className="border-accent text-accent hover:bg-accent hover:text-white">
+              Full Calendar <CalendarIcon className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {upcomingEvents.map((event, idx) => (
+            <motion.div
+              key={event.id}
+              variants={fadeIn}
+              initial="initial"
+              whileInView="animate"
+              transition={{ delay: idx * 0.1 }}
+            >
+              <Card className="h-full border-l-4 border-l-accent shadow-sm hover:shadow-md transition-all">
+                <CardHeader>
+                  <div className="flex justify-between items-start mb-2">
+                    <Badge variant="secondary" className="bg-accent/10 text-accent">{event.category}</Badge>
+                    <span className="text-xs font-bold text-muted-foreground uppercase">{event.date}</span>
+                  </div>
+                  <CardTitle className="text-xl font-bold text-primary">{event.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 text-sm text-muted-foreground mb-6">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-accent" />
+                      <span>{event.time}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-accent" />
+                      <span>{event.location}</span>
+                    </div>
+                  </div>
+                  <Button variant="ghost" className="w-full text-accent hover:text-accent hover:bg-accent/5 p-0 h-auto justify-start font-bold" asChild>
+                    <Link href="/events">
+                      Event details <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 
 export function Hero() {
   return (

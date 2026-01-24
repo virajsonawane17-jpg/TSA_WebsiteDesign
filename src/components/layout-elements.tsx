@@ -32,17 +32,19 @@ export function Navbar() {
           </span>
         </Link>
         
-        {/* Desktop Nav */}
-        <div className="hidden lg:flex items-center space-x-6">
-          <Link href="/directory" className="text-sm font-medium hover:text-secondary transition-colors">Directory</Link>
-          <Link href="/insights" className="text-sm font-medium hover:text-secondary transition-colors">Insights</Link>
-          <Link href="/spotlight" className="text-sm font-medium hover:text-secondary transition-colors">Spotlight</Link>
-          <Link href="/submit">
-            <Button size="sm" className="bg-secondary hover:bg-secondary/90">
-              Submit Resource
-            </Button>
-          </Link>
-        </div>
+          {/* Desktop Nav */}
+          <div className="hidden lg:flex items-center space-x-6">
+            <Link href="/directory" className="text-sm font-medium hover:text-secondary transition-colors">Directory</Link>
+            <Link href="/news" className="text-sm font-medium hover:text-secondary transition-colors">News</Link>
+            <Link href="/events" className="text-sm font-medium hover:text-secondary transition-colors">Events</Link>
+            <Link href="/insights" className="text-sm font-medium hover:text-secondary transition-colors">Insights</Link>
+            <Link href="/tsa" className="text-sm font-medium hover:text-secondary transition-colors">TSA</Link>
+            <Link href="/submit">
+              <Button size="sm" className="bg-secondary hover:bg-secondary/90">
+                Submit Resource
+              </Button>
+            </Link>
+          </div>
 
         {/* Mobile Menu Toggle */}
         <button className="lg:hidden p-2" onClick={() => setIsOpen(!isOpen)}>
@@ -91,20 +93,20 @@ export function Footer() {
               <li><Link href="/emergency" className="text-sm opacity-80 hover:opacity-100 hover:text-secondary">Emergency Services</Link></li>
             </ul>
           </div>
-          <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-secondary">Community</h3>
-            <ul className="mt-4 space-y-2">
-              <li><Link href="#" className="text-sm opacity-80 hover:opacity-100 hover:text-secondary">Hillsborough County</Link></li>
-              <li><Link href="#" className="text-sm opacity-80 hover:opacity-100 hover:text-secondary">City of Tampa</Link></li>
-              <li><Link href="/spotlight" className="text-sm opacity-80 hover:opacity-100 hover:text-secondary">Community Spotlight</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-secondary">Disclaimer</h3>
-            <p className="mt-4 text-xs opacity-70 italic">
-              This hub is a community-driven project. Please verify all information directly with the respective organizations. We do not provide direct services.
-            </p>
-          </div>
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-secondary">Competition</h3>
+              <ul className="mt-4 space-y-2">
+                <li><Link href="/tsa" className="text-sm opacity-80 hover:opacity-100 hover:text-secondary">TSA Chapter Info</Link></li>
+                <li><Link href="/tsa" className="text-sm opacity-80 hover:opacity-100 hover:text-secondary">Reference Page</Link></li>
+                <li><Link href="/tsa" className="text-sm opacity-80 hover:opacity-100 hover:text-secondary">CTE Programs</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-secondary">Disclosure</h3>
+              <p className="mt-4 text-xs opacity-70 italic">
+                This website is a <b>Custom-Built Theme</b> developed for the 2026 TSA National Conference. No generative AI templates or builders were used.
+              </p>
+            </div>
         </div>
         <div className="mt-12 border-t border-white/10 pt-8 text-center md:flex md:items-center md:justify-between">
           <p className="text-xs opacity-60">

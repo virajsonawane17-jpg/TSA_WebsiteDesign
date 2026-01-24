@@ -1,5 +1,5 @@
 import { Navbar, Footer, EmergencyBanner } from "@/components/layout-elements";
-import { Hero, FeaturedResources, HowItWorks, InsightsPreview, CTASection } from "@/components/sections";
+import { Hero, FeaturedResources, HowItWorks, InsightsPreview, NewsTeaser, EventsTeaser, CTASection } from "@/components/sections";
 
 export default function Home() {
   return (
@@ -9,7 +9,9 @@ export default function Home() {
       <main className="flex-grow">
         <Hero />
         <FeaturedResources />
+        <NewsTeaser />
         <HowItWorks />
+        <EventsTeaser />
         <InsightsPreview />
         <CTASection />
       </main>
