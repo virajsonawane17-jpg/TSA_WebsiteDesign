@@ -180,18 +180,19 @@ export function Hero() {
             <p className="mb-10 text-xl leading-relaxed text-white/80 max-w-2xl font-sans">
               A community-first platform designed to help Tampa residents discover local food assistance, housing support, mental health services, and more.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/directory">
-                <Button size="lg" className="h-14 px-8 text-lg bg-accent hover:bg-accent/90 border-none text-white shadow-xl shadow-accent/20">
-                  Find Help Near Me <Navigation className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Link href="/directory">
-                <Button size="lg" variant="outline" className="h-14 px-8 text-lg text-white border-white/30 hover:bg-white/10 backdrop-blur-sm">
-                  Explore Directory
-                </Button>
-              </Link>
-            </div>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link href="/directory">
+                  <Button size="lg" className="h-14 px-8 text-lg bg-accent hover:bg-accent/90 border-none text-white shadow-xl shadow-accent/20 font-bold group">
+                    Find Help Near Me <Navigation className="ml-2 h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                  </Button>
+                </Link>
+                <Link href="/directory">
+                  <Button size="lg" variant="outline" className="h-14 px-8 text-lg text-white border-white/50 bg-white/5 hover:bg-white/20 backdrop-blur-md shadow-lg transition-all">
+                    Explore Directory
+                  </Button>
+                </Link>
+              </div>
+
           </motion.div>
         </div>
       </div>
@@ -233,16 +234,24 @@ export function FeaturedResources() {
         </div>
         
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          {featured.map((resource, idx) => (
-            <motion.div
-              key={resource.id}
-              variants={fadeIn}
-              initial="initial"
-              whileInView="animate"
-              transition={{ delay: idx * 0.1 }}
-            >
-              <Card className="h-full border border-border/40 shadow-sm transition-all hover:shadow-xl hover:-translate-y-1 overflow-hidden group">
-                <div className="h-2 bg-secondary/20 group-hover:bg-secondary transition-colors" />
+            {featured.map((resource, idx) => (
+              <motion.div
+                key={resource.id}
+                variants={fadeIn}
+                initial="initial"
+                whileInView="animate"
+                transition={{ delay: idx * 0.1 }}
+                whileHover={{ 
+                  rotateY: 5, 
+                  rotateX: -2,
+                  translateZ: 20,
+                  scale: 1.02
+                }}
+                className="perspective-1000"
+              >
+                <Card className="h-full border border-border/40 shadow-sm transition-all hover:shadow-2xl overflow-hidden group preserve-3d">
+                  <div className="h-2 bg-secondary/20 group-hover:bg-secondary transition-colors" />
+
                 <CardHeader className="pb-4">
                   <Badge variant="outline" className="mb-3 w-fit border-secondary/30 text-secondary bg-secondary/5">{resource.category}</Badge>
                   <CardTitle className="text-2xl font-heading text-primary group-hover:text-secondary transition-colors">{resource.name}</CardTitle>
@@ -310,18 +319,25 @@ export function HowItWorks() {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-          {steps.map((step, idx) => (
-            <motion.div 
-              key={idx}
-              variants={fadeIn}
-              initial="initial"
-              whileInView="animate"
-              className="flex flex-col items-center text-center group"
-            >
-              <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-white shadow-lg text-secondary group-hover:bg-secondary group-hover:text-white transition-all duration-300">
-                <step.icon className="h-10 w-10" />
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+            {steps.map((step, idx) => (
+              <motion.div 
+                key={idx}
+                variants={fadeIn}
+                initial="initial"
+                whileInView="animate"
+                whileHover={{ 
+                  y: -10,
+                  rotateY: 10,
+                  rotateX: 5,
+                  scale: 1.05
+                }}
+                className="flex flex-col items-center text-center group perspective-1000"
+              >
+                <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-white shadow-xl text-secondary group-hover:bg-secondary group-hover:text-white transition-all duration-500 preserve-3d shadow-secondary/10">
+                  <step.icon className="h-10 w-10 translate-z-10" />
+                </div>
+
               <h3 className="text-xl font-bold mb-3 font-heading text-primary">{step.title}</h3>
               <p className="text-muted-foreground leading-relaxed">
                 {step.description}
@@ -378,23 +394,30 @@ export function InsightsPreview() {
             </Link>
           </div>
           
-          <div className="lg:w-1/2 grid grid-cols-2 gap-4">
-            <Card className="p-8 flex flex-col items-center justify-center text-center border-border/40 bg-primary/5">
-              <TrendingUp className="h-10 w-10 text-secondary mb-4" />
-              <div className="text-3xl font-bold text-primary mb-1">2,400+</div>
-              <div className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">Searches this week</div>
-            </Card>
-            <Card className="p-8 flex flex-col items-center justify-center text-center border-border/40">
-              <Clock className="h-10 w-10 text-accent mb-4" />
-              <div className="text-3xl font-bold text-primary mb-1">12</div>
-              <div className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">New resources added</div>
-            </Card>
-            <Card className="p-8 flex flex-col items-center justify-center text-center border-border/40 col-span-2">
-              <Users className="h-10 w-10 text-primary mb-4" />
-              <div className="text-3xl font-bold text-primary mb-1">North Tampa</div>
-              <div className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">Highest search volume area</div>
-            </Card>
+          <div className="lg:w-1/2 grid grid-cols-2 gap-4 perspective-1000">
+            <motion.div whileHover={{ rotateY: -10, rotateX: 5, z: 50 }} className="preserve-3d">
+              <Card className="p-8 flex flex-col items-center justify-center text-center border-border/40 bg-primary/5 shadow-xl shadow-primary/5">
+                <TrendingUp className="h-10 w-10 text-secondary mb-4" />
+                <div className="text-3xl font-bold text-primary mb-1">2,400+</div>
+                <div className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">Searches this week</div>
+              </Card>
+            </motion.div>
+            <motion.div whileHover={{ rotateY: 10, rotateX: 5, z: 50 }} className="preserve-3d">
+              <Card className="p-8 flex flex-col items-center justify-center text-center border-border/40 shadow-xl shadow-accent/5">
+                <Clock className="h-10 w-10 text-accent mb-4" />
+                <div className="text-3xl font-bold text-primary mb-1">12</div>
+                <div className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">New resources added</div>
+              </Card>
+            </motion.div>
+            <motion.div whileHover={{ rotateY: 0, rotateX: -10, z: 50 }} className="col-span-2 preserve-3d">
+              <Card className="p-8 flex flex-col items-center justify-center text-center border-border/40 shadow-xl shadow-secondary/5">
+                <Users className="h-10 w-10 text-primary mb-4" />
+                <div className="text-3xl font-bold text-primary mb-1">North Tampa</div>
+                <div className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">Highest search volume area</div>
+              </Card>
+            </motion.div>
           </div>
+
         </div>
       </div>
     </section>
