@@ -156,14 +156,14 @@ export function EventsTeaser() {
 
 export function Hero() {
   return (
-    <section className="relative min-h-[85vh] flex items-center overflow-hidden bg-primary py-20">
+    <section className="relative min-h-screen flex items-center overflow-hidden bg-primary py-24">
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/95 to-secondary/40 opacity-90" />
       
       {/* Background Pattern/Imagery Placeholder */}
       <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1596436889106-be35e843f974?auto=format&fit=crop&q=80&w=2000')] bg-cover bg-center" />
       
-      <div className="container relative mx-auto px-4 sm:px-6">
+      <div className="container relative mx-auto px-4 sm:px-6 pb-32">
         <div className="max-w-4xl">
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
@@ -202,7 +202,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.5, duration: 1 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 text-white/60 hidden md:flex pointer-events-none"
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 text-white/60 hidden lg:flex pointer-events-none"
         >
           <span className="text-[10px] font-bold uppercase tracking-[0.4em] translate-x-[0.2em] font-heading opacity-80">
             Scroll to Explore
