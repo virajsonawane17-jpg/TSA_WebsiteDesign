@@ -229,8 +229,12 @@ export function FeaturedResources() {
   const featured = TAMPA_RESOURCES.filter(r => r.featured).slice(0, 3);
   
   return (
-    <section className="bg-background py-24 border-b">
-      <div className="container mx-auto px-4 sm:px-6">
+    <section className="relative bg-background py-24 border-b overflow-hidden">
+      {/* Background Decorative Elements */}
+      <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+      
+      <div className="container relative mx-auto px-4 sm:px-6">
         <div className="mb-16 flex flex-col items-center justify-between gap-6 md:flex-row md:items-end">
           <div className="max-w-2xl">
             <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl font-heading text-primary">Featured Local Resources</h2>
@@ -254,43 +258,46 @@ export function FeaturedResources() {
                 whileInView="animate"
                 transition={{ delay: idx * 0.1 }}
                 whileHover={{ 
-                  rotateY: 5, 
-                  rotateX: -2,
-                  translateZ: 20,
+                  y: -8,
                   scale: 1.02
                 }}
-                className="perspective-1000"
+                className="group"
               >
-                <Card className="h-full border border-border/40 shadow-sm transition-all hover:shadow-2xl overflow-hidden group preserve-3d">
-                  <div className="h-2 bg-secondary/20 group-hover:bg-secondary transition-colors" />
+                <Card className="h-full border border-border/40 shadow-sm transition-all hover:shadow-2xl overflow-hidden bg-white/50 backdrop-blur-sm">
+                  <div className="h-2 bg-gradient-to-r from-secondary/40 to-secondary group-hover:from-secondary group-hover:to-secondary transition-all" />
 
-                <CardHeader className="pb-4">
-                  <Badge variant="outline" className="mb-3 w-fit border-secondary/30 text-secondary bg-secondary/5">{resource.category}</Badge>
-                  <CardTitle className="text-2xl font-heading text-primary group-hover:text-secondary transition-colors">{resource.name}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <CardDescription className="text-base text-foreground/70 line-clamp-3">
-                    {resource.longDescription || resource.description}
-                  </CardDescription>
-                  <div className="space-y-3 pt-2">
-                    <div className="flex items-start text-sm text-muted-foreground">
-                      <MapPin className="mr-3 h-4 w-4 shrink-0 text-secondary" />
-                      <span>{resource.location}</span>
+                  <CardHeader className="pb-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <Badge variant="outline" className="border-secondary/30 text-secondary bg-secondary/5">{resource.category}</Badge>
+                      <div className="h-8 w-8 rounded-full bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                        <Heart className="h-4 w-4" />
+                      </div>
                     </div>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Phone className="mr-3 h-4 w-4 shrink-0 text-secondary" />
-                      <span>{resource.phone}</span>
+                    <CardTitle className="text-2xl font-heading text-primary group-hover:text-secondary transition-colors line-clamp-1">{resource.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <CardDescription className="text-base text-foreground/70 line-clamp-4 min-h-[6rem]">
+                      {resource.longDescription || resource.description}
+                    </CardDescription>
+                    <div className="space-y-3 pt-2">
+                      <div className="flex items-start text-sm text-muted-foreground">
+                        <MapPin className="mr-3 h-4 w-4 shrink-0 text-secondary" />
+                        <span className="line-clamp-1">{resource.location}</span>
+                      </div>
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <Phone className="mr-3 h-4 w-4 shrink-0 text-secondary" />
+                        <span>{resource.phone}</span>
+                      </div>
                     </div>
-                  </div>
-                  <Link href={`/resources/${resource.id}`}>
-                    <Button className="mt-4 w-full bg-primary hover:bg-primary/90 text-white font-medium">
-                      View Organization Details
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+                    <Link href={`/resources/${resource.id}`} className="block w-full">
+                      <Button className="w-full bg-primary hover:bg-primary/90 text-white font-medium shadow-lg shadow-primary/10">
+                        View Organization Details
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
         </div>
       </div>
     </section>

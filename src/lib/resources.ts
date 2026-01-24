@@ -66,7 +66,7 @@ export const TAMPA_RESOURCES: Resource[] = [
     id: "1",
     name: "Feeding Tampa Bay",
     description: "The largest food rescue and distribution organization in the region, providing food to those in need across 10 counties.",
-    longDescription: "Feeding Tampa Bay is the driving force behind hunger relief in the Tampa Bay region. They provide food to more than 1 million people through a network of 400+ partners and various programs including mobile pantries and school programs.",
+    longDescription: "Feeding Tampa Bay is the driving force behind hunger relief in the Tampa Bay region. In 2026, they continue to serve over 1 million people through their Causeway Center and mobile pantries, integrating health and job training into their food security mission.",
     category: "Food Assistance",
     audiences: ["Everyone", "Families", "Seniors", "Low-Income"],
     location: "3624 Causeway Blvd, Tampa, FL 33619",
@@ -80,7 +80,7 @@ export const TAMPA_RESOURCES: Resource[] = [
     id: "2",
     name: "Metropolitan Ministries",
     description: "A grassroots, donor-supported nonprofit providing food, housing, and life-skills for the homeless and at-risk.",
-    longDescription: "Metropolitan Ministries serves poor and homeless families in Hillsborough, Pinellas, Pasco, and Polk counties. They provide food, shelter, and basic services to help families become self-sufficient.",
+    longDescription: "Serving Hillsborough, Pasco, and Pinellas, Metropolitan Ministries provides over 2.3 million meals annually and emergency shelter for families. Their 2026 initiatives focus on long-term self-sufficiency and family stability.",
     category: "Housing",
     audiences: ["Families", "Low-Income"],
     location: "2002 N Florida Ave, Tampa, FL 33602",
@@ -92,20 +92,46 @@ export const TAMPA_RESOURCES: Resource[] = [
   },
   {
     id: "3",
+    name: "Ibis Healthcare",
+    description: "Unified behavioral health, mental health, and substance treatment services created from the Gracepoint and Cove merger.",
+    longDescription: "Following the landmark 2025 merger, Ibis Healthcare provides comprehensive mental health, primary care, and crisis services to over 50,000 residents. Their new Mariposa facility specialized in women's health opened in early 2026.",
+    category: "Mental Health",
+    audiences: ["Everyone", "Youth", "Low-Income"],
+    location: "5707 N 22nd St, Tampa, FL 33610",
+    lat: 27.9995,
+    lng: -82.4350,
+    phone: "(813) 272-2244",
+    website: "https://ibishealthcare.org",
+    featured: true
+  },
+  {
+    id: "4",
+    name: "Tampa Hope (Catholic Charities)",
+    description: "Comprehensive emergency shelter providing tents, cottages, and path-to-housing services for adults.",
+    longDescription: "Tampa Hope offers a safe haven for over 300 adults, providing meals, hygiene, and case management with a focus on reaching permanent housing within four months of entry.",
+    category: "Housing",
+    audiences: ["Everyone", "Low-Income"],
+    location: "3704 E 3rd Ave, Tampa, FL 33605",
+    lat: 27.9535,
+    lng: -82.4150,
+    phone: "(813) 415-8002",
+    website: "https://www.ccdosp.org/tampa-hope"
+  },
+  {
+    id: "5",
     name: "Crisis Center of Tampa Bay",
     description: "Provides 24/7 support for mental health, trauma, and crisis intervention services.",
     longDescription: "The Crisis Center of Tampa Bay is Hillsborough County's gateway to help. They provide 211 contact center services, trauma counseling, sexual assault services, and suicide prevention.",
-    category: "Mental Health",
+    category: "Crisis Support",
     audiences: ["Everyone", "Youth", "Veterans"],
     location: "One Crisis Center Plaza, Tampa, FL 33613",
     lat: 28.0682,
     lng: -82.4770,
     phone: "2-1-1 or (813) 964-1964",
-    website: "https://www.crisiscenter.com",
-    featured: true
+    website: "https://www.crisiscenter.com"
   },
   {
-    id: "4",
+    id: "6",
     name: "Boys & Girls Clubs of Tampa Bay",
     description: "Empowers young people to reach their full potential as productive, caring, and responsible citizens.",
     category: "Youth Programs",
@@ -117,7 +143,7 @@ export const TAMPA_RESOURCES: Resource[] = [
     website: "https://www.bgctampa.org"
   },
   {
-    id: "5",
+    id: "7",
     name: "Wheels of Success",
     description: "Helps families maintain or obtain employment by providing reliable transportation.",
     category: "Employment",
@@ -129,7 +155,7 @@ export const TAMPA_RESOURCES: Resource[] = [
     website: "https://www.wheelsofsuccess.org"
   },
   {
-    id: "6",
+    id: "8",
     name: "Bay Area Legal Services",
     description: "Providing high-quality legal assistance to low-income residents of the Tampa Bay area.",
     category: "Legal Aid",
@@ -141,19 +167,7 @@ export const TAMPA_RESOURCES: Resource[] = [
     website: "https://bals.org"
   },
   {
-    id: "7",
-    name: "Special Operations Warrior Foundation",
-    description: "Provides full post-secondary educational support to the surviving children of fallen Special Operations Personnel.",
-    category: "Education",
-    audiences: ["Veterans", "Youth"],
-    location: "11370 66th St N, Largo, FL 33773",
-    lat: 27.8920,
-    lng: -82.7290,
-    phone: "(813) 805-9400",
-    website: "https://specialops.org"
-  },
-  {
-    id: "8",
+    id: "9",
     name: "Tampa Family Health Centers",
     description: "Providing affordable, high-quality healthcare to the Tampa community across multiple locations.",
     category: "Healthcare",
@@ -165,7 +179,7 @@ export const TAMPA_RESOURCES: Resource[] = [
     website: "https://tampafamilyhc.com"
   },
   {
-    id: "9",
+    id: "10",
     name: "Hillsborough County Social Services",
     description: "Government-run support programs for housing, utilities, and emergency assistance.",
     category: "Crisis Support",
@@ -177,7 +191,7 @@ export const TAMPA_RESOURCES: Resource[] = [
     website: "https://www.hillsboroughcounty.org"
   },
   {
-    id: "10",
+    id: "11",
     name: "A Kid's Place",
     description: "A safe haven for foster siblings to stay together in a loving home environment.",
     category: "Youth Programs",
@@ -189,7 +203,7 @@ export const TAMPA_RESOURCES: Resource[] = [
     website: "https://akidsplacetampa.org"
   },
   {
-    id: "11",
+    id: "12",
     name: "St. Vincent de Paul CARES",
     description: "Providing hunger relief and housing services to prevent homelessness.",
     category: "Housing",
@@ -199,18 +213,6 @@ export const TAMPA_RESOURCES: Resource[] = [
     lng: -82.4515,
     phone: "(813) 977-7057",
     website: "https://www.svdp.care"
-  },
-  {
-    id: "12",
-    name: "Salvation Army Tampa",
-    description: "Offers disaster relief, emergency assistance, and rehabilitation services.",
-    category: "Crisis Support",
-    audiences: ["Everyone", "Low-Income"],
-    location: "1603 N Florida Ave, Tampa, FL 33602",
-    lat: 27.9580,
-    lng: -82.4600,
-    phone: "(813) 226-0055",
-    website: "https://salvationarmytampa.org"
   }
 ];
 
