@@ -10,7 +10,8 @@ export type Category =
   | "Legal Aid"
   | "Crisis Support"
   | "Seniors"
-  | "Arts & Culture";
+  | "Arts & Culture"
+  | "Food & Housing";
 
 export type Audience = 
   | "Families"
@@ -64,8 +65,22 @@ export interface CommunityEvent {
 export const TAMPA_RESOURCES: Resource[] = [
   {
     id: "1",
+    name: "Metropolitan Ministries",
+    description: "Emergency food assistance, housing support, and family stability services for Tampa residents.",
+    longDescription: "Serving Hillsborough, Pasco, and Pinellas, Metropolitan Ministries provides over 2.3 million meals annually and emergency shelter for families. Their 2026 initiatives focus on long-term self-sufficiency and family stability.",
+    category: "Food & Housing",
+    audiences: ["Families", "Low-Income", "Everyone"],
+    location: "2002 N Florida Ave, Tampa, FL 33602",
+    lat: 27.9620,
+    lng: -82.4595,
+    phone: "(813) 209-1000",
+    website: "https://www.metromin.org",
+    featured: true
+  },
+  {
+    id: "2",
     name: "Feeding Tampa Bay",
-    description: "The largest food rescue and distribution organization in the region, providing food to those in need across 10 counties.",
+    description: "Large-scale food distribution network serving Hillsborough County.",
     longDescription: "Feeding Tampa Bay is the driving force behind hunger relief in the Tampa Bay region. In 2026, they continue to serve over 1 million people through their Causeway Center and mobile pantries, integrating health and job training into their food security mission.",
     category: "Food Assistance",
     audiences: ["Everyone", "Families", "Seniors", "Low-Income"],
@@ -77,21 +92,21 @@ export const TAMPA_RESOURCES: Resource[] = [
     featured: true
   },
   {
-    id: "2",
-    name: "Metropolitan Ministries",
-    description: "A grassroots, donor-supported nonprofit providing food, housing, and life-skills for the homeless and at-risk.",
-    longDescription: "Serving Hillsborough, Pasco, and Pinellas, Metropolitan Ministries provides over 2.3 million meals annually and emergency shelter for families. Their 2026 initiatives focus on long-term self-sufficiency and family stability.",
-    category: "Housing",
-    audiences: ["Families", "Low-Income"],
-    location: "2002 N Florida Ave, Tampa, FL 33602",
-    lat: 27.9620,
-    lng: -82.4595,
-    phone: "(813) 209-1000",
-    website: "https://www.metromin.org",
+    id: "3",
+    name: "Bay Area Legal Services",
+    description: "Free civil legal help for housing, domestic violence, and benefits access.",
+    longDescription: "Providing high-quality legal assistance to low-income residents of the Tampa Bay area, specifically focusing on housing stability and veterans' rights in 2026.",
+    category: "Legal Aid",
+    audiences: ["Low-Income", "Seniors", "Veterans"],
+    location: "1302 N 19th St, Tampa, FL 33605",
+    lat: 27.9585,
+    lng: -82.4375,
+    phone: "(813) 232-1343",
+    website: "https://bals.org",
     featured: true
   },
   {
-    id: "3",
+    id: "4",
     name: "Ibis Healthcare",
     description: "Unified behavioral health, mental health, and substance treatment services created from the Gracepoint and Cove merger.",
     longDescription: "Following the landmark 2025 merger, Ibis Healthcare provides comprehensive mental health, primary care, and crisis services to over 50,000 residents. Their new Mariposa facility specialized in women's health opened in early 2026.",
@@ -101,11 +116,10 @@ export const TAMPA_RESOURCES: Resource[] = [
     lat: 27.9995,
     lng: -82.4350,
     phone: "(813) 272-2244",
-    website: "https://ibishealthcare.org",
-    featured: true
+    website: "https://ibishealthcare.org"
   },
   {
-    id: "4",
+    id: "5",
     name: "Tampa Hope (Catholic Charities)",
     description: "Comprehensive emergency shelter providing tents, cottages, and path-to-housing services for adults.",
     longDescription: "Tampa Hope offers a safe haven for over 300 adults, providing meals, hygiene, and case management with a focus on reaching permanent housing within four months of entry.",
@@ -118,10 +132,9 @@ export const TAMPA_RESOURCES: Resource[] = [
     website: "https://www.ccdosp.org/tampa-hope"
   },
   {
-    id: "5",
+    id: "6",
     name: "Crisis Center of Tampa Bay",
     description: "Provides 24/7 support for mental health, trauma, and crisis intervention services.",
-    longDescription: "The Crisis Center of Tampa Bay is Hillsborough County's gateway to help. They provide 211 contact center services, trauma counseling, sexual assault services, and suicide prevention.",
     category: "Crisis Support",
     audiences: ["Everyone", "Youth", "Veterans"],
     location: "One Crisis Center Plaza, Tampa, FL 33613",
@@ -129,181 +142,76 @@ export const TAMPA_RESOURCES: Resource[] = [
     lng: -82.4770,
     phone: "2-1-1 or (813) 964-1964",
     website: "https://www.crisiscenter.com"
-  },
-  {
-    id: "6",
-    name: "Boys & Girls Clubs of Tampa Bay",
-    description: "Empowers young people to reach their full potential as productive, caring, and responsible citizens.",
-    category: "Youth Programs",
-    audiences: ["Youth"],
-    location: "1307 N MacDill Ave, Tampa, FL 33607",
-    lat: 27.9545,
-    lng: -82.4862,
-    phone: "(813) 769-7530",
-    website: "https://www.bgctampa.org"
-  },
-  {
-    id: "7",
-    name: "Wheels of Success",
-    description: "Helps families maintain or obtain employment by providing reliable transportation.",
-    category: "Employment",
-    audiences: ["Low-Income", "Families"],
-    location: "4610 N Florida Ave, Tampa, FL 33603",
-    lat: 27.9880,
-    lng: -82.4595,
-    phone: "(813) 490-9443",
-    website: "https://www.wheelsofsuccess.org"
-  },
-  {
-    id: "8",
-    name: "Bay Area Legal Services",
-    description: "Providing high-quality legal assistance to low-income residents of the Tampa Bay area.",
-    category: "Legal Aid",
-    audiences: ["Low-Income", "Seniors", "Veterans"],
-    location: "1302 N 19th St, Tampa, FL 33605",
-    lat: 27.9585,
-    lng: -82.4375,
-    phone: "(813) 232-1343",
-    website: "https://bals.org"
-  },
-  {
-    id: "9",
-    name: "Tampa Family Health Centers",
-    description: "Providing affordable, high-quality healthcare to the Tampa community across multiple locations.",
-    category: "Healthcare",
-    audiences: ["Everyone", "Families", "Low-Income"],
-    location: "Multiple Locations across Tampa",
-    lat: 27.9600,
-    lng: -82.4400,
-    phone: "(813) 397-5300",
-    website: "https://tampafamilyhc.com"
-  },
-  {
-    id: "10",
-    name: "Hillsborough County Social Services",
-    description: "Government-run support programs for housing, utilities, and emergency assistance.",
-    category: "Crisis Support",
-    audiences: ["Low-Income", "Seniors", "Families"],
-    location: "Various Community Resource Centers",
-    lat: 27.9500,
-    lng: -82.4600,
-    phone: "(813) 272-5900",
-    website: "https://www.hillsboroughcounty.org"
-  },
-  {
-    id: "11",
-    name: "A Kid's Place",
-    description: "A safe haven for foster siblings to stay together in a loving home environment.",
-    category: "Youth Programs",
-    audiences: ["Youth"],
-    location: "1715 Lithia Pinecrest Rd, Brandon, FL 33511",
-    lat: 27.9000,
-    lng: -82.2800,
-    phone: "(813) 381-3839",
-    website: "https://akidsplacetampa.org"
-  },
-  {
-    id: "12",
-    name: "St. Vincent de Paul CARES",
-    description: "Providing hunger relief and housing services to prevent homelessness.",
-    category: "Housing",
-    audiences: ["Low-Income", "Veterans"],
-    location: "12310 N Nebraska Ave, Tampa, FL 33612",
-    lat: 28.0595,
-    lng: -82.4515,
-    phone: "(813) 977-7057",
-    website: "https://www.svdp.care"
   }
 ];
 
 export const TAMPA_NEWS: NewsItem[] = [
   {
     id: "n1",
-    title: "Gasparilla 2026: Complete Guide to the Pirate Fest",
-    excerpt: "The legendary pirate invasion returns to Tampa's shores. Here is everything you need to know about parking, parade routes, and safety.",
-    date: "Jan 20, 2026",
-    source: "Patch Tampa",
-    category: "Events",
-    imageUrl: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=800&auto=format&fit=crop",
-    link: "https://patch.com/florida/tampa"
+    title: "City of Tampa Expands Affordable Housing Grants",
+    excerpt: "New funding initiatives aimed at increasing homeownership and rental assistance for low-income families in Hillsborough County.",
+    date: "Jan 22, 2026",
+    source: "City of Tampa",
+    category: "Housing",
+    imageUrl: "https://images.unsplash.com/photo-1460317442991-0ec239397148?q=80&w=800&auto=format&fit=crop",
+    link: "/news"
   },
   {
     id: "n2",
-    title: "New Affordable Housing Units Open in West Tampa",
-    excerpt: "Hillsborough County officials celebrated the ribbon-cutting of a 120-unit complex dedicated to low-income families and veterans.",
-    date: "Jan 18, 2026",
-    source: "Tampa Bay Times",
-    category: "Housing",
-    imageUrl: "https://images.unsplash.com/photo-1460317442991-0ec239397148?q=80&w=800&auto=format&fit=crop",
-    link: "https://www.tampabay.com"
+    title: "Free Community Health Screenings This Month",
+    excerpt: "Local health centers are offering no-cost wellness checks, vaccinations, and dental screenings across East Tampa neighborhoods.",
+    date: "Jan 20, 2026",
+    source: "Tampa Family Health",
+    category: "Health",
+    imageUrl: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=800&auto=format&fit=crop",
+    link: "/news"
   },
   {
     id: "n3",
-    title: "Feeding Tampa Bay Expands Mobile Pantry Schedule",
-    excerpt: "In response to rising food costs, the region's largest food bank is adding three new stops in underserved neighborhoods.",
-    date: "Jan 15, 2026",
-    source: "Creative Loafing",
-    category: "Community",
-    imageUrl: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=800&auto=format&fit=crop",
-    link: "https://www.cltampa.com"
-  },
-  {
-    id: "n4",
-    title: "Tampa Bay Tech Programs Receive $2M Innovation Grant",
-    excerpt: "Local career and technical education programs will benefit from new equipment and scholarship opportunities.",
-    date: "Jan 12, 2026",
-    source: "WFLA News Channel 8",
-    category: "Education",
-    imageUrl: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=800&auto=format&fit=crop",
-    link: "https://www.wfla.com"
+    title: "Local Job Fair Connects Residents With Employers",
+    excerpt: "Over 50 Tampa-based companies gathered to offer immediate hiring opportunities in healthcare, logistics, and technology.",
+    date: "Jan 18, 2026",
+    source: "Hillsborough County",
+    category: "Employment",
+    imageUrl: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=800&auto=format&fit=crop",
+    link: "/news"
   }
 ];
 
 export const TAMPA_EVENTS: CommunityEvent[] = [
   {
     id: "e1",
-    title: "Gasparilla Children's Parade",
-    description: "A family-friendly celebration along Bayshore Boulevard featuring a bicycle rodeo, preschooler stroll, and parade.",
-    date: "Jan 24, 2026",
-    time: "12:00 PM - 7:30 PM",
-    location: "Bayshore Blvd, Tampa",
-    category: "Family",
-    imageUrl: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=800&auto=format&fit=crop",
-    link: "https://gasparillapiratefest.com",
+    title: "Tampa Community Job Fair",
+    description: "Meet with local employers from across Hillsborough County. Bring your resume and dress for success.",
+    date: "Jan 28, 2026",
+    time: "10:00 AM - 3:00 PM",
+    location: "Tampa Convention Center",
+    category: "Career",
+    imageUrl: "https://images.unsplash.com/photo-1540317580384-e5d43616b9aa?q=80&w=800&auto=format&fit=crop",
+    link: "/events",
     featured: true
   },
   {
     id: "e2",
-    title: "Gasparilla Pirate Fest & Parade",
-    description: "The main event: the world's only pirate invasion and the third-largest parade in the United States.",
-    date: "Jan 31, 2026",
-    time: "10:00 AM - 8:00 PM",
-    location: "Downtown Tampa / Bayshore",
-    category: "Festival",
-    imageUrl: "https://images.unsplash.com/photo-1514525253361-bee8718a340b?q=80&w=800&auto=format&fit=crop",
-    link: "https://gasparillapiratefest.com",
+    title: "Free Financial Literacy Workshop",
+    description: "Learn essential skills for budgeting, saving, and improving your credit score from local experts.",
+    date: "Feb 2, 2026",
+    time: "6:00 PM - 8:00 PM",
+    location: "Robert W. Saunders, Sr. Public Library",
+    category: "Workshop",
+    imageUrl: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=800&auto=format&fit=crop",
+    link: "/events",
     featured: true
   },
   {
     id: "e3",
-    title: "Ybor City Saturday Market",
-    description: "Explore locally grown produce, gourmet foods, and unique arts and crafts in historic Ybor City.",
-    date: "Jan 24, 2026",
-    time: "9:00 AM - 3:00 PM",
-    location: "Centennial Park, Ybor City",
-    category: "Community",
-    imageUrl: "https://images.unsplash.com/photo-1488459711615-228f0954035d?q=80&w=800&auto=format&fit=crop",
-    link: "https://www.ybormarket.com"
-  },
-  {
-    id: "e4",
-    title: "Community Career Fair",
-    description: "Connect with local employers and career counselors. Open to all residents seeking employment.",
+    title: "Neighborhood Food Distribution Day",
+    description: "Feeding Tampa Bay is hosting a large-scale mobile pantry event to provide fresh produce and shelf-stable goods.",
     date: "Feb 5, 2026",
-    time: "10:00 AM - 2:00 PM",
-    location: "Tampa Convention Center",
-    category: "Employment",
-    imageUrl: "https://images.unsplash.com/photo-1540317580384-e5d43616b9aa?q=80&w=800&auto=format&fit=crop",
-    link: "https://www.tampachamber.com"
+    time: "9:00 AM - 12:00 PM",
+    location: "Raymond James Stadium Parking Lot",
+    category: "Health",
+    imageUrl: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=800&auto=format&fit=crop",
+    link: "/events"
   }
 ];
