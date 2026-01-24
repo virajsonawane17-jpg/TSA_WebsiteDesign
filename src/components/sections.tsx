@@ -140,7 +140,7 @@ export function EventsTeaser() {
                   </div>
                   <Button variant="ghost" className="w-full text-accent hover:text-accent hover:bg-accent/5 p-0 h-auto justify-start font-bold" asChild>
                     <Link href="/events">
-                      Event details <ArrowRight className="ml-2 h-4 w-4" />
+                      View Event <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>
                 </CardContent>
@@ -264,15 +264,12 @@ export function FeaturedResources() {
                 className="group"
               >
                   <Card className="h-full border border-border/40 shadow-sm transition-all hover:shadow-2xl overflow-hidden bg-white/50 backdrop-blur-sm relative">
-                    <div className="h-2 bg-gradient-to-r from-secondary/40 to-secondary group-hover:from-secondary group-hover:to-secondary transition-all" />
-                    
                     {resource.featured && (
-                      <div className="absolute top-4 right-4 z-10">
-                        <Badge className="bg-secondary/10 text-secondary border-secondary/20 backdrop-blur-md px-2 py-0 text-[10px] font-bold uppercase tracking-wider">
-                          Featured
-                        </Badge>
+                      <div className="absolute top-0 right-0 bg-secondary text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider z-10">
+                        Featured
                       </div>
                     )}
+                    <div className="h-2 bg-gradient-to-r from-secondary/40 to-secondary group-hover:from-secondary group-hover:to-secondary transition-all" />
 
                     <CardHeader className="pb-4">
                       <div className="flex justify-between items-start mb-3">
@@ -284,7 +281,7 @@ export function FeaturedResources() {
                       <CardTitle className="text-2xl font-heading text-primary group-hover:text-secondary transition-colors line-clamp-1">{resource.name}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                      <CardDescription className="text-base text-foreground/70 line-clamp-4 min-h-[6rem]">
+                      <CardDescription className="text-base text-foreground/70 line-clamp-3 min-h-[4.5rem]">
                         {resource.description}
                       </CardDescription>
                       <div className="space-y-3 pt-2">
@@ -295,7 +292,7 @@ export function FeaturedResources() {
                       </div>
                       <Link href={`/resources/${resource.id}`} className="block w-full">
                         <Button className="w-full bg-primary hover:bg-primary/90 text-white font-medium shadow-lg shadow-primary/10">
-                          {resource.category === "Legal Aid" ? "Get Help" : "View Details"}
+                          View Details
                         </Button>
                       </Link>
                     </CardContent>
@@ -308,37 +305,37 @@ export function FeaturedResources() {
   );
 }
 
-  export function HowItWorks() {
-    const steps = [
-      {
-        icon: Search,
-        title: "Find Help Faster",
-        description: "Search verified local services by need, location, and eligibility."
-      },
-      {
-        icon: Clock,
-        title: "Stay Informed",
-        description: "See real-time updates on programs, events, and local initiatives."
-      },
-      {
-        icon: Users,
-        title: "Strengthen Community",
-        description: "Residents and organizations contribute resources to keep information current."
-      }
-    ];
+export function HowItWorks() {
+  const steps = [
+    {
+      icon: Search,
+      title: "Find Help Faster",
+      description: "Search verified local services by need, location, and eligibility."
+    },
+    {
+      icon: MessageCircle,
+      title: "Stay Informed",
+      description: "See real-time updates on programs, events, and local initiatives."
+    },
+    {
+      icon: Users,
+      title: "Strengthen Community",
+      description: "Residents and organizations contribute resources to keep information current."
+    }
+  ];
 
-    return (
-      <section className="bg-primary/5 py-24">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="text-center mb-20">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-heading text-primary mb-4">How This Helps Tampa</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              A simple, human-centered approach to finding local community support.
-            </p>
-          </div>
-          
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-              {steps.map((step, idx) => (
+  return (
+    <section className="bg-primary/5 py-24">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="text-center mb-20">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-heading text-primary mb-4">How This Helps Tampa</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            A simple, human-centered approach to finding local community support.
+          </p>
+        </div>
+        
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {steps.map((step, idx) => (
               <motion.div 
                 key={idx}
                 variants={fadeIn}
