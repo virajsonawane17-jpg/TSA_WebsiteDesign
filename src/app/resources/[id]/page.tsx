@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { 
   MapPin, 
   Phone, 
@@ -175,9 +176,10 @@ export default async function ResourceDetailPage({ params }: PageProps) {
         <section className="bg-white py-24 border-y">
           <div className="container mx-auto px-4 sm:px-6">
             <h2 className="text-3xl font-bold font-heading text-primary mb-12 text-center">Service Location</h2>
-            <div className="h-[400px] w-full rounded-3xl bg-muted relative overflow-hidden border border-border/40 shadow-inner">
-               <div className="absolute inset-0 bg-[#e5e7eb] opacity-50 bg-[url('https://api.mapbox.com/styles/v1/mapbox/light-v10/static/" + resource.lng + "," + resource.lat + ",14,0/1200x800?access_token=pk.eyJ1Ijoib3JjaGlkcyIsImEiOiJjbGZ3Z3R4MHcwM3R6M3FwZ2d3Z3R4MHcwM3R6In0.fake')] bg-cover bg-center" />
-               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-12 w-12 bg-accent rounded-full border-4 border-white shadow-2xl flex items-center justify-center animate-bounce">
+              <div className="h-[400px] w-full rounded-3xl bg-muted relative overflow-hidden border border-border/40 shadow-inner">
+                 <div className="absolute inset-0 bg-[#e5e7eb] opacity-50 bg-cover bg-center" style={{ backgroundImage: `url('https://api.mapbox.com/styles/v1/mapbox/light-v10/static/${resource.lng},${resource.lat},14,0/1200x800?access_token=pk.eyJ1Ijoib3JjaGlkcyIsImEiOiJjbGZ3Z3R4MHcwM3R6M3FwZ2d3Z3R4MHcwM3R6In0.fake')` }} />
+                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-12 w-12 bg-accent rounded-full border-4 border-white shadow-2xl flex items-center justify-center animate-bounce">
+
                  <MapPin className="h-6 w-6 text-white fill-current" />
                </div>
                <div className="absolute bottom-6 right-6 bg-white p-4 rounded-xl shadow-lg border border-border/40">
