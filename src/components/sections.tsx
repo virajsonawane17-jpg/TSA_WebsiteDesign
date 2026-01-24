@@ -33,7 +33,9 @@ const fadeIn = {
 };
 
 export function NewsTeaser() {
-  const latestNews = TAMPA_NEWS.slice(0, 3);
+  const latestNews = [...TAMPA_NEWS]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 3);
   
   return (
     <section className="bg-primary/5 py-24">
@@ -77,7 +79,7 @@ export function NewsTeaser() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground line-clamp-2 italic mb-4">"{news.excerpt}"</p>
-                  <Link href="/news" className="text-secondary text-sm font-bold flex items-center group/link">
+                  <Link href={news.link} className="text-secondary text-sm font-bold flex items-center group/link">
                     Read more <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover/link:translate-x-1" />
                   </Link>
                 </CardContent>
@@ -91,7 +93,9 @@ export function NewsTeaser() {
 }
 
 export function EventsTeaser() {
-  const upcomingEvents = TAMPA_EVENTS.slice(0, 3);
+  const upcomingEvents = [...TAMPA_EVENTS]
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .slice(0, 3);
   
   return (
     <section className="py-24 bg-background">
@@ -139,8 +143,8 @@ export function EventsTeaser() {
                     </div>
                   </div>
                   <Button variant="ghost" className="w-full text-accent hover:text-accent hover:bg-accent/5 p-0 h-auto justify-start font-bold" asChild>
-                    <Link href="/events">
-                      Event details <ArrowRight className="ml-2 h-4 w-4" />
+                    <Link href={event.link}>
+                      View Event <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>
                 </CardContent>
@@ -226,7 +230,7 @@ export function Hero() {
 }
 
 export function FeaturedResources() {
-  const featured = TAMPA_RESOURCES.filter(r => r.featured).slice(0, 3);
+  const featured = TAMPA_RESOURCES.filter(r => r.featured).slice(0, 5);
   
   return (
     <section className="relative bg-background py-24 border-b overflow-hidden">
@@ -249,7 +253,7 @@ export function FeaturedResources() {
           </Link>
         </div>
         
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
             {featured.map((resource, idx) => (
               <motion.div
                 key={resource.id}
@@ -268,7 +272,12 @@ export function FeaturedResources() {
 
                   <CardHeader className="pb-4">
                     <div className="flex justify-between items-start mb-3">
-                      <Badge variant="outline" className="border-secondary/30 text-secondary bg-secondary/5">{resource.category}</Badge>
+                      <div className="flex gap-2">
+                        <Badge variant="outline" className="border-secondary/30 text-secondary bg-secondary/5">{resource.category}</Badge>
+                        {resource.featured && (
+                          <Badge variant="secondary" className="bg-amber-100 text-amber-700 border-none text-[10px] px-2 py-0">FEATURED</Badge>
+                        )}
+                      </div>
                       <div className="h-8 w-8 rounded-full bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
                         <Heart className="h-4 w-4" />
                       </div>
@@ -276,12 +285,13 @@ export function FeaturedResources() {
                     <CardTitle className="text-2xl font-heading text-primary group-hover:text-secondary transition-colors line-clamp-1">{resource.name}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <CardDescription className="text-base text-foreground/70 line-clamp-4 min-h-[6rem]">
-                      {resource.longDescription || resource.description}
+                    <CardDescription className="text-base text-foreground/70 line-clamp-3 min-h-[4.5rem]">
+                      {resource.description}
                     </CardDescription>
                     <div className="space-y-3 pt-2">
                       <div className="flex items-start text-sm text-muted-foreground">
                         <MapPin className="mr-3 h-4 w-4 shrink-0 text-secondary" />
+                        <span className="font-semibold text-secondary mr-2">{resource.neighborhood}</span>
                         <span className="line-clamp-1">{resource.location}</span>
                       </div>
                       <div className="flex items-center text-sm text-muted-foreground">
@@ -291,7 +301,7 @@ export function FeaturedResources() {
                     </div>
                     <Link href={`/resources/${resource.id}`} className="block w-full">
                       <Button className="w-full bg-primary hover:bg-primary/90 text-white font-medium shadow-lg shadow-primary/10">
-                        View Organization Details
+                        {idx % 2 === 0 ? "View Details" : "Get Help"}
                       </Button>
                     </Link>
                   </CardContent>
@@ -308,23 +318,18 @@ export function HowItWorks() {
   const steps = [
     {
       icon: Search,
-      title: "Search Resources",
-      description: "Find organizations by name, keyword, or specific service needed in Tampa."
+      title: "Find Help Faster",
+      description: "Search verified local services by need, location, and eligibility."
     },
     {
-      icon: Target,
-      title: "Filter by Category",
-      description: "Narrow results by category, location, or the specific community you belong to."
+      icon: Clock,
+      title: "Stay Informed",
+      description: "See real-time updates on programs, events, and local initiatives."
     },
     {
-      icon: MessageCircle,
-      title: "Connect & Inquire",
-      description: "Get direct contact info, website links, and location maps for each resource."
-    },
-    {
-      icon: Heart,
-      title: "Get Support",
-      description: "Access the services you need to improve your quality of life in Tampa Bay."
+      icon: Users,
+      title: "Strengthen Community",
+      description: "Residents and organizations contribute resources to keep information current."
     }
   ];
 
@@ -338,7 +343,7 @@ export function HowItWorks() {
           </p>
         </div>
         
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {steps.map((step, idx) => (
               <motion.div 
                 key={idx}
@@ -347,27 +352,26 @@ export function HowItWorks() {
                 whileInView="animate"
                 whileHover={{ 
                   y: -10,
-                  rotateY: 10,
-                  rotateX: 5,
                   scale: 1.05
                 }}
-                className="flex flex-col items-center text-center group perspective-1000"
+                className="flex flex-col items-center text-center group"
               >
-                <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-white shadow-xl text-secondary group-hover:bg-secondary group-hover:text-white transition-all duration-500 preserve-3d shadow-secondary/10">
-                  <step.icon className="h-10 w-10 translate-z-10" />
+                <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-white shadow-xl text-secondary group-hover:bg-secondary group-hover:text-white transition-all duration-500 shadow-secondary/10">
+                  <step.icon className="h-10 w-10" />
                 </div>
 
-              <h3 className="text-xl font-bold mb-3 font-heading text-primary">{step.title}</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                {step.description}
-              </p>
-            </motion.div>
-          ))}
-        </div>
+                <h3 className="text-xl font-bold mb-3 font-heading text-primary">{step.title}</h3>
+                <p className="text-muted-foreground leading-relaxed max-w-xs">
+                  {step.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
       </div>
     </section>
   );
 }
+
 
 export function InsightsPreview() {
   const insights = [
