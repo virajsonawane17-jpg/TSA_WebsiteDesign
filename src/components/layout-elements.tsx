@@ -32,19 +32,18 @@ export function Navbar() {
           </span>
         </Link>
         
-          {/* Desktop Nav */}
-          <div className="hidden lg:flex items-center space-x-6">
-            <Link href="/directory" className="text-sm font-medium hover:text-secondary transition-colors">Directory</Link>
-            <Link href="/news" className="text-sm font-medium hover:text-secondary transition-colors">News</Link>
-            <Link href="/events" className="text-sm font-medium hover:text-secondary transition-colors">Events</Link>
-            <Link href="/insights" className="text-sm font-medium hover:text-secondary transition-colors">Insights</Link>
-            <Link href="/tsa" className="text-sm font-medium hover:text-secondary transition-colors">TSA</Link>
-            <Link href="/submit">
-              <Button size="sm" className="bg-secondary hover:bg-secondary/90">
-                Submit Resource
-              </Button>
-            </Link>
-          </div>
+            {/* Desktop Nav */}
+            <div className="hidden lg:flex items-center space-x-6">
+              <Link href="/directory" className="text-sm font-medium hover:text-secondary transition-colors">Directory</Link>
+              <Link href="/news" className="text-sm font-medium hover:text-secondary transition-colors">News</Link>
+              <Link href="/events" className="text-sm font-medium hover:text-secondary transition-colors">Events</Link>
+              <Link href="/insights" className="text-sm font-medium hover:text-secondary transition-colors">Insights</Link>
+              <Link href="/submit">
+                <Button size="sm" className="bg-secondary hover:bg-secondary/90">
+                  Submit Resource
+                </Button>
+              </Link>
+            </div>
 
         {/* Mobile Menu Toggle */}
         <button className="lg:hidden p-2" onClick={() => setIsOpen(!isOpen)}>
@@ -94,17 +93,16 @@ export function Footer() {
             </ul>
           </div>
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-secondary">Competition</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-secondary">Contact</h3>
               <ul className="mt-4 space-y-2">
-                <li><Link href="/tsa" className="text-sm opacity-80 hover:opacity-100 hover:text-secondary">TSA Chapter Info</Link></li>
-                <li><Link href="/tsa" className="text-sm opacity-80 hover:opacity-100 hover:text-secondary">Reference Page</Link></li>
-                <li><Link href="/tsa" className="text-sm opacity-80 hover:opacity-100 hover:text-secondary">CTE Programs</Link></li>
+                <li className="text-sm opacity-80">Hillsborough County, FL</li>
+                <li className="text-sm opacity-80">Email: info@tamparesourcehub.org</li>
               </ul>
             </div>
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-secondary">Disclosure</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-secondary">Community</h3>
               <p className="mt-4 text-xs opacity-70 italic">
-                This website is a <b>Custom-Built Theme</b> developed for the 2026 TSA National Conference. No generative AI templates or builders were used.
+                A collaborative effort to connect Tampa residents with the support and services they need to thrive.
               </p>
             </div>
         </div>
