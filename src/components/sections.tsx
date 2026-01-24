@@ -27,8 +27,7 @@ import { Newspaper, Calendar as CalendarIcon, Ticket } from "lucide-react";
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
+  animate: { opacity: 1, y: 0 },
   transition: { duration: 0.6 }
 };
 
@@ -140,7 +139,7 @@ export function EventsTeaser() {
                   </div>
                   <Button variant="ghost" className="w-full text-accent hover:text-accent hover:bg-accent/5 p-0 h-auto justify-start font-bold" asChild>
                     <Link href="/events">
-                      View Event <ArrowRight className="ml-2 h-4 w-4" />
+                      Event details <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>
                 </CardContent>
@@ -226,7 +225,7 @@ export function Hero() {
 }
 
 export function FeaturedResources() {
-  const featured = TAMPA_RESOURCES.filter(r => r.featured).slice(0, 3);
+  const featured = TAMPA_RESOURCES.filter(r => r.featured).slice(0, 6);
   
   return (
     <section className="relative bg-background py-24 border-b overflow-hidden">
@@ -263,40 +262,39 @@ export function FeaturedResources() {
                 }}
                 className="group"
               >
-                  <Card className="h-full border border-border/40 shadow-sm transition-all hover:shadow-2xl overflow-hidden bg-white/50 backdrop-blur-sm relative">
-                    {resource.featured && (
-                      <div className="absolute top-0 right-0 bg-secondary text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider z-10">
-                        Featured
-                      </div>
-                    )}
-                    <div className="h-2 bg-gradient-to-r from-secondary/40 to-secondary group-hover:from-secondary group-hover:to-secondary transition-all" />
+                <Card className="h-full border border-border/40 shadow-sm transition-all hover:shadow-2xl overflow-hidden bg-white/50 backdrop-blur-sm">
+                  <div className="h-2 bg-gradient-to-r from-secondary/40 to-secondary group-hover:from-secondary group-hover:to-secondary transition-all" />
 
-                    <CardHeader className="pb-4">
-                      <div className="flex justify-between items-start mb-3">
-                        <Badge variant="outline" className="border-secondary/30 text-secondary bg-secondary/5">{resource.category}</Badge>
-                        <div className="h-8 w-8 rounded-full bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
-                          <Heart className="h-4 w-4" />
-                        </div>
+                  <CardHeader className="pb-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <Badge variant="outline" className="border-secondary/30 text-secondary bg-secondary/5">{resource.category}</Badge>
+                      <div className="h-8 w-8 rounded-full bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                        <Heart className="h-4 w-4" />
                       </div>
-                      <CardTitle className="text-2xl font-heading text-primary group-hover:text-secondary transition-colors line-clamp-1">{resource.name}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                      <CardDescription className="text-base text-foreground/70 line-clamp-3 min-h-[4.5rem]">
-                        {resource.description}
-                      </CardDescription>
-                      <div className="space-y-3 pt-2">
-                        <div className="flex items-start text-sm text-muted-foreground">
-                          <MapPin className="mr-3 h-4 w-4 shrink-0 text-secondary" />
-                          <span className="line-clamp-1">{resource.location}</span>
-                        </div>
+                    </div>
+                    <CardTitle className="text-2xl font-heading text-primary group-hover:text-secondary transition-colors line-clamp-1">{resource.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <CardDescription className="text-base text-foreground/70 line-clamp-4 min-h-[6rem]">
+                      {resource.longDescription || resource.description}
+                    </CardDescription>
+                    <div className="space-y-3 pt-2">
+                      <div className="flex items-start text-sm text-muted-foreground">
+                        <MapPin className="mr-3 h-4 w-4 shrink-0 text-secondary" />
+                        <span className="line-clamp-1">{resource.location}</span>
                       </div>
-                      <Link href={`/resources/${resource.id}`} className="block w-full">
-                        <Button className="w-full bg-primary hover:bg-primary/90 text-white font-medium shadow-lg shadow-primary/10">
-                          View Details
-                        </Button>
-                      </Link>
-                    </CardContent>
-                  </Card>
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <Phone className="mr-3 h-4 w-4 shrink-0 text-secondary" />
+                        <span>{resource.phone}</span>
+                      </div>
+                    </div>
+                    <Link href={`/resources/${resource.id}`} className="block w-full">
+                      <Button className="w-full bg-primary hover:bg-primary/90 text-white font-medium shadow-lg shadow-primary/10">
+                        View Organization Details
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
               </motion.div>
             ))}
         </div>
@@ -309,18 +307,23 @@ export function HowItWorks() {
   const steps = [
     {
       icon: Search,
-      title: "Find Help Faster",
-      description: "Search verified local services by need, location, and eligibility."
+      title: "Search Resources",
+      description: "Find organizations by name, keyword, or specific service needed in Tampa."
+    },
+    {
+      icon: Target,
+      title: "Filter by Category",
+      description: "Narrow results by category, location, or the specific community you belong to."
     },
     {
       icon: MessageCircle,
-      title: "Stay Informed",
-      description: "See real-time updates on programs, events, and local initiatives."
+      title: "Connect & Inquire",
+      description: "Get direct contact info, website links, and location maps for each resource."
     },
     {
-      icon: Users,
-      title: "Strengthen Community",
-      description: "Residents and organizations contribute resources to keep information current."
+      icon: Heart,
+      title: "Get Support",
+      description: "Access the services you need to improve your quality of life in Tampa Bay."
     }
   ];
 
@@ -334,7 +337,7 @@ export function HowItWorks() {
           </p>
         </div>
         
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
             {steps.map((step, idx) => (
               <motion.div 
                 key={idx}
