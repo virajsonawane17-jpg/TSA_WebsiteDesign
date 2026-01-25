@@ -33,6 +33,7 @@ import {
   GalleryCol, 
   ContainerAnimated 
 } from "@/components/ui/container-scroll";
+import MouseSpark from "@/components/ui/mouse-spark";
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -208,7 +209,10 @@ export function Hero() {
   ];
 
   return (
-    <section className="relative bg-primary">
+    <section className="relative bg-primary overflow-hidden">
+      <div className="absolute inset-0 z-0">
+        <MouseSpark theme="dark" />
+      </div>
       <ContainerScroll className="pt-20 md:pt-40">
         <ContainerSticky className="flex flex-col items-center">
           <div className="container relative z-10 mx-auto px-4 sm:px-6 text-center mb-12">
