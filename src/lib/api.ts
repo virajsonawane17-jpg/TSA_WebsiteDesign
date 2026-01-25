@@ -27,16 +27,29 @@ export interface NewsArticle {
   source: {
     name: string;
   };
+  category?: string;
 }
 
-export interface NewsResponse {
-  articles: NewsArticle[];
+export interface NewsDataArticle {
+  article_id: string;
+  title: string;
+  link: string;
+  description: string;
+  pubDate: string;
+  image_url: string;
+  source_id: string;
+  source_name: string;
+  category: string[];
+}
+
+export interface NewsDataResponse {
   status: string;
   totalResults: number;
+  results: NewsDataArticle[];
 }
 
 const OPENWEATHER_API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
-const NEWSAPI_KEY = process.env.NEXT_PUBLIC_NEWSAPI_KEY;
+const NEWSDATA_API_KEY = process.env.NEWSDATA_API_KEY;
 
 export async function getTampaWeather(): Promise<WeatherData | null> {
   if (!OPENWEATHER_API_KEY) return null;
@@ -56,18 +69,42 @@ export async function getTampaWeather(): Promise<WeatherData | null> {
 }
 
 export async function getTampaNews(): Promise<NewsArticle[]> {
-  if (!NEWSAPI_KEY) return [];
+  if (!NEWSDATA_API_KEY) {
+    console.warn("NEWSDATA_API_KEY is missing");
+    return [];
+  }
   
   try {
-    // Searching for Tampa specifically
+    // Using NewsData.io latest endpoint as researched
+    // Note: q=Tampa search is reliable for all plan types
     const res = await fetch(
-      `https://newsapi.org/v2/everything?q=Tampa&sortBy=publishedAt&language=en&apiKey=${NEWSAPI_KEY}`,
+      `https://newsdata.io/api/1/latest?apikey=${NEWSDATA_API_KEY}&q=Tampa&country=us&language=en`,
       { next: { revalidate: 7200 } } // Cache for 2 hours
     );
     
-    if (!res.ok) return [];
-    const data: NewsResponse = await res.json();
-    return data.articles.filter(article => article.title && article.description).slice(0, 10);
+    if (!res.ok) {
+      const errorData = await res.json();
+      console.error("NewsData API error:", errorData);
+      return [];
+    }
+    
+    const data: NewsDataResponse = await res.json();
+    
+    if (data.status !== "success") {
+      return [];
+    }
+
+    return data.results.map(article => ({
+      title: article.title,
+      description: article.description || "No description available",
+      url: article.link,
+      urlToImage: article.image_url,
+      publishedAt: article.pubDate,
+      source: {
+        name: article.source_name || article.source_id.charAt(0).toUpperCase() + article.source_id.slice(1)
+      },
+      category: article.category?.[0] || "News"
+    }));
   } catch (error) {
     console.error("Error fetching Tampa news:", error);
     return [];

@@ -2,10 +2,10 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { EmergencyBanner } from "@/components/emergency-banner";
 import { Hero, FeaturedResources, HowItWorks, InsightsPreview, NewsTeaser, EventsTeaser, CTASection } from "@/components/sections";
-import { getTampaNews } from "@/lib/news";
+import { getTampaNews } from "@/lib/api";
 
 export default async function Home() {
-  const news = await getTampaNews(3);
+  const news = await getTampaNews();
   
   return (
     <div className="flex min-h-screen flex-col">
@@ -14,7 +14,7 @@ export default async function Home() {
       <main className="flex-grow">
         <Hero />
         <FeaturedResources />
-        <NewsTeaser articles={news} />
+        <NewsTeaser news={news} />
         <HowItWorks />
         <EventsTeaser />
         <InsightsPreview />
