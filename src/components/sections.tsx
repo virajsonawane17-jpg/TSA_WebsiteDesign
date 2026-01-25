@@ -22,9 +22,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { TAMPA_RESOURCES, TAMPA_NEWS, TAMPA_EVENTS } from "@/lib/resources";
+import { NewsArticle } from "@/lib/news";
 import { useState } from "react";
 import { Newspaper, Calendar as CalendarIcon, Ticket } from "lucide-react";
-import { NewsArticle } from "@/lib/api";
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -32,29 +32,17 @@ const fadeIn = {
   transition: { duration: 0.6 }
 };
 
-export function NewsTeaser({ liveNews = [] }: { liveNews?: NewsArticle[] }) {
-  const displayNews = liveNews.length > 0 
-    ? liveNews.slice(0, 3).map((article, index) => ({
-        id: `live-${index}`,
-        title: article.title,
-        excerpt: article.description,
-        date: new Date(article.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-        category: "Real-Time",
-        imageUrl: article.urlToImage || "https://images.unsplash.com/photo-1504711432869-efd5973e8d48?q=80&w=800&auto=format&fit=crop"
-      }))
-    : TAMPA_NEWS.slice(0, 3);
+export function NewsTeaser({ articles = [] }: { articles?: NewsArticle[] }) {
+  const latestNews = articles.length > 0 ? articles.slice(0, 3) : [];
   
+  if (latestNews.length === 0) return null;
+
   return (
     <section className="bg-primary/5 py-24">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
           <div className="max-w-2xl">
-            <div className="flex items-center gap-2 mb-4">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-heading text-primary">Tampa Community Pulse</h2>
-              {liveNews.length > 0 && (
-                <Badge className="bg-red-500 animate-pulse text-white border-none">LIVE</Badge>
-              )}
-            </div>
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-heading text-primary mb-4">Tampa Community Pulse</h2>
             <p className="text-lg text-muted-foreground">
               Stay updated with the latest developments, housing initiatives, and local successes in the Tampa area.
             </p>
@@ -67,33 +55,39 @@ export function NewsTeaser({ liveNews = [] }: { liveNews?: NewsArticle[] }) {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {displayNews.map((news, idx) => (
+          {latestNews.map((news, idx) => (
             <motion.div
-              key={news.id}
+              key={news.link}
               variants={fadeIn}
               initial="initial"
               whileInView="animate"
               transition={{ delay: idx * 0.1 }}
             >
               <Card className="h-full border-none shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
-                <div className="h-48 overflow-hidden relative">
-                  <img src={news.imageUrl} alt={news.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <Badge className={`absolute top-4 left-4 ${news.category === 'Real-Time' ? 'bg-accent' : 'bg-secondary'}`}>{news.category}</Badge>
+                <div className="h-48 overflow-hidden relative bg-muted flex items-center justify-center">
+                  {news.image_url ? (
+                    <img src={news.image_url} alt={news.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <Newspaper className="h-12 w-12 text-muted-foreground/30" />
+                  )}
+                  {news.category && news.category.length > 0 && (
+                    <Badge className="absolute top-4 left-4 bg-secondary capitalize">{news.category[0]}</Badge>
+                  )}
                 </div>
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
                     <CalendarIcon className="h-3 w-3" />
-                    <span>{news.date}</span>
+                    <span>{new Date(news.pubDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                   </div>
                   <CardTitle className="text-lg font-bold leading-tight group-hover:text-secondary transition-colors line-clamp-2">
                     {news.title}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground line-clamp-2 italic mb-4">"{news.excerpt}"</p>
-                  <Link href="/news" className="text-secondary text-sm font-bold flex items-center group/link">
+                  <p className="text-sm text-muted-foreground line-clamp-3 italic mb-4">"{news.description}"</p>
+                  <a href={news.link} target="_blank" rel="noopener noreferrer" className="text-secondary text-sm font-bold flex items-center group/link">
                     Read more <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover/link:translate-x-1" />
-                  </Link>
+                  </a>
                 </CardContent>
               </Card>
             </motion.div>
