@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useEffect, useRef, useState } from "react";
 
@@ -8,9 +8,9 @@ interface MouseSparkProps {
   theme?: "light" | "dark";
 }
 
-const MouseSpark: React.FC<MouseSparkProps> = ({
-  width,
-  height,
+export const MouseSpark: React.FC<MouseSparkProps> = ({
+  width: customWidth,
+  height: customHeight,
   theme = "light",
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -19,18 +19,20 @@ const MouseSpark: React.FC<MouseSparkProps> = ({
   useEffect(() => {
     const updateDimensions = () => {
       setDimensions({
-        width: width || window.innerWidth,
-        height: height || window.innerHeight,
+        width: customWidth || window.innerWidth,
+        height: customHeight || window.innerHeight,
       });
     };
-    
+
     updateDimensions();
     window.addEventListener("resize", updateDimensions);
+
     return () => window.removeEventListener("resize", updateDimensions);
-  }, [width, height]);
+  }, [customWidth, customHeight]);
 
   useEffect(() => {
     if (dimensions.width === 0) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -52,6 +54,7 @@ const MouseSpark: React.FC<MouseSparkProps> = ({
       dx: number;
       dy: number;
       color: string;
+      life: number;
     }[] = [];
 
     const spawnParticles = (x: number, y: number) => {
@@ -65,13 +68,15 @@ const MouseSpark: React.FC<MouseSparkProps> = ({
           dx: Math.cos(angle) * speed,
           dy: Math.sin(angle) * speed,
           color,
+          life: 1.0,
         });
       }
     };
 
     // Mouse move event
     const handleMouseMove = (e: MouseEvent) => {
-      spawnParticles(e.clientX, e.clientY);
+      const rect = canvas.getBoundingClientRect();
+      spawnParticles(e.clientX - rect.left, e.clientY - rect.top);
     };
 
     let animationFrameId: number;
@@ -79,39 +84,50 @@ const MouseSpark: React.FC<MouseSparkProps> = ({
     const animate = () => {
       if (!ctx) return;
 
-      ctx.fillStyle = backgroundColor;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      particles.forEach((p, i) => {
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
         p.x += p.dx;
         p.y += p.dy;
         p.dx *= 0.92;
         p.dy *= 0.92;
-
+        
+        // Add life decay to eventually remove them as in original code
+        // The original code removes them if speed is low.
+        
         ctx.fillStyle = p.color;
         ctx.beginPath();
         ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
         ctx.fill();
 
-        // Remove slow particles
+        // Remove slow particles as per original code
         if (Math.abs(p.dx) < 0.05 && Math.abs(p.dy) < 0.05) {
           particles.splice(i, 1);
         }
-      });
+      }
 
       animationFrameId = requestAnimationFrame(animate);
     };
 
-    canvas.addEventListener("mousemove", handleMouseMove);
+    // Use parent element for mouse events if possible, or just the canvas
+    const target = canvas.parentElement || window;
+    target.addEventListener("mousemove", handleMouseMove as any);
     animate();
 
     return () => {
-      canvas.removeEventListener("mousemove", handleMouseMove);
+      target.removeEventListener("mousemove", handleMouseMove as any);
       cancelAnimationFrame(animationFrameId);
     };
   }, [dimensions, theme]);
 
-  return <canvas ref={canvasRef} style={{ display: "block" }} />;
+  return (
+    <canvas 
+      ref={canvasRef} 
+      className="pointer-events-none absolute inset-0 z-0"
+      style={{ display: "block" }} 
+    />
+  );
 };
 
 export default MouseSpark;
