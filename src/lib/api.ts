@@ -19,37 +19,24 @@ export interface WeatherData {
 }
 
 export interface NewsArticle {
-  title: string;
-  description: string;
-  url: string;
-  urlToImage?: string;
-  publishedAt: string;
-  source: {
-    name: string;
-  };
-  category?: string;
-}
-
-export interface NewsDataArticle {
   article_id: string;
   title: string;
   link: string;
-  description: string;
+  description: string | null;
   pubDate: string;
-  image_url: string;
+  image_url: string | null;
   source_id: string;
-  source_name: string;
-  category: string[];
 }
 
-export interface NewsDataResponse {
+export interface NewsResponse {
   status: string;
   totalResults: number;
-  results: NewsDataArticle[];
+  results: NewsArticle[];
+  nextPage?: string;
 }
 
 const OPENWEATHER_API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
-const NEWSDATA_API_KEY = process.env.NEWSDATA_API_KEY;
+const NEWS_API_KEY = process.env.NEXT_PUBLIC_NEWS_API_KEY || "pub_c79e898c6b254a8fb4f0103e44129941";
 
 export async function getTampaWeather(): Promise<WeatherData | null> {
   if (!OPENWEATHER_API_KEY) return null;
@@ -57,7 +44,7 @@ export async function getTampaWeather(): Promise<WeatherData | null> {
   try {
     const res = await fetch(
       `https://api.openweathermap.org/data/2.5/weather?q=Tampa,US&appid=${OPENWEATHER_API_KEY}&units=imperial`,
-      { next: { revalidate: 3600 } } // Cache for 1 hour
+      { next: { revalidate: 3600 } }
     );
     
     if (!res.ok) return null;
@@ -68,43 +55,31 @@ export async function getTampaWeather(): Promise<WeatherData | null> {
   }
 }
 
-export async function getTampaNews(): Promise<NewsArticle[]> {
-  if (!NEWSDATA_API_KEY) {
-    console.warn("NEWSDATA_API_KEY is missing");
-    return [];
-  }
-  
+export async function getTampaNews(size: number = 10): Promise<NewsArticle[]> {
   try {
-    // Using NewsData.io latest endpoint as researched
-    // Note: q=Tampa search is reliable for all plan types
-    const res = await fetch(
-      `https://newsdata.io/api/1/latest?apikey=${NEWSDATA_API_KEY}&q=Tampa&country=us&language=en`,
-      { next: { revalidate: 7200 } } // Cache for 2 hours
-    );
-    
-    if (!res.ok) {
-      const errorData = await res.json();
-      console.error("NewsData API error:", errorData);
-      return [];
-    }
-    
-    const data: NewsDataResponse = await res.json();
-    
-    if (data.status !== "success") {
-      return [];
+    const params = new URLSearchParams({
+      apikey: NEWS_API_KEY,
+      q: "Tampa",
+      country: "us",
+      language: "en",
+      size: size.toString(),
+    });
+
+    const response = await fetch(`https://newsdata.io/api/1/latest?${params.toString()}`, {
+      next: { revalidate: 3600 }, // Cache for 1 hour
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    return data.results.map(article => ({
-      title: article.title,
-      description: article.description || "No description available",
-      url: article.link,
-      urlToImage: article.image_url,
-      publishedAt: article.pubDate,
-      source: {
-        name: article.source_name || article.source_id.charAt(0).toUpperCase() + article.source_id.slice(1)
-      },
-      category: article.category?.[0] || "News"
-    }));
+    const data: NewsResponse = await response.json();
+
+    if (data.status !== "success") {
+      throw new Error(`API error! status: ${data.status}`);
+    }
+
+    return data.results;
   } catch (error) {
     console.error("Error fetching Tampa news:", error);
     return [];

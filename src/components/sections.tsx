@@ -23,23 +23,33 @@ import {
 import Link from "next/link";
 import { TAMPA_RESOURCES, TAMPA_NEWS, TAMPA_EVENTS } from "@/lib/resources";
 import { useState } from "react";
-import { Newspaper, Calendar as CalendarIcon, Ticket } from "lucide-react";
+import { Newspaper, Calendar as CalendarIcon, Ticket, Loader2 } from "lucide-react";
+import { getTampaNews, type NewsArticle } from "@/lib/api";
+import { useEffect } from "react";
 
-interface NewsTeaserProps {
-  news?: any[];
-}
+const fadeIn = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6 }
+};
 
-export function NewsTeaser({ news }: NewsTeaserProps) {
-  const displayNews = news && news.length > 0 
-    ? news.slice(0, 3).map((article, idx) => ({
-        id: `live-${idx}`,
-        title: article.title,
-        excerpt: article.description,
-        date: new Date(article.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-        category: article.category || "Latest",
-        imageUrl: article.urlToImage || "https://images.unsplash.com/photo-1504711432869-efd5973e8d48?q=80&w=800&auto=format&fit=crop",
-      }))
-    : TAMPA_NEWS.slice(0, 3);
+export function NewsTeaser() {
+  const [news, setNews] = useState<NewsArticle[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchNews() {
+      try {
+        const data = await getTampaNews(3);
+        setNews(data);
+      } catch (error) {
+        console.error("Failed to fetch news:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchNews();
+  }, []);
   
   return (
     <section className="bg-primary/5 py-24">
@@ -58,44 +68,60 @@ export function NewsTeaser({ news }: NewsTeaserProps) {
           </Link>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {displayNews.map((news, idx) => (
-            <motion.div
-              key={news.id}
-              variants={fadeIn}
-              initial="initial"
-              whileInView="animate"
-              transition={{ delay: idx * 0.1 }}
-            >
-              <Card className="h-full border-none shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
-                <div className="h-48 overflow-hidden relative">
-                  <img src={news.imageUrl} alt={news.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <Badge className="absolute top-4 left-4 bg-secondary">{news.category}</Badge>
-                </div>
-                <CardHeader className="pb-2">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-                    <CalendarIcon className="h-3 w-3" />
-                    <span>{news.date}</span>
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <Loader2 className="h-8 w-8 text-secondary animate-spin" />
+          </div>
+        ) : news.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {news.map((item, idx) => (
+              <motion.div
+                key={item.article_id}
+                variants={fadeIn}
+                initial="initial"
+                whileInView="animate"
+                transition={{ delay: idx * 0.1 }}
+              >
+                <Card className="h-full border-none shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+                  <div className="h-48 overflow-hidden relative">
+                    <img 
+                      src={item.image_url || "https://images.unsplash.com/photo-1504711432869-efd5973e8d48?q=80&w=800&auto=format&fit=crop"} 
+                      alt={item.title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    />
+                    <Badge className="absolute top-4 left-4 bg-secondary">{item.source_id}</Badge>
                   </div>
-                  <CardTitle className="text-lg font-bold leading-tight group-hover:text-secondary transition-colors line-clamp-2">
-                    {news.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground line-clamp-2 italic mb-4">"{news.excerpt}"</p>
-                  <Link href="/news" className="text-secondary text-sm font-bold flex items-center group/link">
-                    Read more <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover/link:translate-x-1" />
-                  </Link>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                      <CalendarIcon className="h-3 w-3" />
+                      <span>{new Date(item.pubDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+                    </div>
+                    <CardTitle className="text-lg font-bold leading-tight group-hover:text-secondary transition-colors line-clamp-2">
+                      {item.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground line-clamp-2 italic mb-4">
+                      "{item.description || "Click to read more about this update from the Tampa area."}"
+                    </p>
+                    <a href={item.link} target="_blank" rel="noopener noreferrer" className="text-secondary text-sm font-bold flex items-center group/link">
+                      Read more <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover/link:translate-x-1" />
+                    </a>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-20 bg-white/50 rounded-2xl backdrop-blur-sm border border-dashed border-primary/20">
+            <Newspaper className="h-12 w-12 text-primary/30 mx-auto mb-4" />
+            <p className="text-muted-foreground">No recent news found for Tampa at the moment. Please check back later.</p>
+          </div>
+        )}
       </div>
     </section>
   );
 }
-
 
 export function EventsTeaser() {
   const upcomingEvents = TAMPA_EVENTS.slice(0, 3);
