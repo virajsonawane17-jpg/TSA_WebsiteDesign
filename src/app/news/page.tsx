@@ -42,12 +42,12 @@ export default async function NewsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {liveNews.map((news) => (
                 <Card key={news.article_id} className="h-full flex flex-col overflow-hidden hover:shadow-xl transition-all duration-300 border-none bg-white group shadow-sm">
-                  <div className="relative h-48 overflow-hidden">
-                    <img 
-                      src={news.image_url || "https://images.unsplash.com/photo-1504711432869-efd5973e8d48?q=80&w=800&auto=format&fit=crop"} 
-                      alt={news.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
+                    <div className="relative h-48 overflow-hidden">
+                      <img 
+                        src={news.image_url || "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/project-uploads/3f997176-9cd5-44c5-880a-703ea12f7459/Image-1-1769318907736.jpg"} 
+                        alt={news.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
                     <Badge className="absolute top-4 right-4 bg-secondary text-white">
                       {news.source_id}
                     </Badge>

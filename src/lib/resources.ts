@@ -225,46 +225,46 @@ export const TAMPA_RESOURCES: Resource[] = [
 ];
 
 export const TAMPA_NEWS: NewsItem[] = [
-  {
-    id: "n1",
-    title: "Gasparilla 2026: Complete Guide to the Pirate Fest",
-    excerpt: "The legendary pirate invasion returns to Tampa's shores. Here is everything you need to know about parking, parade routes, and safety.",
-    date: "Jan 20, 2026",
-    source: "Patch Tampa",
-    category: "Events",
-    imageUrl: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=800&auto=format&fit=crop",
-    link: "https://patch.com/florida/tampa"
-  },
-  {
-    id: "n2",
-    title: "New Affordable Housing Units Open in West Tampa",
-    excerpt: "Hillsborough County officials celebrated the ribbon-cutting of a 120-unit complex dedicated to low-income families and veterans.",
-    date: "Jan 18, 2026",
-    source: "Tampa Bay Times",
-    category: "Housing",
-    imageUrl: "https://images.unsplash.com/photo-1460317442991-0ec239397148?q=80&w=800&auto=format&fit=crop",
-    link: "https://www.tampabay.com"
-  },
-  {
-    id: "n3",
-    title: "Feeding Tampa Bay Expands Mobile Pantry Schedule",
-    excerpt: "In response to rising food costs, the region's largest food bank is adding three new stops in underserved neighborhoods.",
-    date: "Jan 15, 2026",
-    source: "Creative Loafing",
-    category: "Community",
-    imageUrl: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=800&auto=format&fit=crop",
-    link: "https://www.cltampa.com"
-  },
-  {
-    id: "n4",
-    title: "Tampa Bay Tech Programs Receive $2M Innovation Grant",
-    excerpt: "Local career and technical education programs will benefit from new equipment and scholarship opportunities.",
-    date: "Jan 12, 2026",
-    source: "WFLA News Channel 8",
-    category: "Education",
-    imageUrl: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=800&auto=format&fit=crop",
-    link: "https://www.wfla.com"
-  }
+    {
+      id: "n1",
+      title: "Gasparilla 2026: Complete Guide to the Pirate Fest",
+      excerpt: "The legendary pirate invasion returns to Tampa's shores. Here is everything you need to know about parking, parade routes, and safety.",
+      date: "Jan 20, 2026",
+      source: "Patch Tampa",
+      category: "Events",
+      imageUrl: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/project-uploads/3f997176-9cd5-44c5-880a-703ea12f7459/image-5-1769318907712.jpg",
+      link: "https://patch.com/florida/tampa"
+    },
+    {
+      id: "n2",
+      title: "New Affordable Housing Units Open in West Tampa",
+      excerpt: "Hillsborough County officials celebrated the ribbon-cutting of a 120-unit complex dedicated to low-income families and veterans.",
+      date: "Jan 18, 2026",
+      source: "Tampa Bay Times",
+      category: "Housing",
+      imageUrl: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/project-uploads/3f997176-9cd5-44c5-880a-703ea12f7459/image-3-1769318907789.webp",
+      link: "https://www.tampabay.com"
+    },
+    {
+      id: "n3",
+      title: "Feeding Tampa Bay Expands Mobile Pantry Schedule",
+      excerpt: "In response to rising food costs, the region's largest food bank is adding three new stops in underserved neighborhoods.",
+      date: "Jan 15, 2026",
+      source: "Creative Loafing",
+      category: "Community",
+      imageUrl: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/project-uploads/3f997176-9cd5-44c5-880a-703ea12f7459/image-10-1769318908163.jpg",
+      link: "https://www.cltampa.com"
+    },
+    {
+      id: "n4",
+      title: "Tampa Bay Tech Programs Receive $2M Innovation Grant",
+      excerpt: "Local career and technical education programs will benefit from new equipment and scholarship opportunities.",
+      date: "Jan 12, 2026",
+      source: "WFLA News Channel 8",
+      category: "Education",
+      imageUrl: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/project-uploads/3f997176-9cd5-44c5-880a-703ea12f7459/image-9-1769318907142.jpg",
+      link: "https://www.wfla.com"
+    }
 ];
 
 export const TAMPA_EVENTS: CommunityEvent[] = [
@@ -276,7 +276,7 @@ export const TAMPA_EVENTS: CommunityEvent[] = [
     time: "12:00 PM - 7:30 PM",
     location: "Bayshore Blvd, Tampa",
     category: "Family",
-    imageUrl: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/project-uploads/3f997176-9cd5-44c5-880a-703ea12f7459/Image-1-1769318907736.jpg",
     link: "https://gasparillapiratefest.com",
     featured: true
   },
@@ -288,7 +288,7 @@ export const TAMPA_EVENTS: CommunityEvent[] = [
     time: "10:00 AM - 8:00 PM",
     location: "Downtown Tampa / Bayshore",
     category: "Festival",
-    imageUrl: "https://images.unsplash.com/photo-1514525253361-bee8718a340b?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/project-uploads/3f997176-9cd5-44c5-880a-703ea12f7459/image-5-1769318907712.jpg",
     link: "https://gasparillapiratefest.com",
     featured: true
   },
@@ -300,7 +300,7 @@ export const TAMPA_EVENTS: CommunityEvent[] = [
     time: "9:00 AM - 3:00 PM",
     location: "Centennial Park, Ybor City",
     category: "Community",
-    imageUrl: "https://images.unsplash.com/photo-1488459711615-228f0954035d?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/project-uploads/3f997176-9cd5-44c5-880a-703ea12f7459/image-8-resized-1769318907254.webp",
     link: "https://www.ybormarket.com"
   },
   {
@@ -311,7 +311,7 @@ export const TAMPA_EVENTS: CommunityEvent[] = [
     time: "10:00 AM - 2:00 PM",
     location: "Tampa Convention Center",
     category: "Employment",
-    imageUrl: "https://images.unsplash.com/photo-1540317580384-e5d43616b9aa?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/project-uploads/3f997176-9cd5-44c5-880a-703ea12f7459/image-4-1769318908177.jpg",
     link: "https://www.tampachamber.com"
   }
 ];
