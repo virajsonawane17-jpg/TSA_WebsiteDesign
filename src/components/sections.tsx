@@ -26,6 +26,13 @@ import { useState } from "react";
 import { Newspaper, Calendar as CalendarIcon, Ticket, Loader2 } from "lucide-react";
 import { getTampaNews, type NewsArticle } from "@/lib/api";
 import { useEffect } from "react";
+import { 
+  ContainerScroll, 
+  ContainerSticky, 
+  GalleryContainer, 
+  GalleryCol, 
+  ContainerAnimated 
+} from "@/components/ui/container-scroll";
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -188,32 +195,35 @@ export function EventsTeaser() {
 
 
 export function Hero() {
+  const images = [
+    "https://images.unsplash.com/photo-1596436889106-be35e843f974?auto=format&fit=crop&q=80&w=800", // Tampa Skyline
+    "https://images.unsplash.com/photo-1620606900483-338275c602a8?auto=format&fit=crop&q=80&w=800", // Tampa Riverwalk
+    "https://images.unsplash.com/photo-1543716627-839b54c40519?auto=format&fit=crop&q=80&w=800", // Community Support
+    "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=800", // Social Services
+    "https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&q=80&w=800", // Volunteer
+    "https://images.unsplash.com/photo-1509059852496-f3822ae057bf?auto=format&fit=crop&q=80&w=800", // Health
+    "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=800", // Care
+    "https://images.unsplash.com/photo-1524178232363-1fb28f74b0cd?auto=format&fit=crop&q=80&w=800", // Community center
+    "https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?auto=format&fit=crop&q=80&w=800", // Support group
+  ];
+
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden bg-primary py-24">
-      {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/95 to-secondary/40 opacity-90" />
-      
-      {/* Background Pattern/Imagery Placeholder */}
-      <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1596436889106-be35e843f974?auto=format&fit=crop&q=80&w=2000')] bg-cover bg-center" />
-      
-      <div className="container relative mx-auto px-4 sm:px-6 pb-32">
-        <div className="max-w-4xl">
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <Badge className="mb-6 bg-secondary text-white border-none px-4 py-1.5 text-sm font-medium">
-              Civic Technology for Hillsborough County
-            </Badge>
-            <h1 className="mb-6 text-5xl font-extrabold tracking-tight text-white sm:text-6xl lg:text-7xl font-heading leading-[1.1]">
-              Connecting Tampa to <br />
-              <span className="text-secondary">Resources that Matter.</span>
-            </h1>
-            <p className="mb-10 text-xl leading-relaxed text-white/80 max-w-2xl font-sans">
-              A community-first platform designed to help Tampa residents discover local food assistance, housing support, mental health services, and more.
-            </p>
-              <div className="flex flex-col sm:flex-row gap-4">
+    <section className="relative bg-primary">
+      <ContainerScroll className="pt-20 md:pt-40">
+        <ContainerSticky className="flex flex-col items-center">
+          <div className="container relative z-10 mx-auto px-4 sm:px-6 text-center mb-12">
+            <ContainerAnimated>
+              <Badge className="mb-6 bg-secondary text-white border-none px-4 py-1.5 text-sm font-medium">
+                Civic Technology for Hillsborough County
+              </Badge>
+              <h1 className="mb-6 text-5xl font-extrabold tracking-tight text-white sm:text-6xl lg:text-7xl font-heading leading-[1.1]">
+                Connecting Tampa to <br />
+                <span className="text-secondary">Resources that Matter.</span>
+              </h1>
+              <p className="mb-10 text-xl leading-relaxed text-white/80 max-w-2xl mx-auto font-sans">
+                A community-first platform designed to help Tampa residents discover local food assistance, housing support, mental health services, and more.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/directory">
                   <Button size="lg" className="h-14 px-8 text-lg bg-accent hover:bg-accent/90 border-none text-white shadow-xl shadow-accent/20 font-bold group">
                     Find Help Near Me <Navigation className="ml-2 h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
@@ -225,35 +235,40 @@ export function Hero() {
                   </Button>
                 </Link>
               </div>
-
-          </motion.div>
-        </div>
-      </div>
-      
-        {/* Scroll Indicator */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.5, duration: 1 }}
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 text-white/60 hidden lg:flex pointer-events-none"
-        >
-          <span className="text-[10px] font-bold uppercase tracking-[0.4em] translate-x-[0.2em] font-heading opacity-80">
-            Scroll to Explore
-          </span>
-          <div className="relative w-[1.5px] h-16 bg-white/10 overflow-hidden rounded-full">
-            <motion.div 
-              animate={{ 
-                y: [-64, 64],
-              }}
-              transition={{ 
-                duration: 2.5, 
-                repeat: Infinity,
-                ease: "linear"
-              }}
-              className="absolute inset-0 w-full h-1/2 bg-gradient-to-b from-transparent via-secondary to-transparent" 
-            />
+            </ContainerAnimated>
           </div>
-        </motion.div>
+
+          <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 overflow-hidden rounded-2xl">
+            <GalleryContainer className="bg-primary/50 backdrop-blur-sm p-4 border border-white/10 shadow-2xl">
+              <GalleryCol yRange={["0%", "-20%"]}>
+                {images.slice(0, 3).map((src, i) => (
+                  <div key={i} className="relative aspect-[4/3] overflow-hidden rounded-xl border border-white/10">
+                    <img src={src} alt="Tampa community" className="w-full h-full object-cover" />
+                  </div>
+                ))}
+              </GalleryCol>
+              <GalleryCol yRange={["0%", "10%"]}>
+                {images.slice(3, 6).map((src, i) => (
+                  <div key={i} className="relative aspect-[4/3] overflow-hidden rounded-xl border border-white/10">
+                    <img src={src} alt="Tampa community" className="w-full h-full object-cover" />
+                  </div>
+                ))}
+              </GalleryCol>
+              <GalleryCol yRange={["0%", "-10%"]}>
+                {images.slice(6, 9).map((src, i) => (
+                  <div key={i} className="relative aspect-[4/3] overflow-hidden rounded-xl border border-white/10">
+                    <img src={src} alt="Tampa community" className="w-full h-full object-cover" />
+                  </div>
+                ))}
+              </GalleryCol>
+            </GalleryContainer>
+          </div>
+        </ContainerSticky>
+      </ContainerScroll>
+      
+      {/* Background Decorative Elements */}
+      <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
     </section>
   );
 }
