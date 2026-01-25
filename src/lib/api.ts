@@ -37,6 +37,7 @@ export interface NewsResponse {
 
 const OPENWEATHER_API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
 const NEWSAPI_KEY = process.env.NEXT_PUBLIC_NEWSAPI_KEY;
+const THENEWSAPI_TOKEN = process.env.NEXT_PUBLIC_THENEWSAPI_TOKEN;
 
 export async function getTampaWeather(): Promise<WeatherData | null> {
   if (!OPENWEATHER_API_KEY) return null;
@@ -56,6 +57,35 @@ export async function getTampaWeather(): Promise<WeatherData | null> {
 }
 
 export async function getTampaNews(): Promise<NewsArticle[]> {
+  // Try TheNewsAPI first if token is available
+  if (THENEWSAPI_TOKEN) {
+    try {
+      const res = await fetch(
+        `https://api.thenewsapi.com/v1/news/all?api_token=${THENEWSAPI_TOKEN}&language=en&search=Tampa&limit=10`,
+        { next: { revalidate: 7200 } }
+      );
+      
+      if (res.ok) {
+        const data = await res.json();
+        if (data.data && Array.isArray(data.data)) {
+          return data.data.map((article: any) => ({
+            title: article.title,
+            description: article.description || article.snippet,
+            url: article.url,
+            urlToImage: article.image_url,
+            publishedAt: article.published_at,
+            source: {
+              name: article.source
+            }
+          }));
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching from TheNewsAPI:", error);
+    }
+  }
+
+  // Fallback to NewsAPI.org
   if (!NEWSAPI_KEY) return [];
   
   try {

@@ -15,50 +15,57 @@ export default async function NewsPage() {
   
   // Combine live news with mock news if live news is empty or for variety
   // In a real app, we'd probably just use live news
-  const displayNews = liveNews.length > 0 
-    ? liveNews.map((article, index) => ({
-        id: `live-${index}`,
-        title: article.title,
-        excerpt: article.description,
-        date: new Date(article.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-        source: article.source.name,
-        category: "Latest",
-        imageUrl: article.urlToImage || "https://images.unsplash.com/photo-1504711432869-efd5973e8d48?q=80&w=800&auto=format&fit=crop",
-        link: article.url
-      }))
-    : TAMPA_NEWS;
+    const displayNews = liveNews.length > 0 
+      ? liveNews.map((article, index) => ({
+          id: `live-${index}`,
+          title: article.title,
+          excerpt: article.description,
+          date: new Date(article.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+          source: article.source.name,
+          category: "Live Update",
+          imageUrl: article.urlToImage || "https://images.unsplash.com/photo-1504711432869-efd5973e8d48?q=80&w=800&auto=format&fit=crop",
+          link: article.url,
+          isLive: true
+        }))
+      : TAMPA_NEWS;
 
-  return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <EmergencyBanner />
-      <Navbar />
-      
-      <main className="flex-grow container mx-auto px-4 py-12">
-        <div className="mb-12 text-center">
-          <Badge variant="outline" className="mb-4 px-3 py-1 text-secondary border-secondary uppercase tracking-widest text-xs">
-            Tampa Pulse
-          </Badge>
-          <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4 font-heading">
-            Community News & Updates
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Stay informed about local developments, housing updates, and community achievements in the Tampa Bay area.
-          </p>
-        </div>
+    return (
+      <div className="flex min-h-screen flex-col bg-background">
+        <EmergencyBanner />
+        <Navbar />
+        
+        <main className="flex-grow container mx-auto px-4 py-12">
+          <div className="mb-12 text-center">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <Badge variant="outline" className="px-3 py-1 text-secondary border-secondary uppercase tracking-widest text-xs">
+                Tampa Pulse
+              </Badge>
+              {liveNews.length > 0 && (
+                <Badge className="bg-red-500 animate-pulse text-white border-none text-[10px] py-0">LIVE</Badge>
+              )}
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4 font-heading">
+              Community News & Updates
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Stay informed about local developments, housing updates, and community achievements in the Tampa Bay area.
+            </p>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {displayNews.map((news) => (
-            <Card key={news.id} className="h-full flex flex-col overflow-hidden hover:shadow-xl transition-all duration-300 border-none bg-white group">
-              <div className="relative h-48 overflow-hidden">
-                <img 
-                  src={news.imageUrl} 
-                  alt={news.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <Badge className="absolute top-4 right-4 bg-secondary text-white">
-                  {news.category}
-                </Badge>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {displayNews.map((news: any) => (
+              <Card key={news.id} className="h-full flex flex-col overflow-hidden hover:shadow-xl transition-all duration-300 border-none bg-white group">
+                <div className="relative h-48 overflow-hidden">
+                  <img 
+                    src={news.imageUrl} 
+                    alt={news.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <Badge className={`absolute top-4 right-4 text-white border-none ${news.isLive ? 'bg-accent shadow-lg shadow-accent/20' : 'bg-secondary'}`}>
+                    {news.category}
+                  </Badge>
+                </div>
+
               <CardHeader>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
                   <Calendar className="h-3 w-3" />

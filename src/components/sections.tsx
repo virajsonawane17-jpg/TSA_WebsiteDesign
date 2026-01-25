@@ -24,6 +24,7 @@ import Link from "next/link";
 import { TAMPA_RESOURCES, TAMPA_NEWS, TAMPA_EVENTS } from "@/lib/resources";
 import { useState } from "react";
 import { Newspaper, Calendar as CalendarIcon, Ticket } from "lucide-react";
+import { NewsArticle } from "@/lib/api";
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -31,15 +32,29 @@ const fadeIn = {
   transition: { duration: 0.6 }
 };
 
-export function NewsTeaser() {
-  const latestNews = TAMPA_NEWS.slice(0, 3);
+export function NewsTeaser({ liveNews = [] }: { liveNews?: NewsArticle[] }) {
+  const displayNews = liveNews.length > 0 
+    ? liveNews.slice(0, 3).map((article, index) => ({
+        id: `live-${index}`,
+        title: article.title,
+        excerpt: article.description,
+        date: new Date(article.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+        category: "Real-Time",
+        imageUrl: article.urlToImage || "https://images.unsplash.com/photo-1504711432869-efd5973e8d48?q=80&w=800&auto=format&fit=crop"
+      }))
+    : TAMPA_NEWS.slice(0, 3);
   
   return (
     <section className="bg-primary/5 py-24">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
           <div className="max-w-2xl">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-heading text-primary mb-4">Tampa Community Pulse</h2>
+            <div className="flex items-center gap-2 mb-4">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-heading text-primary">Tampa Community Pulse</h2>
+              {liveNews.length > 0 && (
+                <Badge className="bg-red-500 animate-pulse text-white border-none">LIVE</Badge>
+              )}
+            </div>
             <p className="text-lg text-muted-foreground">
               Stay updated with the latest developments, housing initiatives, and local successes in the Tampa area.
             </p>
@@ -52,7 +67,7 @@ export function NewsTeaser() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {latestNews.map((news, idx) => (
+          {displayNews.map((news, idx) => (
             <motion.div
               key={news.id}
               variants={fadeIn}
@@ -63,14 +78,14 @@ export function NewsTeaser() {
               <Card className="h-full border-none shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
                 <div className="h-48 overflow-hidden relative">
                   <img src={news.imageUrl} alt={news.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <Badge className="absolute top-4 left-4 bg-secondary">{news.category}</Badge>
+                  <Badge className={`absolute top-4 left-4 ${news.category === 'Real-Time' ? 'bg-accent' : 'bg-secondary'}`}>{news.category}</Badge>
                 </div>
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
                     <CalendarIcon className="h-3 w-3" />
                     <span>{news.date}</span>
                   </div>
-                  <CardTitle className="text-lg font-bold leading-tight group-hover:text-secondary transition-colors">
+                  <CardTitle className="text-lg font-bold leading-tight group-hover:text-secondary transition-colors line-clamp-2">
                     {news.title}
                   </CardTitle>
                 </CardHeader>
