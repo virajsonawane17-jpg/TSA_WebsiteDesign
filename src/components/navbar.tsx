@@ -2,11 +2,31 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Heart, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { Heart, Menu, X, User } from "lucide-react";
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const supabase = createClient();
+  const router = useRouter();
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+
+    getUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase]);
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -26,6 +46,20 @@ export function Navbar() {
           <Link href="/news" className="text-sm font-medium hover:text-secondary transition-colors">News</Link>
           <Link href="/events" className="text-sm font-medium hover:text-secondary transition-colors">Events</Link>
           <Link href="/insights" className="text-sm font-medium hover:text-secondary transition-colors">Insights</Link>
+          
+          <div className="h-6 w-[1px] bg-slate-200 mx-2" />
+          
+          {user ? (
+            <Link href="/profile" className="flex items-center text-sm font-medium hover:text-secondary transition-colors">
+              <User className="mr-2 h-4 w-4" />
+              Profile
+            </Link>
+          ) : (
+            <Link href="/login" className="text-sm font-medium hover:text-secondary transition-colors">
+              Sign In
+            </Link>
+          )}
+
           <Link href="/submit">
             <Button size="sm" className="bg-secondary hover:bg-secondary/90">
               Submit Resource
@@ -46,6 +80,13 @@ export function Navbar() {
           <Link href="/news" className="block text-lg font-medium py-2" onClick={() => setIsOpen(false)}>News</Link>
           <Link href="/events" className="block text-lg font-medium py-2" onClick={() => setIsOpen(false)}>Events</Link>
           <Link href="/insights" className="block text-lg font-medium py-2" onClick={() => setIsOpen(false)}>Insights</Link>
+          
+          {user ? (
+            <Link href="/profile" className="block text-lg font-medium py-2" onClick={() => setIsOpen(false)}>My Profile</Link>
+          ) : (
+            <Link href="/login" className="block text-lg font-medium py-2" onClick={() => setIsOpen(false)}>Sign In</Link>
+          )}
+
           <Link href="/emergency" className="block text-lg font-medium py-2 text-accent" onClick={() => setIsOpen(false)}>Emergency Help</Link>
           <Link href="/submit" onClick={() => setIsOpen(false)}>
             <Button className="w-full bg-secondary hover:bg-secondary/90 mt-4">
