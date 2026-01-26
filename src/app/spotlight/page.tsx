@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Navbar, Footer, EmergencyBanner } from "@/components/layout-elements";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
@@ -14,13 +15,45 @@ import {
   ArrowRight,
   ExternalLink,
   MapPin,
-  Calendar
+  Calendar,
+  Loader2
 } from "lucide-react";
 import Link from "next/link";
-import { TAMPA_RESOURCES } from "@/lib/resources";
+import { getFeaturedResources } from "@/lib/db";
+import { Resource } from "@/lib/resources";
 
 export default function SpotlightPage() {
-  const featuredOrg = TAMPA_RESOURCES[0]; // Feeding Tampa Bay
+  const [featuredOrg, setFeaturedOrg] = useState<Resource | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchResource() {
+      try {
+        const resources = await getFeaturedResources(1);
+        if (resources.length > 0) {
+          setFeaturedOrg(resources[0]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch resource:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchResource();
+  }, []);
+
+  if (loading || !featuredOrg) {
+    return (
+      <div className="flex min-h-screen flex-col bg-[#F7F9FB]">
+        <EmergencyBanner />
+        <Navbar />
+        <main className="flex-grow flex items-center justify-center">
+          <Loader2 className="h-8 w-8 text-secondary animate-spin" />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F7F9FB]">

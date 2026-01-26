@@ -1,5 +1,5 @@
 import { Navbar, Footer, EmergencyBanner } from "@/components/layout-elements";
-import { TAMPA_RESOURCES } from "@/lib/resources";
+import { getResourceById, getResources } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
@@ -26,13 +26,14 @@ interface PageProps {
 
 export default async function ResourceDetailPage({ params }: PageProps) {
   const { id } = await params;
-  const resource = TAMPA_RESOURCES.find(r => r.id === id);
+  const resource = await getResourceById(id);
 
   if (!resource) {
     notFound();
   }
 
-  const similarResources = TAMPA_RESOURCES
+  const allResources = await getResources();
+  const similarResources = allResources
     .filter(r => r.category === resource.category && r.id !== resource.id)
     .slice(0, 3);
 

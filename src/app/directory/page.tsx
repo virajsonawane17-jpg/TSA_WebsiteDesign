@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Navbar, Footer, EmergencyBanner } from "@/components/layout-elements";
-import { TAMPA_RESOURCES, Category, Audience, Resource } from "@/lib/resources";
+import { getResources } from "@/lib/db";
+import { Category, Audience, Resource } from "@/lib/resources";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -23,17 +24,33 @@ import {
 import Link from "next/link";
 
 export default function DirectoryPage() {
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedAudience, setSelectedAudience] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
   const [selectedResourceId, setSelectedResourceId] = useState<string | null>(null);
 
-  const categories = Array.from(new Set(TAMPA_RESOURCES.map(r => r.category))).sort();
+  useEffect(() => {
+    async function fetchResources() {
+      try {
+        const data = await getResources();
+        setResources(data);
+      } catch (error) {
+        console.error("Failed to fetch resources:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchResources();
+  }, []);
+
+  const categories = Array.from(new Set(resources.map(r => r.category))).sort();
   const audiences = ["Everyone", "Families", "Seniors", "Youth", "Veterans", "Low-Income"];
 
   const filteredResources = useMemo(() => {
-    return TAMPA_RESOURCES.filter(resource => {
+    return resources.filter(resource => {
       const matchesSearch = 
         resource.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         resource.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -44,11 +61,11 @@ export default function DirectoryPage() {
       
       return matchesSearch && matchesCategory && matchesAudience;
     });
-  }, [searchQuery, selectedCategory, selectedAudience]);
+  }, [resources, searchQuery, selectedCategory, selectedAudience]);
 
   const selectedResource = useMemo(() => 
-    TAMPA_RESOURCES.find(r => r.id === selectedResourceId), 
-  [selectedResourceId]);
+    resources.find(r => r.id === selectedResourceId), 
+  [resources, selectedResourceId]);
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F7F9FB]">

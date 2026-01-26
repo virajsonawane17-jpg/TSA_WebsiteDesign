@@ -1,14 +1,48 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Navbar, Footer, EmergencyBanner } from "@/components/layout-elements";
-import { TAMPA_EVENTS } from "@/lib/resources";
+import { getEvents } from "@/lib/db";
+import { CommunityEvent } from "@/lib/resources";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Clock, ExternalLink, Ticket } from "lucide-react";
+import { Calendar, MapPin, Clock, ExternalLink, Ticket, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function EventsPage() {
+  const [events, setEvents] = useState<CommunityEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchEvents() {
+      try {
+        const data = await getEvents();
+        setEvents(data);
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchEvents();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen flex-col bg-background">
+        <EmergencyBanner />
+        <Navbar />
+        <main className="flex-grow container mx-auto px-4 py-12">
+          <div className="flex justify-center items-center py-20">
+            <Loader2 className="h-8 w-8 text-secondary animate-spin" />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <EmergencyBanner />
@@ -34,7 +68,7 @@ export default function EventsPage() {
             Highlight Events
           </h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {TAMPA_EVENTS.filter(e => e.featured).map((event, index) => (
+            {events.filter(e => e.featured).map((event, index) => (
               <motion.div
                 key={event.id}
                 initial={{ opacity: 0, x: index === 0 ? -20 : 20 }}
@@ -87,7 +121,7 @@ export default function EventsPage() {
 
         {/* Regular Events List */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {TAMPA_EVENTS.filter(e => !e.featured).map((event, index) => (
+          {events.filter(e => !e.featured).map((event, index) => (
             <motion.div
               key={event.id}
               initial={{ opacity: 0, y: 20 }}

@@ -2,7 +2,7 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { EmergencyBanner } from "@/components/emergency-banner";
 import { getTampaNews } from "@/lib/api";
-import { TAMPA_NEWS } from "@/lib/resources";
+import { getNews } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ export const revalidate = 3600; // Revalidate every hour
 
 export default async function NewsPage() {
   const liveNews = await getTampaNews(12);
+  const communityNews = await getNews();
   
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -90,7 +91,7 @@ export default async function NewsPage() {
             <h2 className="text-2xl font-bold text-primary">Community Highlights & Local Updates</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {TAMPA_NEWS.map((news) => (
+            {communityNews.map((news) => (
               <Card key={news.id} className="h-full flex flex-col overflow-hidden hover:shadow-md transition-all border-none bg-white group shadow-sm">
                 <div className="relative h-40 overflow-hidden">
                   <img 

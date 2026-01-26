@@ -16,10 +16,25 @@ import {
   Search,
   CheckCircle2
 } from "lucide-react";
-import { TAMPA_RESOURCES } from "@/lib/resources";
+import { useState, useEffect } from "react";
+import { getResources } from "@/lib/db";
+import { Resource } from "@/lib/resources";
 import Link from "next/link";
 
 export default function InsightsPage() {
+  const [recentResources, setRecentResources] = useState<Resource[]>([]);
+
+  useEffect(() => {
+    async function fetchResources() {
+      try {
+        const resources = await getResources();
+        setRecentResources(resources.slice(-5).reverse());
+      } catch (error) {
+        console.error("Failed to fetch resources:", error);
+      }
+    }
+    fetchResources();
+  }, []);
   const trends = [
     { label: "Food Assistance", value: 85, change: "+12%", status: "up" },
     { label: "Housing Support", value: 72, change: "+5%", status: "up" },
@@ -35,8 +50,6 @@ export default function InsightsPage() {
     { name: "South Tampa", volume: "Low", focus: "Education" },
     { name: "Downtown", volume: "High", focus: "Crisis Support" }
   ];
-
-  const recentResources = TAMPA_RESOURCES.slice(-5).reverse();
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F7F9FB]">
@@ -65,13 +78,13 @@ export default function InsightsPage() {
             {/* Live Demand Section */}
             <div className="lg:col-span-2 space-y-8">
               <Card className="rounded-3xl border-border/40 shadow-xl overflow-hidden">
-                <CardHeader className="bg-white border-b border-border/40 p-8">
-                  <div className="flex justify-between items-center">
-                    <div>
+                <CardHeader className="bg-white border-b border-border/40 p-8 pb-6">
+                  <div className="flex justify-between items-start gap-6">
+                    <div className="space-y-3 flex-1">
                       <CardTitle className="text-2xl font-heading text-primary">Live Demand Overview</CardTitle>
-                      <p className="text-sm text-muted-foreground mt-1">Weekly search volume by resource category</p>
+                      <p className="text-sm text-muted-foreground leading-relaxed">Weekly search volume by resource category</p>
                     </div>
-                    <Badge variant="outline" className="text-secondary border-secondary/20 bg-secondary/5">
+                    <Badge variant="outline" className="text-secondary border-secondary/20 bg-secondary/5 shrink-0 mt-1">
                       Updated 2h ago
                     </Badge>
                   </div>

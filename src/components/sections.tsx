@@ -21,11 +21,11 @@ import {
   Navigation
 } from "lucide-react";
 import Link from "next/link";
-import { TAMPA_RESOURCES, TAMPA_NEWS, TAMPA_EVENTS } from "@/lib/resources";
-import { useState } from "react";
+import { getFeaturedResources, getFeaturedEvents } from "@/lib/db";
+import { Resource, CommunityEvent } from "@/lib/resources";
+import { useState, useEffect } from "react";
 import { Newspaper, Calendar as CalendarIcon, Ticket, Loader2 } from "lucide-react";
 import { getTampaNews, type NewsArticle } from "@/lib/api";
-import { useEffect } from "react";
 import { 
   ContainerScroll, 
   ContainerSticky, 
@@ -132,8 +132,35 @@ export function NewsTeaser() {
 }
 
 export function EventsTeaser() {
-  const upcomingEvents = TAMPA_EVENTS.slice(0, 3);
+  const [upcomingEvents, setUpcomingEvents] = useState<CommunityEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchEvents() {
+      try {
+        const events = await getFeaturedEvents(3);
+        setUpcomingEvents(events);
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchEvents();
+  }, []);
   
+  if (loading) {
+    return (
+      <section className="py-24 bg-background">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="flex justify-center items-center py-20">
+            <Loader2 className="h-8 w-8 text-secondary animate-spin" />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-24 bg-background">
       <div className="container mx-auto px-4 sm:px-6">
@@ -276,7 +303,34 @@ export function Hero() {
 }
 
 export function FeaturedResources() {
-  const featured = TAMPA_RESOURCES.filter(r => r.featured).slice(0, 6);
+  const [featured, setFeatured] = useState<Resource[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchResources() {
+      try {
+        const resources = await getFeaturedResources(6);
+        setFeatured(resources);
+      } catch (error) {
+        console.error("Failed to fetch resources:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchResources();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="relative bg-background py-24 border-b overflow-hidden">
+        <div className="container relative mx-auto px-4 sm:px-6">
+          <div className="flex justify-center items-center py-20">
+            <Loader2 className="h-8 w-8 text-secondary animate-spin" />
+          </div>
+        </div>
+      </section>
+    );
+  }
   
   return (
     <section className="relative bg-background py-24 border-b overflow-hidden">
