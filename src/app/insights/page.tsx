@@ -73,7 +73,7 @@ export default function InsightsPage() {
           </div>
         </section>
 
-        <div className="container mx-auto px-4 sm:px-6 -mt-16 pb-24">
+        <div className="container mx-auto px-4 sm:px-6 mt-8 pb-24">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Live Demand Section */}
             <div className="lg:col-span-2 space-y-8">

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { updateProfile, signOut } from '@/app/auth/actions'
-import { createClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -20,11 +20,15 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false)
   const [profile, setProfile] = useState<any>(null)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
-  const supabase = createClient()
   const router = useRouter()
 
   useEffect(() => {
     async function loadProfile() {
+      if (!supabase) {
+        setLoading(false)
+        return
+      }
+
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
         router.push('/login')
@@ -50,6 +54,12 @@ export default function ProfilePage() {
     e.preventDefault()
     setSaving(true)
     setMessage(null)
+    
+    if (!supabase) {
+      setMessage({ type: 'error', text: 'Supabase is not configured' })
+      setSaving(false)
+      return
+    }
     
     const formData = new FormData(e.currentTarget)
     const result = await updateProfile(formData)
