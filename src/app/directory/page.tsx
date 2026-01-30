@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { Navbar, Footer, EmergencyBanner } from "@/components/layout-elements";
 import { getResources } from "@/lib/db";
 import { Category, Audience, Resource } from "@/lib/resources";
@@ -22,6 +23,14 @@ import {
   Info
 } from "lucide-react";
 import Link from "next/link";
+
+const TampaResourceMap = dynamic(
+  () =>
+    import("@/components/tampa-resource-map").then(
+      (mod) => mod.TampaResourceMap,
+    ),
+  { ssr: false },
+);
 
 export default function DirectoryPage() {
   const [resources, setResources] = useState<Resource[]>([]);
@@ -248,59 +257,13 @@ export default function DirectoryPage() {
               </AnimatePresence>
             </div>
           ) : (
-            /* Mock Map View */
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-[700px]">
-              <div className="lg:col-span-2 relative bg-muted rounded-3xl overflow-hidden border border-border/40 shadow-inner">
-                {/* Simulated Map Background */}
-                <div className="absolute inset-0 bg-[#e5e7eb] opacity-50 bg-[url('https://api.mapbox.com/styles/v1/mapbox/light-v10/static/-82.4572,27.9506,11,0/1200x800?access_token=pk.eyJ1Ijoib3JjaGlkcyIsImEiOiJjbGZ3Z3R4MHcwM3R6M3FwZ2d3Z3R4MHcwM3R6In0.fake')] bg-cover bg-center" />
-                
-                {/* Map Markers */}
-                {filteredResources.map((resource) => {
-                  // Normalize coordinates to percentage (very roughly for Tampa area)
-                  // Tampa box: Lat [27.8, 28.1], Lng [-82.6, -82.3]
-                  const x = ((resource.lng - (-82.6)) / 0.3) * 100;
-                  const y = (1 - (resource.lat - 27.8) / 0.3) * 100;
-                  
-                  return (
-                    <motion.button
-                      key={resource.id}
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className={`absolute h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-white shadow-xl flex items-center justify-center transition-transform hover:scale-125 z-10 ${selectedResourceId === resource.id ? 'bg-accent z-20 scale-125' : 'bg-secondary'}`}
-                      style={{ left: `${x}%`, top: `${y}%` }}
-                      onClick={() => setSelectedResourceId(resource.id)}
-                    >
-                      <MapPin className="h-4 w-4 text-white fill-current" />
-                    </motion.button>
-                  );
-                })}
-
-                {/* Map Controls */}
-                <div className="absolute bottom-6 left-6 flex flex-col gap-2">
-                  <div className="bg-white rounded-xl shadow-lg border border-border/40 p-2 flex flex-col gap-2">
-                    <Button variant="ghost" size="icon" className="h-8 w-8">+</Button>
-                    <div className="h-[1px] bg-border mx-2" />
-                    <Button variant="ghost" size="icon" className="h-8 w-8">-</Button>
-                  </div>
-                  <Button className="bg-white text-primary hover:bg-white shadow-lg border border-border/40 rounded-xl px-4 py-2 font-bold flex items-center">
-                    <Navigation className="mr-2 h-4 w-4" /> Recenter
-                  </Button>
-                </div>
-
-                {/* Legend */}
-                <div className="absolute top-6 right-6 bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-border/40 p-4">
-                  <h4 className="text-xs font-bold text-primary uppercase tracking-widest mb-3">Map Legend</h4>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <div className="h-3 w-3 rounded-full bg-secondary" />
-                      <span className="text-[10px] font-bold text-muted-foreground">Local Resource</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="h-3 w-3 rounded-full bg-accent" />
-                      <span className="text-[10px] font-bold text-muted-foreground">Selected</span>
-                    </div>
-                  </div>
-                </div>
+              <div className="lg:col-span-2 h-full">
+                <TampaResourceMap
+                  resources={filteredResources}
+                  selectedResourceId={selectedResourceId}
+                  onSelectResource={(id) => setSelectedResourceId(id)}
+                />
               </div>
 
               {/* Sidebar Info */}
