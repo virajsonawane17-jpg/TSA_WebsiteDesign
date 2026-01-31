@@ -34,6 +34,8 @@ export interface Resource {
   email?: string;
   website: string;
   featured?: boolean;
+  /** Set when loaded from DB; used for "Recently Added" on insights. */
+  created_at?: string;
 }
 
 export interface NewsItem {
@@ -60,6 +62,9 @@ export interface CommunityEvent {
   link: string;
   featured?: boolean;
 }
+
+/** CommunityEvent with optional source (e.g. from City of Tampa API). */
+export type CommunityEventWithSource = CommunityEvent & { source?: "tampa_gov" };
 
 export const TAMPA_RESOURCES: Resource[] = [
   {

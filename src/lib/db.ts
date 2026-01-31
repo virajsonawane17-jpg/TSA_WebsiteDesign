@@ -17,6 +17,7 @@ function transformResource(row: any): Resource {
     email: row.email || undefined,
     website: row.website,
     featured: row.featured || false,
+    created_at: row.created_at ?? undefined,
   };
 }
 
