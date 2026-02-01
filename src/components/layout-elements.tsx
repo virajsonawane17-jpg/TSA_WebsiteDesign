@@ -38,6 +38,7 @@ export function Navbar() {
               <Link href="/news" className="text-sm font-medium hover:text-secondary transition-colors">News</Link>
               <Link href="/events" className="text-sm font-medium hover:text-secondary transition-colors">Events</Link>
               <Link href="/insights" className="text-sm font-medium hover:text-secondary transition-colors">Insights</Link>
+              <Link href="/references" className="text-sm font-medium hover:text-secondary transition-colors">References</Link>
               <Link href="/submit">
                 <Button size="sm" className="bg-secondary hover:bg-secondary/90">
                   Submit Resource
@@ -55,7 +56,10 @@ export function Navbar() {
       {isOpen && (
         <div className="lg:hidden border-t bg-background px-4 py-6 space-y-4 animate-in slide-in-from-top duration-300">
           <Link href="/directory" className="block text-lg font-medium py-2" onClick={() => setIsOpen(false)}>Directory</Link>
+          <Link href="/news" className="block text-lg font-medium py-2" onClick={() => setIsOpen(false)}>News</Link>
+          <Link href="/events" className="block text-lg font-medium py-2" onClick={() => setIsOpen(false)}>Events</Link>
           <Link href="/insights" className="block text-lg font-medium py-2" onClick={() => setIsOpen(false)}>Insights</Link>
+          <Link href="/references" className="block text-lg font-medium py-2" onClick={() => setIsOpen(false)}>References</Link>
           <Link href="/spotlight" className="block text-lg font-medium py-2" onClick={() => setIsOpen(false)}>Spotlight</Link>
           <Link href="/emergency" className="block text-lg font-medium py-2 text-accent" onClick={() => setIsOpen(false)}>Emergency Help</Link>
           <Link href="/submit" onClick={() => setIsOpen(false)}>

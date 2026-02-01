@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar, MapPin, Clock, ExternalLink, Ticket, Building2, ArrowUpDown, Filter } from "lucide-react";
+import { Calendar, MapPin, Clock, ExternalLink, Ticket, Building2, Filter } from "lucide-react";
 import { motion } from "framer-motion";
 
 /** Category-based placeholder images (picsum.photos, deterministic by seed) – always load. */
@@ -78,21 +78,13 @@ function EventImage({
   );
 }
 
-type SortOption = "date-asc" | "date-desc" | "title-asc" | "title-desc" | "category";
 type SourceFilter = "all" | "tampa_gov" | "community";
-
-function parseEventDate(dateStr: string): number {
-  if (!dateStr) return 0;
-  const d = new Date(dateStr);
-  return Number.isNaN(d.getTime()) ? 0 : d.getTime();
-}
 
 interface EventsContentProps {
   events: CommunityEventWithSource[];
 }
 
 export function EventsContent({ events }: EventsContentProps) {
-  const [sortBy, setSortBy] = useState<SortOption>("date-asc");
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [filterSource, setFilterSource] = useState<SourceFilter>("all");
 
@@ -101,7 +93,7 @@ export function EventsContent({ events }: EventsContentProps) {
     return Array.from(set).sort((a, b) => a.localeCompare(b));
   }, [events]);
 
-  const filteredAndSorted = useMemo(() => {
+  const filtered = useMemo(() => {
     let list = [...events];
     if (filterCategory !== "all") {
       list = list.filter((e) => e.category === filterCategory);
@@ -111,27 +103,9 @@ export function EventsContent({ events }: EventsContentProps) {
     } else if (filterSource === "community") {
       list = list.filter((e) => e.source !== "tampa_gov");
     }
-    list.sort((a, b) => {
-      switch (sortBy) {
-        case "date-asc":
-          return parseEventDate(a.date) - parseEventDate(b.date);
-        case "date-desc":
-          return parseEventDate(b.date) - parseEventDate(a.date);
-        case "title-asc":
-          return a.title.localeCompare(b.title, undefined, { sensitivity: "base" });
-        case "title-desc":
-          return b.title.localeCompare(a.title, undefined, { sensitivity: "base" });
-        case "category":
-          return a.category.localeCompare(b.category, undefined, { sensitivity: "base" }) || a.title.localeCompare(b.title);
-        default:
-          return 0;
-      }
-    });
     return list;
-  }, [events, sortBy, filterCategory, filterSource]);
+  }, [events, filterCategory, filterSource]);
 
-  const featured = filteredAndSorted.filter((e) => e.featured);
-  const regular = filteredAndSorted.filter((e) => !e.featured);
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -155,7 +129,7 @@ export function EventsContent({ events }: EventsContentProps) {
           </p>
         </div>
 
-        {/* Sort & Filter toolbar */}
+        {/* Filter toolbar */}
         <div className="mb-10 flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between">
           <div className="flex flex-wrap items-center gap-3">
             <Filter className="h-4 w-4 text-muted-foreground shrink-0" />
@@ -183,27 +157,12 @@ export function EventsContent({ events }: EventsContentProps) {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex items-center gap-3">
-            <ArrowUpDown className="h-4 w-4 text-muted-foreground shrink-0" />
-            <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
-              <SelectTrigger className="w-[180px]" size="default">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="date-asc">Date (soonest first)</SelectItem>
-                <SelectItem value="date-desc">Date (latest first)</SelectItem>
-                <SelectItem value="title-asc">Title (A–Z)</SelectItem>
-                <SelectItem value="title-desc">Title (Z–A)</SelectItem>
-                <SelectItem value="category">Category</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
           <p className="text-sm text-muted-foreground shrink-0">
-            {filteredAndSorted.length} event{filteredAndSorted.length !== 1 ? "s" : ""}
+            {filtered.length} event{filtered.length !== 1 ? "s" : ""}
           </p>
         </div>
 
-        {filteredAndSorted.length === 0 ? (
+        {filtered.length === 0 ? (
           <div className="py-16 text-center rounded-2xl border border-dashed border-muted-foreground/30 bg-muted/30">
             <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-primary mb-2">No events match your filters</h3>
@@ -221,85 +180,8 @@ export function EventsContent({ events }: EventsContentProps) {
             </Button>
           </div>
         ) : (
-        <>
-        {featured.length > 0 && (
-          <section className="mb-20">
-            <h2 className="text-2xl font-bold text-primary mb-8 flex items-center gap-2">
-              <Badge className="bg-accent text-white">Featured</Badge>
-              Highlight Events
-            </h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {featured.map((event, index) => (
-                <motion.div
-                  key={event.id}
-                  initial={{ opacity: 0, x: index === 0 ? -20 : 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <Card className="overflow-hidden border-none bg-primary text-white h-full group flex flex-col md:flex-row">
-                    <div className="md:w-1/2 h-64 md:h-auto overflow-hidden bg-muted">
-                      <EventImage
-                        src={event.imageUrl}
-                        alt={event.title}
-                        category={event.category}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      />
-                    </div>
-                    <div className="md:w-1/2 p-8 flex flex-col justify-between">
-                      <div>
-                        <div className="flex flex-wrap gap-2 mb-2">
-                          <Badge variant="outline" className="text-secondary border-secondary">
-                            {event.category}
-                          </Badge>
-                          {event.source === "tampa_gov" && (
-                            <Badge variant="outline" className="border-white/50 text-white/90 text-[10px] flex items-center gap-1">
-                              <Building2 className="h-3 w-3" />
-                              City of Tampa
-                            </Badge>
-                          )}
-                        </div>
-                        <CardTitle className="text-2xl font-bold mb-4 font-heading leading-tight">
-                          {event.title}
-                        </CardTitle>
-                        <div className="space-y-3 mb-6 opacity-90">
-                          <div className="flex items-center gap-2 text-sm">
-                            <Calendar className="h-4 w-4 text-secondary" />
-                            <span>{event.date}</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm">
-                            <Clock className="h-4 w-4 text-secondary" />
-                            <span>{event.time}</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm">
-                            <MapPin className="h-4 w-4 text-secondary" />
-                            <span>{event.location}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <Button
-                        className="bg-secondary hover:bg-secondary/90 text-white w-full md:w-auto"
-                        asChild
-                      >
-                        <a
-                          href={event.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center justify-center gap-2"
-                        >
-                          View Details
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
-                      </Button>
-                    </div>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </section>
-        )}
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {regular.map((event, index) => (
+          {filtered.map((event, index) => (
             <motion.div
               key={event.id}
               initial={{ opacity: 0, y: 20 }}
@@ -368,8 +250,6 @@ export function EventsContent({ events }: EventsContentProps) {
             </motion.div>
           ))}
         </div>
-
-        </>
         )}
 
         <section className="mt-24 p-12 rounded-3xl bg-secondary/10 border-2 border-dashed border-secondary/30 flex flex-col md:flex-row items-center justify-between gap-8">
