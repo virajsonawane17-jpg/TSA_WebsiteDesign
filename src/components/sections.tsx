@@ -44,6 +44,7 @@ const fadeIn = {
 export function NewsTeaser() {
   const [news, setNews] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     async function fetchNews() {
@@ -58,6 +59,10 @@ export function NewsTeaser() {
     }
     fetchNews();
   }, []);
+
+  const handleImageError = (articleId: string) => {
+    setFailedImages(prev => new Set(prev).add(articleId));
+  };
   
   return (
     <section className="bg-primary/5 py-24">
@@ -95,9 +100,17 @@ export function NewsTeaser() {
                       <img 
                         src={item.image_url || "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/project-uploads/3f997176-9cd5-44c5-880a-703ea12f7459/Image-1-1769318907736.jpg"} 
                         alt={item.title} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          if (target.src !== "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/project-uploads/3f997176-9cd5-44c5-880a-703ea12f7459/Image-1-1769318907736.jpg") {
+                            target.src = "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/project-uploads/3f997176-9cd5-44c5-880a-703ea12f7459/Image-1-1769318907736.jpg";
+                          } else {
+                            handleImageError(item.article_id);
+                          }
+                        }}
                       />
-                    <Badge className="absolute top-4 left-4 bg-secondary">{item.source_id}</Badge>
+                    <Badge className="absolute top-4 left-4 bg-secondary z-10">{item.source_id}</Badge>
                   </div>
                   <CardHeader className="pb-2">
                     <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
@@ -236,9 +249,18 @@ export function Hero() {
   ];
 
   return (
-    <section className="relative bg-primary overflow-hidden">
+    <section className="relative overflow-hidden">
+      {/* Beach Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: "url('/beach-background.png')"
+        }}
+      />
+      {/* Overlay for text readability */}
+      <div className="absolute inset-0 bg-primary/60" />
       <MouseSpark theme="dark" />
-      <ContainerScroll className="pt-20 md:pt-40">
+      <ContainerScroll className="pt-20 md:pt-40 relative z-10">
         <ContainerSticky className="flex flex-col items-center">
           <div className="container relative z-10 mx-auto px-4 sm:px-6 text-center mb-12">
             <ContainerAnimated>
@@ -247,7 +269,7 @@ export function Hero() {
               </Badge>
               <h1 className="mb-6 text-5xl font-extrabold tracking-tight text-white sm:text-6xl lg:text-7xl font-heading leading-[1.1]">
                 Connecting Tampa to <br />
-                <span className="text-secondary">Resources that Matter.</span>
+                <span className="text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">Resources that Matter.</span>
               </h1>
               <p className="mb-10 text-xl leading-relaxed text-white/80 max-w-2xl mx-auto font-sans">
                 A community-first platform designed to help Tampa residents discover local food assistance, housing support, mental health services, and more.
@@ -384,14 +406,22 @@ export function FeaturedResources() {
                       {resource.longDescription || resource.description}
                     </CardDescription>
                     <div className="space-y-3 pt-2">
-                      <div className="flex items-start text-sm text-muted-foreground">
-                        <MapPin className="mr-3 h-4 w-4 shrink-0 text-secondary" />
-                        <span className="line-clamp-1">{resource.location}</span>
-                      </div>
-                      <div className="flex items-center text-sm text-muted-foreground">
-                        <Phone className="mr-3 h-4 w-4 shrink-0 text-secondary" />
-                        <span>{resource.phone}</span>
-                      </div>
+                      <a 
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(resource.location)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-start text-sm text-muted-foreground hover:text-secondary transition-colors cursor-pointer group"
+                      >
+                        <MapPin className="mr-3 h-4 w-4 shrink-0 text-secondary group-hover:scale-110 transition-transform" />
+                        <span className="line-clamp-1 group-hover:underline">{resource.location}</span>
+                      </a>
+                      <a 
+                        href={`tel:${resource.phone.replace(/\D/g, '')}`}
+                        className="flex items-center text-sm text-muted-foreground hover:text-secondary transition-colors cursor-pointer group"
+                      >
+                        <Phone className="mr-3 h-4 w-4 shrink-0 text-secondary group-hover:scale-110 transition-transform" />
+                        <span className="group-hover:underline">{resource.phone}</span>
+                      </a>
                     </div>
                     <Link href={`/resources/${resource.id}`} className="block w-full">
                       <Button className="w-full bg-primary hover:bg-primary/90 text-white font-medium shadow-lg shadow-primary/10">

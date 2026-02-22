@@ -206,14 +206,22 @@ export default function DirectoryPage() {
                           </CardDescription>
                           
                           <div className="space-y-3 border-t pt-4">
-                            <div className="flex items-start text-sm text-muted-foreground">
-                              <MapPin className="mr-3 h-4 w-4 shrink-0 text-secondary" />
-                              <span className="truncate">{resource.location}</span>
-                            </div>
-                            <div className="flex items-center text-sm text-muted-foreground">
-                              <Phone className="mr-3 h-4 w-4 shrink-0 text-secondary" />
-                              <span>{resource.phone}</span>
-                            </div>
+                            <a 
+                              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(resource.location)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-start text-sm text-muted-foreground hover:text-secondary transition-colors cursor-pointer group"
+                            >
+                              <MapPin className="mr-3 h-4 w-4 shrink-0 text-secondary group-hover:scale-110 transition-transform" />
+                              <span className="truncate group-hover:underline">{resource.location}</span>
+                            </a>
+                            <a 
+                              href={`tel:${resource.phone.replace(/\D/g, '')}`}
+                              className="flex items-center text-sm text-muted-foreground hover:text-secondary transition-colors cursor-pointer group"
+                            >
+                              <Phone className="mr-3 h-4 w-4 shrink-0 text-secondary group-hover:scale-110 transition-transform" />
+                              <span className="group-hover:underline">{resource.phone}</span>
+                            </a>
                           </div>
 
                             <div className="flex flex-wrap gap-2 pt-2">
@@ -289,24 +297,32 @@ export default function DirectoryPage() {
                     </p>
                     
                     <div className="space-y-4 pt-6 border-t">
-                      <div className="flex items-start gap-4">
-                        <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center shrink-0">
-                          <MapPin className="h-5 w-5 text-secondary" />
+                      <a 
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedResource.location)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-start gap-4 hover:bg-muted/50 p-3 rounded-xl transition-colors cursor-pointer group"
+                      >
+                        <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center shrink-0 group-hover:bg-secondary/10 transition-colors">
+                          <MapPin className="h-5 w-5 text-secondary group-hover:scale-110 transition-transform" />
                         </div>
-                        <div>
+                        <div className="flex-grow">
                           <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Location</p>
-                          <p className="text-sm font-medium">{selectedResource.location}</p>
+                          <p className="text-sm font-medium group-hover:text-secondary transition-colors">{selectedResource.location}</p>
                         </div>
-                      </div>
-                      <div className="flex items-start gap-4">
-                        <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center shrink-0">
-                          <Phone className="h-5 w-5 text-secondary" />
+                      </a>
+                      <a 
+                        href={`tel:${selectedResource.phone.replace(/\D/g, '')}`}
+                        className="flex items-start gap-4 hover:bg-muted/50 p-3 rounded-xl transition-colors cursor-pointer group"
+                      >
+                        <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center shrink-0 group-hover:bg-secondary/10 transition-colors">
+                          <Phone className="h-5 w-5 text-secondary group-hover:scale-110 transition-transform" />
                         </div>
-                        <div>
+                        <div className="flex-grow">
                           <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Contact</p>
-                          <p className="text-sm font-medium">{selectedResource.phone}</p>
+                          <p className="text-sm font-medium group-hover:text-secondary transition-colors">{selectedResource.phone}</p>
                         </div>
-                      </div>
+                      </a>
                     </div>
 
                     <div className="pt-8 space-y-3">

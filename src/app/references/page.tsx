@@ -249,6 +249,37 @@ const libraries: Source[] = [
   },
 ];
 
+// Custom Components & Features
+const customComponents: Source[] = [
+  {
+    title: "NewsImage Component",
+    url: "N/A - Custom component",
+    description: "Custom React component for handling news article images with fallback support",
+    usage: "Used in NewsCard, TampaGovNewsCard, and CommunityNewsCard components. Handles image loading errors and displays fallback images when primary images fail. Located in src/components/news-image.tsx",
+    permission: "Original work - Created by project team. No external dependencies",
+    license: "Project-owned",
+    category: "library",
+  },
+  {
+    title: "NewsCard Components",
+    url: "N/A - Custom components",
+    description: "Reusable card components for displaying news articles with consistent styling and image handling",
+    usage: "NewsCard (src/components/news-card.tsx), TampaGovNewsCard (src/components/tampa-gov-news-card.tsx), and CommunityNewsCard (src/components/community-news-card.tsx) used throughout News page and homepage teaser",
+    permission: "Original work - Created by project team",
+    license: "Project-owned",
+    category: "library",
+  },
+  {
+    title: "Tel: Protocol Links",
+    url: "N/A - HTML standard",
+    description: "HTML tel: protocol for clickable phone number links",
+    usage: "Used throughout directory page, resource detail pages, and featured resources to make phone numbers clickable. Opens device dialer on mobile or calling app on desktop. Format: tel:{phone_number}",
+    permission: "HTML standard - No license required. Built-in browser feature",
+    license: "N/A - HTML Standard",
+    category: "library",
+  },
+];
+
 // APIs & Data Sources
 const apis: Source[] = [
   {
@@ -267,6 +298,24 @@ const apis: Source[] = [
     usage: "Parses RSS feed to display official Tampa news on News page. Used in src/lib/tampa-api.ts with 1-hour cache revalidation",
     permission: "Public RSS Feed - Free for public use. Content is public domain",
     license: "Public Domain",
+    category: "api",
+  },
+  {
+    title: "Google Maps Search API",
+    url: "https://developers.google.com/maps/documentation/urls/get-started",
+    description: "Google Maps URL-based search API for generating map links",
+    usage: "Used to create clickable address links that open Google Maps with resource locations. Implemented in directory page, resource detail pages, and featured resources section. Format: https://www.google.com/maps/search/?api=1&query={encoded_address}",
+    permission: "Public API - No API key required for URL-based searches. Free for public use. Subject to Google Maps Platform Terms of Service",
+    license: "Google Maps Platform Terms of Service",
+    category: "api",
+  },
+  {
+    title: "OpenStreetMap Tile Layer",
+    url: "https://www.openstreetmap.org/",
+    description: "Open-source mapping data and tile service",
+    usage: "Provides map tiles for Leaflet map component on Directory page. Used via TileLayer component in src/components/tampa-resource-map.tsx. Attribution required per OSM copyright policy",
+    permission: "Open Database License (ODbL) - Free for commercial and personal use. Attribution required",
+    license: "ODbL",
     category: "api",
   },
   {
@@ -292,6 +341,15 @@ const apis: Source[] = [
 // Image Sources & Media
 const imageSources: Source[] = [
   {
+    title: "Beach Background Image",
+    url: "N/A - Project asset",
+    description: "Aerial beach photograph used as homepage hero background",
+    usage: "Homepage hero section background image. Stored in public/beach-background.png. Used in src/components/sections.tsx Hero component with overlay for text readability",
+    permission: "Project-owned image - Uploaded by project team. Used as background with overlay",
+    license: "Project-owned",
+    category: "image",
+  },
+  {
     title: "Picsum Photos",
     url: "https://picsum.photos/",
     description: "Lorem Ipsum for photos - placeholder image service",
@@ -304,7 +362,7 @@ const imageSources: Source[] = [
     title: "Unsplash",
     url: "https://unsplash.com/",
     description: "High-quality free stock photos",
-    usage: "Hero image on Spotlight page (photo-1488521787991-ed7bbaae773c). Used via direct Unsplash CDN link",
+    usage: "Hero image on Spotlight page (photo-1488521787991-ed7bbaae773c). Used via direct Unsplash CDN link. Also used as fallback images in TampaGovNewsCard (photo-1569025743873-ea3e9ce9c8ef) and CommunityNewsCard (photo-1504711432869-efd5973e8d48) components when primary news images fail to load",
     permission: "Unsplash License - Free for commercial and personal use. No attribution required but appreciated",
     license: "Unsplash License",
     category: "image",
@@ -313,9 +371,36 @@ const imageSources: Source[] = [
     title: "Supabase Storage",
     url: "https://supabase.com/storage",
     description: "File storage service provided by Supabase",
-    usage: "Hosts uploaded images for resources, events, and news articles. Images stored at slelguoygbfzlpylpxfs.supabase.co",
+    usage: "Hosts uploaded images for resources, events, and news articles. Images stored at slelguoygbfzlpylpxfs.supabase.co. Also used as default placeholder image for news items when images fail to load. Homepage Hero gallery displays 9 Tampa community images (Image-1 through image-9) showcasing city landmarks, waterfront scenes, and community spaces",
     permission: "Supabase Storage - Free tier available. Images uploaded by project team",
     license: "Project-owned content",
+    category: "image",
+  },
+  {
+    title: "Homepage Gallery Images",
+    url: "N/A - Supabase Storage",
+    description: "Collection of 9 Tampa community photographs displayed in homepage Hero gallery",
+    usage: "Gallery images in Hero section showcasing Tampa landmarks, waterfront scenes, bridges, cityscapes, and community spaces. Images include: Tampa skyline at night, waterfront walkways, bridges (including purple-lit bridge), city murals, Gasparilla ship, and urban scenes. Displayed in animated gallery container on homepage (src/components/sections.tsx Hero component)",
+    permission: "Project-owned images - Uploaded to Supabase Storage by project team. All images depict Tampa, Florida locations and landmarks",
+    license: "Project-owned",
+    category: "image",
+  },
+  {
+    title: "News Image Fallback - Supabase Default",
+    url: "N/A - Supabase Storage",
+    description: "Default fallback image used when news article images fail to load",
+    usage: "Used as DEFAULT_PLACEHOLDER in NewsImage component (src/components/news-image.tsx). Falls back to Image-1-1769318907736.jpg from Supabase Storage when primary news images fail to load. Also used as fallback in NewsTeaser component (src/components/sections.tsx) and NewsCard component",
+    permission: "Project-owned image - Stored in Supabase Storage. Used as fallback/placeholder",
+    license: "Project-owned",
+    category: "image",
+  },
+  {
+    title: "News Image Fallback - Unsplash",
+    url: "https://unsplash.com/",
+    description: "Unsplash images used as fallback for news components",
+    usage: "Used as fallbackSrc in TampaGovNewsCard (photo-1569025743873-ea3e9ce9c8ef) and CommunityNewsCard (photo-1504711432869-efd5973e8d48) components. These Unsplash images are displayed when primary news images fail to load or are unavailable",
+    permission: "Unsplash License - Free for commercial and personal use. No attribution required but appreciated",
+    license: "Unsplash License",
     category: "image",
   },
   {
@@ -532,6 +617,7 @@ const categoryColors = {
 const allSources = [
   ...frameworks,
   ...libraries,
+  ...customComponents,
   ...apis,
   ...imageSources,
   ...externalLinks,
@@ -873,7 +959,7 @@ export default function ReferencesPage() {
                                         </Badge>
                                       )}
                                     </div>
-                                    {source.url !== "N/A - Generated inline" && (
+                                    {source.url !== "N/A - Generated inline" && source.url !== "N/A - Supabase Storage" && source.url !== "N/A - Project asset" && (
                                       <a
                                         href={source.url}
                                         target="_blank"
@@ -965,6 +1051,80 @@ export default function ReferencesPage() {
                                     >
                                       Visit Source <ExternalLink className="h-3 w-3" />
                                     </a>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              {/* Custom Components */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.45 }}
+              >
+                <Card className="rounded-3xl border-border/40 shadow-xl overflow-hidden">
+                  <CardHeader className="bg-white border-b border-border/40 p-8 pb-6">
+                    <div className="flex items-center gap-4 mb-2">
+                      <div className="h-12 w-12 rounded-xl bg-indigo-500/10 flex items-center justify-center">
+                        <Code className="h-6 w-6 text-indigo-600" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-2xl font-heading text-primary">Custom Components & Features</CardTitle>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Project-specific components and implementations ({customComponents.length} total)
+                        </p>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-8 bg-white">
+                    <div className="space-y-6">
+                      {customComponents.map((source, index) => {
+                        const Icon = categoryIcons[source.category];
+                        return (
+                          <motion.div
+                            key={source.title}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.3, delay: index * 0.05 }}
+                          >
+                            <Card className="border-border/40 hover:shadow-lg transition-all duration-300">
+                              <CardContent className="p-6">
+                                <div className="space-y-4">
+                                  <div className="flex items-start justify-between gap-4">
+                                    <div className="flex items-start gap-4 flex-grow">
+                                      <div className="h-10 w-10 rounded-lg bg-indigo-500/10 flex items-center justify-center shrink-0">
+                                        <Icon className="h-5 w-5 text-indigo-600" />
+                                      </div>
+                                      <div className="flex-grow min-w-0">
+                                        <h3 className="font-bold text-primary text-lg mb-1">{source.title}</h3>
+                                        <p className="text-sm text-muted-foreground mb-2">{source.description}</p>
+                                      </div>
+                                    </div>
+                                    <Badge className={`${categoryColors[source.category]} border text-xs shrink-0`}>
+                                      {source.category}
+                                    </Badge>
+                                  </div>
+                                  <div className="pl-14 space-y-2">
+                                    <div>
+                                      <p className="text-xs font-semibold text-primary mb-1">Usage:</p>
+                                      <p className="text-sm text-muted-foreground leading-relaxed">{source.usage}</p>
+                                    </div>
+                                    <div>
+                                      <p className="text-xs font-semibold text-primary mb-1">Permission & License:</p>
+                                      <p className="text-sm text-muted-foreground leading-relaxed">{source.permission}</p>
+                                      {source.license && source.license !== "N/A - HTML Standard" && (
+                                        <Badge variant="outline" className="mt-2 text-xs">
+                                          {source.license}
+                                        </Badge>
+                                      )}
+                                    </div>
                                   </div>
                                 </div>
                               </CardContent>
@@ -1105,6 +1265,7 @@ export default function ReferencesPage() {
                       <ul className="text-white/80 space-y-1 ml-4">
                         <li>• {frameworks.length} Frameworks</li>
                         <li>• {libraries.length} Libraries</li>
+                        <li>• {customComponents.length} Custom Components</li>
                         <li>• {apis.length} APIs</li>
                         <li>• {imageSources.length} Image Sources</li>
                         <li>• {documentation.length} Documentation</li>

@@ -125,24 +125,32 @@ export default async function ResourceDetailPage({ params }: PageProps) {
                   </div>
                   <div className="p-8 space-y-6">
                     <div className="space-y-4">
-                      <div className="flex items-start gap-4">
-                        <MapPin className="h-5 w-5 text-secondary shrink-0 mt-0.5" />
-                        <div>
+                      <a 
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(resource.location)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-start gap-4 hover:bg-muted/50 p-3 rounded-xl transition-colors cursor-pointer group"
+                      >
+                        <MapPin className="h-5 w-5 text-secondary shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                        <div className="flex-grow">
                           <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Physical Address</p>
-                          <p className="text-sm font-medium leading-relaxed">{resource.location}</p>
-                          <Button variant="link" className="p-0 h-auto text-secondary text-xs font-bold mt-1">
+                          <p className="text-sm font-medium leading-relaxed group-hover:text-secondary transition-colors">{resource.location}</p>
+                          <span className="text-secondary text-xs font-bold mt-1 inline-flex items-center group-hover:underline">
                             Get Directions <ExternalLink className="ml-1 h-3 w-3" />
-                          </Button>
+                          </span>
                         </div>
-                      </div>
-                      <div className="flex items-start gap-4">
-                        <Phone className="h-5 w-5 text-secondary shrink-0 mt-0.5" />
-                        <div>
+                      </a>
+                      <a 
+                        href={`tel:${resource.phone.replace(/\D/g, '')}`}
+                        className="flex items-start gap-4 hover:bg-muted/50 p-3 rounded-xl transition-colors cursor-pointer group"
+                      >
+                        <Phone className="h-5 w-5 text-secondary shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                        <div className="flex-grow">
                           <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Phone Number</p>
-                          <p className="text-sm font-medium leading-relaxed">{resource.phone}</p>
+                          <p className="text-sm font-medium leading-relaxed group-hover:text-secondary transition-colors">{resource.phone}</p>
                           <p className="text-[10px] text-muted-foreground mt-1">Mon - Fri, 9:00 AM - 5:00 PM</p>
                         </div>
-                      </div>
+                      </a>
                     </div>
 
                     <div className="space-y-3 pt-6 border-t">

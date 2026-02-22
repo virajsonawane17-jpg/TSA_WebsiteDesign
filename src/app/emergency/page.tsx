@@ -21,10 +21,10 @@ import Link from "next/link";
 
 export default function EmergencyPage() {
   const hotlines = [
-    { name: "Suicide & Crisis Lifeline", number: "988", description: "24/7 free and confidential support for people in distress.", color: "bg-accent" },
-    { name: "Hillsborough County 211", number: "2-1-1", description: "The gateway to health and human services in our community.", color: "bg-primary" },
-    { name: "Domestic Violence Hotline", number: "1-800-500-1119", description: "The Spring of Tampa Bay - 24/7 crisis support.", color: "bg-secondary" },
-    { name: "Florida Abuse Hotline", number: "1-800-962-2873", description: "Report child or elder abuse or neglect.", color: "bg-primary" }
+    { name: "Suicide & Crisis Lifeline", number: "988", telNumber: "988", description: "24/7 free and confidential support for people in distress.", color: "bg-accent" },
+    { name: "Hillsborough County 211", number: "2-1-1", telNumber: "211", description: "The gateway to health and human services in our community.", color: "bg-primary" },
+    { name: "Domestic Violence Hotline", number: "1-800-500-1119", telNumber: "18005001119", description: "The Spring of Tampa Bay - 24/7 crisis support.", color: "bg-secondary" },
+    { name: "Florida Abuse Hotline", number: "1-800-962-2873", telNumber: "18009622873", description: "Report child or elder abuse or neglect.", color: "bg-primary" }
   ];
 
   const categories = [
@@ -32,28 +32,28 @@ export default function EmergencyPage() {
       title: "Immediate Crisis Support",
       icon: ShieldAlert,
       items: [
-        { name: "Crisis Center of Tampa Bay", action: "Call 211", link: "/resources/3" },
-        { name: "ACT (Abuse Counseling)", action: "Call (813) 935-2015", link: "#" },
-        { name: "Mobile Crisis Unit", action: "Call (813) 272-2958", link: "#" }
-      ]
+        { name: "Crisis Center of Tampa Bay", action: "Call 211", link: "/resources/5", phone: "211" },
+        { name: "ACT (Abuse Counseling)", action: "Call (813) 935-2015", link: "tel:8139352015", phone: "(813) 935-2015" },
+        { name: "Mobile Crisis Unit", action: "Call (813) 272-2958", link: "tel:8132722958", phone: "(813) 272-2958" }
+      ] as Array<{ name: string; action: string; link: string; phone?: string }>
     },
     {
       title: "Emergency Shelter",
       icon: Home,
       items: [
         { name: "Metropolitan Ministries", action: "View Shelter", link: "/resources/2" },
-        { name: "Salvation Army Tampa", action: "Call (813) 226-0055", link: "/resources/12" },
-        { name: "St. Vincent de Paul", action: "Call (813) 977-7057", link: "/resources/11" }
-      ]
+        { name: "Salvation Army Tampa", action: "Call (813) 226-0055", link: "tel:8132260055", phone: "(813) 226-0055" },
+        { name: "St. Vincent de Paul", action: "Call (813) 977-7057", link: "tel:8139777057", phone: "(813) 977-7057" }
+      ] as Array<{ name: string; action: string; link: string; phone?: string }>
     },
     {
       title: "Food Emergency",
       icon: Soup,
       items: [
         { name: "Feeding Tampa Bay", action: "Find Pantry", link: "/resources/1" },
-        { name: "St. Peter Claver", action: "Call (813) 223-7098", link: "#" },
-        { name: "Tampa Crossroads", action: "Call (813) 238-8557", link: "#" }
-      ]
+        { name: "St. Peter Claver", action: "Call (813) 223-7098", link: "tel:8132237098", phone: "(813) 223-7098" },
+        { name: "Tampa Crossroads", action: "Call (813) 238-8557", link: "tel:8132388557", phone: "(813) 238-8557" }
+      ] as Array<{ name: string; action: string; link: string; phone?: string }>
     }
   ];
 
@@ -93,9 +93,11 @@ export default function EmergencyPage() {
                   <p className="text-sm text-foreground/70 mb-8 leading-relaxed">
                     {hotline.description}
                   </p>
-                  <Button className={`w-full h-12 font-bold ${hotline.color} text-white hover:opacity-90`}>
-                    <Phone className="mr-2 h-4 w-4" /> Call Now
-                  </Button>
+                  <a href={`tel:${hotline.telNumber}`} className="block">
+                    <Button className={`w-full h-12 font-bold ${hotline.color} text-white hover:opacity-90`}>
+                      <Phone className="mr-2 h-4 w-4" /> Call Now
+                    </Button>
+                  </a>
                 </CardContent>
               </Card>
             ))}
@@ -116,13 +118,27 @@ export default function EmergencyPage() {
                       <CardContent className="p-6 flex justify-between items-center">
                         <div>
                           <h4 className="font-bold text-primary group-hover:text-accent transition-colors">{item.name}</h4>
-                          <p className="text-xs text-muted-foreground mt-1">{item.action}</p>
+                          {item.phone ? (
+                            <a href={`tel:${item.phone.replace(/\D/g, '')}`} className="text-xs text-muted-foreground mt-1 hover:text-accent transition-colors inline-block">
+                              {item.action}
+                            </a>
+                          ) : (
+                            <p className="text-xs text-muted-foreground mt-1">{item.action}</p>
+                          )}
                         </div>
-                        <Link href={item.link}>
-                          <Button variant="ghost" size="icon" className="rounded-full group-hover:bg-accent/10 group-hover:text-accent">
-                            <ArrowRight className="h-5 w-5" />
-                          </Button>
-                        </Link>
+                        {item.link.startsWith('tel:') ? (
+                          <a href={item.link}>
+                            <Button variant="ghost" size="icon" className="rounded-full group-hover:bg-accent/10 group-hover:text-accent">
+                              <Phone className="h-5 w-5" />
+                            </Button>
+                          </a>
+                        ) : (
+                          <Link href={item.link}>
+                            <Button variant="ghost" size="icon" className="rounded-full group-hover:bg-accent/10 group-hover:text-accent">
+                              <ArrowRight className="h-5 w-5" />
+                            </Button>
+                          </Link>
+                        )}
                       </CardContent>
                     </Card>
                   ))}
@@ -145,11 +161,11 @@ export default function EmergencyPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
                     <h4 className="font-bold text-secondary mb-2">Text Support</h4>
-                    <p className="text-sm text-white/60">Text <b>HOME</b> to <b>741741</b> to connect with a Crisis Counselor.</p>
+                    <p className="text-sm text-white/60">Text <b>HOME</b> to <a href="sms:741741" className="underline hover:text-secondary transition-colors"><b>741741</b></a> to connect with a Crisis Counselor.</p>
                   </div>
                   <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
                     <h4 className="font-bold text-secondary mb-2">Trevor Project</h4>
-                    <p className="text-sm text-white/60">LGBTQ+ youth support. Call <b>1-866-488-7386</b> or text <b>START</b> to <b>678-678</b>.</p>
+                    <p className="text-sm text-white/60">LGBTQ+ youth support. Call <a href="tel:18664887386" className="underline hover:text-secondary transition-colors"><b>1-866-488-7386</b></a> or text <b>START</b> to <a href="sms:678678" className="underline hover:text-secondary transition-colors"><b>678-678</b></a>.</p>
                   </div>
                 </div>
               </div>
@@ -163,12 +179,12 @@ export default function EmergencyPage() {
                     The <b>Crisis Center of Tampa Bay</b> is the gateway to help in Hillsborough County. They provide a range of services from suicide prevention to sexual assault advocacy.
                   </p>
                   <div className="space-y-4">
-                    <div className="flex items-center gap-4">
+                    <a href="tel:211" className="flex items-center gap-4 hover:opacity-80 transition-opacity">
                       <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center shrink-0">
                         <Phone className="h-5 w-5 text-secondary" />
                       </div>
                       <span className="font-bold">Dial 2-1-1 (24/7)</span>
-                    </div>
+                    </a>
                     <div className="flex items-center gap-4">
                       <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center shrink-0">
                         <MessageSquare className="h-5 w-5 text-secondary" />
@@ -176,7 +192,7 @@ export default function EmergencyPage() {
                       <span className="font-bold">Online Chat Available</span>
                     </div>
                   </div>
-                  <Link href="/resources/3">
+                  <Link href="/resources/5">
                     <Button className="w-full h-14 bg-primary text-white font-bold mt-6">
                       View Crisis Center Details
                     </Button>
