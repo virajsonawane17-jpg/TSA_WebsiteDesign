@@ -11,16 +11,26 @@ export default async function EventsPage() {
     getTampaGovEvents(),
   ]);
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
+
   const dbIds = new Set(dbEvents.map((e) => e.id));
   const merged: CommunityEventWithSource[] = [
     ...dbEvents.map((e) => ({ ...e, source: undefined as undefined })),
     ...tampaGovEvents.filter((e) => !dbIds.has(e.id)),
-  ].sort((a, b) => {
-    const dateA = parseDisplayDate(a.date);
-    const dateB = parseDisplayDate(b.date);
-    if (!dateA || !dateB) return 0;
-    return dateA.getTime() - dateB.getTime();
-  });
+  ]
+    .filter((event) => {
+      const eventDate = parseDisplayDate(event.date);
+      if (!eventDate) return true; // Keep events with invalid dates
+      eventDate.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
+      return eventDate >= today; // Only keep events that are today or in the future
+    })
+    .sort((a, b) => {
+      const dateA = parseDisplayDate(a.date);
+      const dateB = parseDisplayDate(b.date);
+      if (!dateA || !dateB) return 0;
+      return dateA.getTime() - dateB.getTime();
+    });
 
   return <EventsContent events={merged} />;
 }

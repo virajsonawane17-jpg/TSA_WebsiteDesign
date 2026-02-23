@@ -6,26 +6,30 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
+  ArrowRight, 
   Search, 
   MapPin, 
   Phone, 
   ExternalLink, 
-  ArrowRight, 
   Heart, 
   Users, 
-  ShieldCheck, 
   Target, 
   MessageCircle, 
   TrendingUp, 
   Clock,
-  Navigation
+  Navigation,
+  Calendar as CalendarIcon,
+  Loader2,
+  Building2,
+  Newspaper
 } from "lucide-react";
 import Link from "next/link";
 import { getFeaturedResources, getFeaturedEvents } from "@/lib/db";
 import { Resource, CommunityEvent } from "@/lib/resources";
 import { useState, useEffect } from "react";
-import { Newspaper, Calendar as CalendarIcon, Ticket, Loader2 } from "lucide-react";
-import { getTampaNews, type NewsArticle } from "@/lib/api";
+import { NewsCard } from "@/components/news-card";
+import { TampaGovNewsCard } from "@/components/tampa-gov-news-card";
+import { CommunityNewsCard } from "@/components/community-news-card";
 import { 
   ContainerScroll, 
   ContainerSticky, 
@@ -41,16 +45,44 @@ const fadeIn = {
   transition: { duration: 0.6 }
 };
 
+interface CommunityNewsItem {
+  id: string;
+  title: string;
+  excerpt: string;
+  imageUrl?: string;
+  link: string;
+  date: string;
+  source?: string;
+  category?: string;
+}
+
+interface TampaGovNewsItem {
+  title: string;
+  link: string;
+  pubDate: string;
+  description: string;
+  imageUrl?: string;
+}
+
 export function NewsTeaser() {
-  const [news, setNews] = useState<NewsArticle[]>([]);
+  const [communityNews, setCommunityNews] = useState<CommunityNewsItem[]>([]);
+  const [tampaGovNews, setTampaGovNews] = useState<TampaGovNewsItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     async function fetchNews() {
       try {
-        const data = await getTampaNews(3);
-        setNews(data);
+        // Fetch both community news and City of Tampa news
+        const [communityRes, tampaGovRes] = await Promise.all([
+          fetch('/api/news/community?limit=3'),
+          fetch('/api/news/tampa-gov?limit=3')
+        ]);
+        
+        const communityData = communityRes.ok ? await communityRes.json() : [];
+        const tampaGovData = tampaGovRes.ok ? await tampaGovRes.json() : [];
+        
+        setCommunityNews(communityData);
+        setTampaGovNews(tampaGovData);
       } catch (error) {
         console.error("Failed to fetch news:", error);
       } finally {
@@ -59,10 +91,12 @@ export function NewsTeaser() {
     }
     fetchNews();
   }, []);
-
-  const handleImageError = (articleId: string) => {
-    setFailedImages(prev => new Set(prev).add(articleId));
-  };
+  
+  // Combine and limit to 3 total items for the teaser
+  const combinedNews = [
+    ...tampaGovNews.slice(0, 2).map(item => ({ ...item, type: 'tampa-gov' as const })),
+    ...communityNews.slice(0, 1).map(item => ({ ...item, type: 'community' as const }))
+  ].slice(0, 3);
   
   return (
     <section className="bg-primary/5 py-24">
@@ -85,57 +119,43 @@ export function NewsTeaser() {
           <div className="flex justify-center items-center py-20">
             <Loader2 className="h-8 w-8 text-secondary animate-spin" />
           </div>
-        ) : news.length > 0 ? (
+        ) : combinedNews.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {news.map((item, idx) => (
+            {combinedNews.map((item, idx) => (
               <motion.div
-                key={item.article_id}
+                key={item.type === 'tampa-gov' ? item.link : item.id}
                 variants={fadeIn}
                 initial="initial"
                 whileInView="animate"
                 transition={{ delay: idx * 0.1 }}
               >
-                <Card className="h-full border-none shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
-                    <div className="h-48 overflow-hidden relative">
-                      <img 
-                        src={item.image_url || "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/project-uploads/3f997176-9cd5-44c5-880a-703ea12f7459/Image-1-1769318907736.jpg"} 
-                        alt={item.title} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          if (target.src !== "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/project-uploads/3f997176-9cd5-44c5-880a-703ea12f7459/Image-1-1769318907736.jpg") {
-                            target.src = "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/project-uploads/3f997176-9cd5-44c5-880a-703ea12f7459/Image-1-1769318907736.jpg";
-                          } else {
-                            handleImageError(item.article_id);
-                          }
-                        }}
-                      />
-                    <Badge className="absolute top-4 left-4 bg-secondary z-10">{item.source_id}</Badge>
-                  </div>
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-                      <CalendarIcon className="h-3 w-3" />
-                      <span>{new Date(item.pubDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
-                    </div>
-                    <CardTitle className="text-lg font-bold leading-tight group-hover:text-secondary transition-colors line-clamp-2">
-                      {item.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground line-clamp-2 italic mb-4">
-                      "{item.description || "Click to read more about this update from the Tampa area."}"
-                    </p>
-                    <a href={item.link} target="_blank" rel="noopener noreferrer" className="text-secondary text-sm font-bold flex items-center group/link">
-                      Read more <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover/link:translate-x-1" />
-                    </a>
-                  </CardContent>
-                </Card>
+                {item.type === 'tampa-gov' ? (
+                  <TampaGovNewsCard
+                    title={item.title}
+                    description={item.description}
+                    imageUrl={item.imageUrl}
+                    link={item.link}
+                    pubDate={item.pubDate}
+                    index={idx}
+                  />
+                ) : (
+                  <CommunityNewsCard
+                    id={item.id}
+                    title={item.title}
+                    excerpt={item.excerpt}
+                    imageUrl={item.imageUrl}
+                    link={item.link}
+                    date={item.date}
+                    source={item.source ?? "Community"}
+                    category={item.category ?? "Local"}
+                  />
+                )}
               </motion.div>
             ))}
           </div>
         ) : (
           <div className="text-center py-20 bg-white/50 rounded-2xl backdrop-blur-sm border border-dashed border-primary/20">
-            <Newspaper className="h-12 w-12 text-primary/30 mx-auto mb-4" />
+            <Building2 className="h-12 w-12 text-primary/30 mx-auto mb-4" />
             <p className="text-muted-foreground">No recent news found for Tampa at the moment. Please check back later.</p>
           </div>
         )}
@@ -151,7 +171,8 @@ export function EventsTeaser() {
   useEffect(() => {
     async function fetchEvents() {
       try {
-        const events = await getFeaturedEvents(3);
+        const response = await fetch('/api/events?limit=3');
+        const events = response.ok ? await response.json() : [];
         setUpcomingEvents(events);
       } catch (error) {
         console.error("Failed to fetch events:", error);
@@ -504,12 +525,40 @@ export function HowItWorks() {
 }
 
 export function InsightsPreview() {
-  const insights = [
+  const [insights, setInsights] = useState([
     { label: "Food Assistance", value: "34%", trend: "up" },
     { label: "Housing Support", value: "28%", trend: "stable" },
     { label: "Mental Health", value: "19%", trend: "up" },
     { label: "Youth Programs", value: "12%", trend: "down" }
-  ];
+  ]);
+  const [stats, setStats] = useState({
+    totalResources: 0,
+    totalEvents: 0,
+    totalNews: 0,
+    newResourcesThisWeek: 0,
+    topArea: "Tampa Bay",
+    topCategory: "Resources"
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchInsights() {
+      try {
+        const response = await fetch('/api/insights?limit=4');
+        const data = response.ok ? await response.json() : null;
+        
+        if (data) {
+          setInsights(data.trends);
+          setStats(data.stats);
+        }
+      } catch (error) {
+        console.error("Failed to fetch insights:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchInsights();
+  }, []);
 
   return (
     <section className="py-24 bg-background">
@@ -550,23 +599,23 @@ export function InsightsPreview() {
           <div className="lg:w-1/2 grid grid-cols-2 gap-4 perspective-1000">
             <motion.div whileHover={{ rotateY: -10, rotateX: 5, z: 50 }} className="preserve-3d">
               <Card className="p-8 flex flex-col items-center justify-center text-center border-border/40 bg-primary/5 shadow-xl shadow-primary/5">
-                <TrendingUp className="h-10 w-10 text-secondary mb-4" />
-                <div className="text-3xl font-bold text-primary mb-1">2,400+</div>
-                <div className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">Searches this week</div>
+                <Search className="h-10 w-10 text-secondary mb-4" />
+                <div className="text-3xl font-bold text-primary mb-1">{stats.totalResources.toLocaleString()}</div>
+                <div className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">Total Resources</div>
               </Card>
             </motion.div>
             <motion.div whileHover={{ rotateY: 10, rotateX: 5, z: 50 }} className="preserve-3d">
               <Card className="p-8 flex flex-col items-center justify-center text-center border-border/40 shadow-xl shadow-accent/5">
-                <Clock className="h-10 w-10 text-accent mb-4" />
-                <div className="text-3xl font-bold text-primary mb-1">12</div>
-                <div className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">New resources added</div>
+                <CalendarIcon className="h-10 w-10 text-accent mb-4" />
+                <div className="text-3xl font-bold text-primary mb-1">{stats.totalEvents}</div>
+                <div className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">Upcoming Events</div>
               </Card>
             </motion.div>
             <motion.div whileHover={{ rotateY: 0, rotateX: -10, z: 50 }} className="col-span-2 preserve-3d">
               <Card className="p-8 flex flex-col items-center justify-center text-center border-border/40 shadow-xl shadow-secondary/5">
-                <Users className="h-10 w-10 text-primary mb-4" />
-                <div className="text-3xl font-bold text-primary mb-1">North Tampa</div>
-                <div className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">Highest search volume area</div>
+                <Newspaper className="h-10 w-10 text-primary mb-4" />
+                <div className="text-3xl font-bold text-primary mb-1">{stats.totalNews}</div>
+                <div className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">News & Updates</div>
               </Card>
             </motion.div>
           </div>
