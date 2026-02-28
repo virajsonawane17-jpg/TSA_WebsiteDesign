@@ -50,7 +50,7 @@ export function Navbar() {
           <Link href="/insights" className="block text-lg font-medium py-2" onClick={() => setIsOpen(false)}>Insights</Link>
           <Link href="/references" className="block text-lg font-medium py-2" onClick={() => setIsOpen(false)}>References</Link>
           
-          <Link href="/emergency" className="block text-lg font-medium py-2 text-accent" onClick={() => setIsOpen(false)}>Emergency Help</Link>
+          <Link href="/emergency" className="block text-lg font-medium py-2 text-orange-600" onClick={() => setIsOpen(false)}>Emergency Help</Link>
           <Link href="/submit" onClick={() => setIsOpen(false)}>
             <Button className="w-full bg-secondary hover:bg-secondary/90 mt-4">
               Submit Resource

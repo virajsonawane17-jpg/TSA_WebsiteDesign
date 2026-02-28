@@ -27,7 +27,7 @@ export function CommunityNewsCard({ title, excerpt, imageUrl, link, date, source
           fallbackSrc="https://images.unsplash.com/photo-1504711432869-efd5973e8d48?q=80&w=800&auto=format&fit=crop"
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        <Badge className="absolute top-3 right-3 bg-accent text-white border-none text-[10px] px-2 py-0 z-10">
+        <Badge className="absolute top-3 right-3 bg-primary text-white border-none text-[10px] px-2 py-0 z-10">
           {category}
         </Badge>
       </div>
@@ -36,7 +36,7 @@ export function CommunityNewsCard({ title, excerpt, imageUrl, link, date, source
           <Calendar className="h-3 w-3" />
           <span>{date} • {source}</span>
         </div>
-        <CardTitle className="text-base font-bold text-primary leading-tight group-hover:text-accent transition-colors line-clamp-2">
+        <CardTitle className="text-base font-bold text-primary leading-tight group-hover:text-secondary transition-colors line-clamp-2">
           {title}
         </CardTitle>
       </CardHeader>
@@ -44,7 +44,7 @@ export function CommunityNewsCard({ title, excerpt, imageUrl, link, date, source
         <p className="text-xs text-muted-foreground mb-4 line-clamp-2">
           {excerpt}
         </p>
-        <Button variant="link" className="p-0 h-auto text-accent text-xs font-bold" asChild>
+        <Button variant="link" className="p-0 h-auto text-secondary text-xs font-bold" asChild>
           <a href={link} target="_blank" rel="noopener noreferrer">
             Read more →
           </a>

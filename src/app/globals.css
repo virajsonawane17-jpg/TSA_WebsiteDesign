@@ -59,7 +59,7 @@
       --secondary-foreground: oklch(1 0 0);
       --muted: oklch(0.96 0.01 240);
       --muted-foreground: oklch(0.4 0.02 240);
-      --accent: oklch(0.6 0.22 35); /* Pop Coral */
+      --accent: oklch(0.6 0.22 300); /* Vivid Purple */
       --accent-foreground: oklch(1 0 0);
       --destructive: oklch(0.55 0.18 25);
       --border: oklch(0.92 0.01 240);
@@ -67,7 +67,7 @@
       --ring: oklch(0.25 0.06 245);
       --chart-1: oklch(0.25 0.06 245);
       --chart-2: oklch(0.6 0.15 195);
-      --chart-3: oklch(0.6 0.22 35);
+      --chart-3: oklch(0.6 0.22 300);
       --chart-4: oklch(0.8 0.08 120);
       --chart-5: oklch(0.9 0.05 80);
       --sidebar: oklch(0.99 0.005 240);

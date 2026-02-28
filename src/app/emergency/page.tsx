@@ -21,7 +21,7 @@ import Link from "next/link";
 
 export default function EmergencyPage() {
   const hotlines = [
-    { name: "Suicide & Crisis Lifeline", number: "988", telNumber: "988", description: "24/7 free and confidential support for people in distress.", color: "bg-accent" },
+    { name: "Suicide & Crisis Lifeline", number: "988", telNumber: "988", description: "24/7 free and confidential support for people in distress.", color: "bg-orange-600" },
     { name: "Hillsborough County 211", number: "2-1-1", telNumber: "211", description: "The gateway to health and human services in our community.", color: "bg-primary" },
     { name: "Domestic Violence Hotline", number: "1-800-500-1119", telNumber: "18005001119", description: "The Spring of Tampa Bay - 24/7 crisis support.", color: "bg-secondary" },
     { name: "Florida Abuse Hotline", number: "1-800-962-2873", telNumber: "18009622873", description: "Report child or elder abuse or neglect.", color: "bg-primary" }
@@ -64,12 +64,12 @@ export default function EmergencyPage() {
       
       <main className="flex-grow">
         {/* Urgent Header */}
-        <section className="bg-accent py-20 text-white">
+        <section className="bg-orange-600 py-20 text-white">
           <div className="container mx-auto px-4 sm:px-6">
             <div className="max-w-3xl">
               <div className="flex items-center gap-3 mb-6">
                 <AlertCircle className="h-10 w-10 animate-pulse" />
-                <Badge className="bg-white text-accent border-none font-bold">Priority Support</Badge>
+                <Badge className="bg-white text-orange-600 border-none font-bold">Priority Support</Badge>
               </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-heading mb-6">
                 Emergency & Crisis Resources
@@ -107,19 +107,19 @@ export default function EmergencyPage() {
             {categories.map((cat, i) => (
               <div key={i} className="space-y-8">
                 <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-2xl bg-accent/10 flex items-center justify-center shrink-0">
-                    <cat.icon className="h-6 w-6 text-accent" />
+                  <div className="h-12 w-12 rounded-2xl bg-orange-100 flex items-center justify-center shrink-0">
+                    <cat.icon className="h-6 w-6 text-orange-600" />
                   </div>
                   <h2 className="text-2xl font-bold font-heading text-primary">{cat.title}</h2>
                 </div>
                 <div className="space-y-4">
                   {cat.items.map((item, j) => (
-                    <Card key={j} className="border-border/40 hover:border-accent/40 transition-colors shadow-sm group">
+                    <Card className="border-border/40 hover:border-orange-200 transition-colors shadow-sm group">
                       <CardContent className="p-6 flex justify-between items-center">
                         <div>
-                          <h4 className="font-bold text-primary group-hover:text-accent transition-colors">{item.name}</h4>
+                          <h4 className="font-bold text-primary group-hover:text-orange-600 transition-colors">{item.name}</h4>
                           {item.phone ? (
-                            <a href={`tel:${item.phone.replace(/\D/g, '')}`} className="text-xs text-muted-foreground mt-1 hover:text-accent transition-colors inline-block">
+                            <a href={`tel:${item.phone.replace(/\D/g, '')}`} className="text-xs text-muted-foreground mt-1 hover:text-orange-600 transition-colors inline-block">
                               {item.action}
                             </a>
                           ) : (
@@ -128,13 +128,13 @@ export default function EmergencyPage() {
                         </div>
                         {item.link.startsWith('tel:') ? (
                           <a href={item.link}>
-                            <Button variant="ghost" size="icon" className="rounded-full group-hover:bg-accent/10 group-hover:text-accent">
+                            <Button variant="ghost" size="icon" className="rounded-full group-hover:bg-orange-100 group-hover:text-orange-600">
                               <Phone className="h-5 w-5" />
                             </Button>
                           </a>
                         ) : (
                           <Link href={item.link}>
-                            <Button variant="ghost" size="icon" className="rounded-full group-hover:bg-accent/10 group-hover:text-accent">
+                            <Button variant="ghost" size="icon" className="rounded-full group-hover:bg-orange-100 group-hover:text-orange-600">
                               <ArrowRight className="h-5 w-5" />
                             </Button>
                           </Link>

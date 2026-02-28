@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Heart, AlertTriangle, Menu, X } from "lucide-react";
+import { Heart, Menu, X } from "lucide-react";
 import { useState } from "react";
 
 export function EmergencyBanner() {
   return (
-    <div className="bg-accent px-4 py-2 text-center text-sm font-medium text-white">
-      <div className="container mx-auto flex items-center justify-center space-x-2">
-        <AlertTriangle className="h-4 w-4" />
+    <div className="bg-orange-600 px-4 py-2 text-center text-sm font-medium text-white">
+      <div className="container mx-auto flex items-center justify-center space-x-4">
         <span>In a crisis? Call or text <b>988</b> for 24/7 support.</span>
         <Link href="/emergency" className="underline hover:opacity-80 ml-2">View Emergency Resources</Link>
       </div>
@@ -61,7 +60,7 @@ export function Navbar() {
           <Link href="/insights" className="block text-lg font-medium py-2" onClick={() => setIsOpen(false)}>Insights</Link>
           <Link href="/references" className="block text-lg font-medium py-2" onClick={() => setIsOpen(false)}>References</Link>
           <Link href="/spotlight" className="block text-lg font-medium py-2" onClick={() => setIsOpen(false)}>Spotlight</Link>
-          <Link href="/emergency" className="block text-lg font-medium py-2 text-accent" onClick={() => setIsOpen(false)}>Emergency Help</Link>
+          <Link href="/emergency" className="block text-lg font-medium py-2 text-orange-600" onClick={() => setIsOpen(false)}>Emergency Help</Link>
           <Link href="/submit" onClick={() => setIsOpen(false)}>
             <Button className="w-full bg-secondary hover:bg-secondary/90 mt-4">
               Submit Resource
@@ -115,8 +114,7 @@ export function Footer() {
             &copy; 2026 Tampa Community Resource Hub. All rights reserved. Built with pride for Tampa.
           </p>
           <div className="mt-4 md:mt-0 flex items-center justify-center space-x-4">
-            <Link href="#" className="text-xs opacity-60 hover:opacity-100">Privacy Policy</Link>
-            <Link href="#" className="text-xs opacity-60 hover:opacity-100">Accessibility Statement</Link>
+            <Link href="/privacy" className="text-xs opacity-60 hover:opacity-100">Privacy Policy</Link>
           </div>
         </div>
       </div>

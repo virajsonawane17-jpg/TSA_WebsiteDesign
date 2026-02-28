@@ -43,8 +43,7 @@ export function Footer() {
             &copy; 2026 Tampa Community Resource Hub. All rights reserved. Built with pride for Tampa.
           </p>
           <div className="mt-4 md:mt-0 flex items-center justify-center space-x-4">
-            <Link href="#" className="text-xs opacity-60 hover:opacity-100">Privacy Policy</Link>
-            <Link href="#" className="text-xs opacity-60 hover:opacity-100">Accessibility Statement</Link>
+            <Link href="/privacy" className="text-xs opacity-60 hover:opacity-100">Privacy Policy</Link>
           </div>
         </div>
       </div>

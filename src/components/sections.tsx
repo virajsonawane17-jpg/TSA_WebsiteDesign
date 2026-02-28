@@ -297,7 +297,7 @@ export function Hero() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/directory">
-                  <Button size="lg" className="h-14 px-8 text-lg bg-accent hover:bg-accent/90 border-none text-white shadow-xl shadow-accent/20 font-bold group">
+                  <Button size="lg" className="h-14 px-8 text-lg bg-orange-600 hover:bg-orange-700 border-none text-white shadow-xl shadow-orange-600/20 font-bold group">
                     Find Help Near Me <Navigation className="ml-2 h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                   </Button>
                 </Link>
