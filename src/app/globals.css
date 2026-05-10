@@ -3,14 +3,22 @@
 
 @custom-variant dark (&:is(.dark *));
 
-    @theme inline {
-      --color-background: var(--background);
-      --color-foreground: var(--foreground);
-      --font-sans: var(--font-plus-jakarta-sans);
-      --font-heading: var(--font-space-grotesk);
-      --font-mono: monospace;
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-plus-jakarta-sans);
+  --font-heading: var(--font-space-grotesk);
+  --font-mono: monospace;
 
-    --color-sidebar-ring: var(--sidebar-ring);
+  /* === Coastal Tampa Palette === */
+  --color-aqua: var(--aqua);
+  --color-sand: var(--sand);
+  --color-sand-light: var(--sand-light);
+  --color-seafoam: var(--seafoam);
+  --color-sunset: var(--sunset);
+  --color-ocean-deep: var(--ocean-deep);
+
+  --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-accent: var(--sidebar-accent);
@@ -45,71 +53,101 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-    :root {
-      --radius: 1rem;
-      --background: oklch(0.99 0.005 240); /* Cleaner white */
-      --foreground: oklch(0.2 0.02 245);
-      --card: oklch(1 0 0);
-      --card-foreground: oklch(0.2 0.02 245);
-      --popover: oklch(1 0 0);
-      --popover-foreground: oklch(0.2 0.02 245);
-      --primary: oklch(0.25 0.06 245); /* Richer Navy */
-      --primary-foreground: oklch(0.985 0 0);
-      --secondary: oklch(0.6 0.15 195); /* More vibrant Teal */
-      --secondary-foreground: oklch(1 0 0);
-      --muted: oklch(0.96 0.01 240);
-      --muted-foreground: oklch(0.4 0.02 240);
-      --accent: oklch(0.6 0.22 300); /* Vivid Purple */
-      --accent-foreground: oklch(1 0 0);
-      --destructive: oklch(0.55 0.18 25);
-      --border: oklch(0.92 0.01 240);
-      --input: oklch(0.92 0.01 240);
-      --ring: oklch(0.25 0.06 245);
-      --chart-1: oklch(0.25 0.06 245);
-      --chart-2: oklch(0.6 0.15 195);
-      --chart-3: oklch(0.6 0.22 300);
-      --chart-4: oklch(0.8 0.08 120);
-      --chart-5: oklch(0.9 0.05 80);
-      --sidebar: oklch(0.99 0.005 240);
-      --sidebar-foreground: oklch(0.2 0.02 245);
-      --sidebar-primary: oklch(0.25 0.06 245);
-      --sidebar-primary-foreground: oklch(0.985 0 0);
-      --sidebar-accent: oklch(0.6 0.15 195);
-      --sidebar-accent-foreground: oklch(1 0 0);
-      --sidebar-border: oklch(0.92 0.01 240);
-      --sidebar-ring: oklch(0.25 0.06 245);
-    }
+:root {
+  --radius: 0.875rem;
 
-  .dark {
-    --background: oklch(0.12 0.02 245);
-    --foreground: oklch(0.97 0.01 240);
-    --card: oklch(0.15 0.03 245);
-    --card-foreground: oklch(0.97 0.01 240);
-    --popover: oklch(0.15 0.03 245);
-    --popover-foreground: oklch(0.97 0.01 240);
-    --primary: oklch(0.75 0.1 245);
-    --primary-foreground: oklch(0.12 0.02 245);
-    --secondary: oklch(0.5 0.12 200);
-    --secondary-foreground: oklch(0.95 0.02 200);
-    --muted: oklch(0.2 0.03 245);
-    --muted-foreground: oklch(0.7 0.02 240);
-    --accent: oklch(0.4 0.1 200);
-    --accent-foreground: oklch(0.95 0.02 200);
-    --destructive: oklch(0.6 0.18 25);
-    --border: oklch(0.2 0.03 245);
-    --input: oklch(0.2 0.03 245);
-    --ring: oklch(0.75 0.1 245);
-    --sidebar: oklch(0.15 0.03 245);
-    --sidebar-foreground: oklch(0.97 0.01 240);
-    --sidebar-primary: oklch(0.75 0.1 245);
-    --sidebar-primary-foreground: oklch(0.12 0.02 245);
-    --sidebar-accent: oklch(0.25 0.04 200);
-    --sidebar-accent-foreground: oklch(0.85 0.02 200);
-    --sidebar-border: oklch(0.2 0.03 245);
-    --sidebar-ring: oklch(0.75 0.1 245);
-  }
+  /* ============================================
+     COASTAL TAMPA COLOR PALETTE
+     Deep Ocean Navy → Coastal Teal → Aqua Blue
+     Sand Beige · Seafoam · Soft Coral · Sunset
+     ============================================ */
+
+  /* Page defaults */
+  --background: oklch(0.99 0.005 220);       /* Barely-blue white */
+  --foreground: oklch(0.29 0.032 248);        /* Slate #334155 */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.29 0.032 248);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.29 0.032 248);
+
+  /* Primary: Deep Ocean Navy #063B4C */
+  --primary: oklch(0.235 0.068 213);
+  --primary-foreground: oklch(0.985 0 0);
+
+  /* Secondary: Coastal Teal #0E7490 */
+  --secondary: oklch(0.49 0.118 212);
+  --secondary-foreground: oklch(1 0 0);
+
+  /* Muted: Warm Sand tint */
+  --muted: oklch(0.96 0.012 80);
+  --muted-foreground: oklch(0.48 0.028 240);
+
+  /* Accent: Soft Coral #FB7185 */
+  --accent: oklch(0.655 0.197 10);
+  --accent-foreground: oklch(1 0 0);
+
+  --destructive: oklch(0.55 0.18 25);
+  --border: oklch(0.91 0.01 220);
+  --input: oklch(0.91 0.01 220);
+  --ring: oklch(0.49 0.118 212);
+
+  /* === Extended Coastal Palette === */
+  --aqua: oklch(0.74 0.156 218);             /* Aqua Blue #38BDF8 */
+  --sand: oklch(0.93 0.052 82);              /* Sand Beige #F5E6C8 */
+  --sand-light: oklch(0.975 0.018 80);       /* Very light sand */
+  --seafoam: oklch(0.91 0.092 163);          /* Seafoam Green #A7F3D0 */
+  --sunset: oklch(0.83 0.143 65);            /* Sunset Orange #FDBA74 */
+  --ocean-deep: oklch(0.175 0.052 213);      /* Deepest navy */
+
+  /* Charts */
+  --chart-1: oklch(0.235 0.068 213);
+  --chart-2: oklch(0.49 0.118 212);
+  --chart-3: oklch(0.655 0.197 10);
+  --chart-4: oklch(0.74 0.156 218);
+  --chart-5: oklch(0.83 0.143 65);
+
+  /* Sidebar */
+  --sidebar: oklch(0.99 0.005 220);
+  --sidebar-foreground: oklch(0.29 0.032 248);
+  --sidebar-primary: oklch(0.235 0.068 213);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.49 0.118 212);
+  --sidebar-accent-foreground: oklch(1 0 0);
+  --sidebar-border: oklch(0.91 0.01 220);
+  --sidebar-ring: oklch(0.235 0.068 213);
+}
+
+.dark {
+  --background: oklch(0.13 0.03 213);
+  --foreground: oklch(0.97 0.01 220);
+  --card: oklch(0.16 0.04 213);
+  --card-foreground: oklch(0.97 0.01 220);
+  --popover: oklch(0.16 0.04 213);
+  --popover-foreground: oklch(0.97 0.01 220);
+  --primary: oklch(0.70 0.10 213);
+  --primary-foreground: oklch(0.13 0.03 213);
+  --secondary: oklch(0.55 0.12 212);
+  --secondary-foreground: oklch(0.97 0.01 220);
+  --muted: oklch(0.22 0.04 213);
+  --muted-foreground: oklch(0.70 0.03 220);
+  --accent: oklch(0.655 0.197 10);
+  --accent-foreground: oklch(0.97 0.01 220);
+  --destructive: oklch(0.60 0.18 25);
+  --border: oklch(0.22 0.04 213);
+  --input: oklch(0.22 0.04 213);
+  --ring: oklch(0.55 0.12 212);
+  --sidebar: oklch(0.16 0.04 213);
+  --sidebar-foreground: oklch(0.97 0.01 220);
+  --sidebar-primary: oklch(0.70 0.10 213);
+  --sidebar-primary-foreground: oklch(0.13 0.03 213);
+  --sidebar-accent: oklch(0.30 0.06 212);
+  --sidebar-accent-foreground: oklch(0.90 0.02 220);
+  --sidebar-border: oklch(0.22 0.04 213);
+  --sidebar-ring: oklch(0.55 0.12 212);
+}
 
 @layer utilities {
+  /* 3D transforms */
   .perspective-1000 {
     perspective: 1000px;
   }
@@ -119,14 +157,85 @@
   .backface-hidden {
     backface-visibility: hidden;
   }
-  .text-glow {
-    text-shadow: 0 0 10px rgba(var(--primary), 0.3);
-  }
+
+  /* Glassmorphism */
   .glass {
-    @apply bg-white/10 backdrop-blur-md border border-white/20;
+    @apply bg-white/70 backdrop-blur-md border border-white/30 shadow-lg;
   }
   .glass-dark {
-    @apply bg-black/20 backdrop-blur-md border border-white/10;
+    @apply bg-primary/85 backdrop-blur-md border border-white/10;
+  }
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-sm border border-white/40 shadow-xl;
+  }
+  .glass-nav {
+    @apply bg-white/10 backdrop-blur-sm border-b border-white/15;
+  }
+
+  /* Coastal gradients */
+  .gradient-ocean {
+    background: linear-gradient(135deg,
+      oklch(0.235 0.068 213) 0%,
+      oklch(0.32 0.09 213) 50%,
+      oklch(0.49 0.118 212) 100%
+    );
+  }
+  .gradient-ocean-bright {
+    background: linear-gradient(135deg,
+      oklch(0.49 0.118 212) 0%,
+      oklch(0.74 0.156 218) 100%
+    );
+  }
+  .gradient-sunset {
+    background: linear-gradient(135deg,
+      oklch(0.655 0.197 10) 0%,
+      oklch(0.83 0.143 65) 100%
+    );
+  }
+  .gradient-seafoam {
+    background: linear-gradient(135deg,
+      oklch(0.49 0.118 212) 0%,
+      oklch(0.91 0.092 163) 100%
+    );
+  }
+  .gradient-hero {
+    background: linear-gradient(
+      160deg,
+      oklch(0.175 0.052 213) 0%,
+      oklch(0.235 0.068 213) 40%,
+      oklch(0.32 0.09 213) 100%
+    );
+  }
+
+  /* Coastal backgrounds */
+  .sand-bg {
+    background-color: oklch(0.975 0.018 80);
+  }
+  .coastal-pattern {
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      oklch(0.49 0.118 212 / 0.06) 1px,
+      transparent 0
+    );
+    background-size: 28px 28px;
+  }
+  .wave-pattern {
+    background-image:
+      repeating-linear-gradient(
+        -45deg,
+        oklch(0.49 0.118 212 / 0.04) 0px,
+        oklch(0.49 0.118 212 / 0.04) 2px,
+        transparent 2px,
+        transparent 10px
+      );
+  }
+
+  /* Text effects */
+  .text-glow {
+    text-shadow: 0 0 30px oklch(0.74 0.156 218 / 0.5);
+  }
+  .text-glow-coral {
+    text-shadow: 0 0 20px oklch(0.655 0.197 10 / 0.4);
   }
 }
 
@@ -140,7 +249,42 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading tracking-tighter font-bold;
   }
+  html {
+    scroll-behavior: smooth;
+  }
 }
+
+/* ============================================
+   COASTAL ANIMATIONS
+   ============================================ */
+
+@keyframes wave-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+@keyframes wave-sway {
+  0%, 100% { transform: rotate(-2deg) scale(1); }
+  50%       { transform: rotate(2deg) scale(1.02); }
+}
+@keyframes gradient-drift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes shimmer-pulse {
+  0%, 100% { opacity: 0.6; }
+  50%       { opacity: 1; }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-wave-float  { animation: wave-float 3s ease-in-out infinite; }
+.animate-wave-sway   { animation: wave-sway 4s ease-in-out infinite; }
+.animate-gradient    { background-size: 200% 200%; animation: gradient-drift 8s ease infinite; }
+.animate-shimmer     { animation: shimmer-pulse 2s ease-in-out infinite; }
+.animate-fade-up     { animation: fade-up 0.6s ease-out forwards; }
 
 /* Hide Next.js error overlay portal */
 nextjs-portal {
