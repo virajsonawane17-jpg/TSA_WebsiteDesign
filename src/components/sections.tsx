@@ -279,129 +279,235 @@ export function Hero() {
 /* ════════════════════════════════════════════════════════
    FEATURED RESOURCES
 ════════════════════════════════════════════════════════ */
-export function FeaturedResources() {
-  const [featured, setFeatured] = useState<Resource[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    getFeaturedResources(6)
-      .then(setFeatured)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+const FEATURED_CARDS = [
+  {
+    type: "light" as const,
+    name: "Tampa Bay Food Bank",
+    category: "Food Assistance",
+    tagline: "Serving over 1 million meals every month to families across Hillsborough, Pasco, and Pinellas counties.",
+    area: "Hillsborough County",
+    image: "https://picsum.photos/seed/foodbank/800/420",
+    href: "/directory",
+  },
+  {
+    type: "dark" as const,
+    name: "Crisis Center of Tampa Bay",
+    category: "Mental Health · 24/7",
+    tagline: "Call, text, or chat any time — trained counselors ready around the clock for any emotional crisis.",
+    area: "Serving all of Tampa Bay",
+    overlay: "from-primary/70 via-primary/50 to-primary/80",
+  },
+  {
+    type: "light" as const,
+    name: "Hillsborough County Health Centers",
+    category: "Healthcare",
+    tagline: "Sliding-scale primary care, dental, and behavioral health regardless of insurance status.",
+    area: "12 locations across Tampa",
+    image: "https://picsum.photos/seed/healthcare-tampa/800/420",
+    href: "/directory",
+  },
+  {
+    type: "dark" as const,
+    name: "Metropolitan Ministries",
+    category: "Housing & Community",
+    tagline: "Emergency shelter, transitional housing, and family services — a lifeline for Tampa's most vulnerable.",
+    area: "North Tampa",
+    overlay: "from-amber-900/65 via-orange-900/45 to-amber-800/70",
+  },
+  {
+    type: "light" as const,
+    name: "CareerSource Tampa Bay",
+    category: "Employment",
+    tagline: "Free job training, resume workshops, and direct employer connections for every stage of your career.",
+    area: "Multiple Tampa locations",
+    image: "https://picsum.photos/seed/employment-career/800/420",
+    href: "/directory",
+  },
+  {
+    type: "dark" as const,
+    name: "Hillsborough Aging Services",
+    category: "Senior Support",
+    tagline: "Meals, transportation, in-home care, and social programs keeping seniors independent and connected.",
+    area: "Countywide delivery",
+    overlay: "from-teal-900/70 via-secondary/50 to-primary/75",
+  },
+];
 
+function QuoteMark({ dark }: { dark?: boolean }) {
   return (
-    <section className="relative overflow-hidden" style={{ backgroundColor: "oklch(0.975 0.018 80)" }}>
-      {/* Coastal dot pattern */}
-      <div className="absolute inset-0 coastal-pattern opacity-60 pointer-events-none" />
+    <span
+      className="block text-5xl font-black leading-none mb-3 select-none"
+      style={{ color: "oklch(0.655 0.197 10)", opacity: dark ? 0.9 : 1 }}
+      aria-hidden
+    >
+      "
+    </span>
+  );
+}
 
-      <div className="relative container mx-auto px-4 sm:px-6 py-24">
-        <div className="mb-16 flex flex-col items-center justify-between gap-6 md:flex-row md:items-end">
-          <div className="max-w-2xl">
-            <div className="flex items-center gap-2 mb-4">
-              <Star className="h-5 w-5 text-accent fill-accent" />
-              <span className="text-sm font-bold uppercase tracking-widest text-accent">
-                Spotlighted Organizations
-              </span>
-            </div>
-            <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl font-heading text-primary">
-              Featured Local Resources
-            </h2>
-            <p className="text-lg text-muted-foreground font-sans">
-              Verified Tampa organizations making a direct impact on our neighbors today.
+function LightResourceCard({ card, idx }: { card: typeof FEATURED_CARDS[0]; idx: number }) {
+  const IconComponent = categoryIconMap[card.category.split(" · ")[0]] || Heart;
+  return (
+    <motion.div
+      variants={fadeUp}
+      initial="initial"
+      whileInView="animate"
+      viewport={{ once: true }}
+      transition={{ duration: 0.55, delay: idx * 0.07 }}
+      whileHover={{ y: -4 }}
+      className="group"
+    >
+      <Link href={card.href ?? "/directory"} className="block h-full">
+        <div className="h-full bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl hover:shadow-primary/8 transition-all duration-300 flex flex-col">
+          {/* Text area */}
+          <div className="p-7 flex-1">
+            <QuoteMark />
+            <p className="text-gray-900 font-bold text-lg leading-snug mb-5 line-clamp-3">
+              {card.tagline}
             </p>
+            <p className="text-gray-800 font-semibold text-sm">{card.name}</p>
+            <p className="text-gray-400 text-sm mt-0.5">{card.area}</p>
           </div>
-          <Link href="/directory">
-            <Button
-              variant="outline"
-              className="border-primary/25 text-primary hover:bg-primary hover:text-white group font-semibold"
+          {/* Photo at bottom */}
+          <div className="h-44 overflow-hidden shrink-0">
+            <img
+              src={card.image}
+              alt={card.name}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+          </div>
+        </div>
+      </Link>
+    </motion.div>
+  );
+}
+
+function DarkResourceCard({ card, idx }: { card: typeof FEATURED_CARDS[0]; idx: number }) {
+  return (
+    <motion.div
+      variants={fadeUp}
+      initial="initial"
+      whileInView="animate"
+      viewport={{ once: true }}
+      transition={{ duration: 0.55, delay: idx * 0.07 }}
+      whileHover={{ y: -4 }}
+      className="group"
+    >
+      <Link href="/directory" className="block h-full">
+        <div
+          className="relative h-full rounded-2xl overflow-hidden min-h-[420px] flex flex-col"
+          style={{ minHeight: idx === 1 ? "480px" : "420px" }}
+        >
+          {/* Background: beach photo with color gradient overlay */}
+          <div
+            className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700"
+            style={{ backgroundImage: "url('/beach-background.png')" }}
+          />
+          <div className={`absolute inset-0 bg-gradient-to-b ${card.overlay}`} />
+
+          {/* Content */}
+          <div className="relative z-10 p-7 flex flex-col h-full">
+            <QuoteMark dark />
+            <p className="text-white font-bold text-lg leading-snug mb-5 line-clamp-4">
+              {card.tagline}
+            </p>
+            <div className="mt-auto">
+              <p className="text-white font-semibold text-sm">{card.name}</p>
+              <p className="text-white/55 text-sm mt-0.5">{card.area}</p>
+            </div>
+          </div>
+        </div>
+      </Link>
+    </motion.div>
+  );
+}
+
+export function FeaturedResources() {
+  return (
+    <section className="bg-white py-24 overflow-hidden" id="resources">
+      <div className="container mx-auto px-4 sm:px-6">
+
+        {/* ── Section header ── */}
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 mb-5" style={{ color: "oklch(0.655 0.197 10)" }}>
+            <Heart className="w-4 h-4 fill-current" />
+            <span className="text-sm font-semibold tracking-wide">Featured Resources</span>
+          </div>
+
+          <div className="relative inline-block">
+            <h2
+              className="font-black text-gray-900 leading-tight"
+              style={{ fontSize: "clamp(2.4rem, 6vw, 4.5rem)", letterSpacing: "-0.02em" }}
             >
-              View All Resources
-              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </Link>
+              Local{" "}
+              <span className="italic" style={{ color: "oklch(0.15 0.04 213)" }}>
+                Resources
+              </span>
+            </h2>
+            {/* Animated script underline */}
+            <div className="flex justify-end pr-2 -mt-1">
+              <svg
+                viewBox="0 0 320 42"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-[45%]"
+                aria-hidden
+              >
+                <motion.path
+                  d="M6,28 C40,10 80,36 130,22 C180,8 225,34 270,18 C292,10 308,26 314,22"
+                  stroke="oklch(0.655 0.197 10)"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  fill="none"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  whileInView={{ pathLength: 1, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1.8, ease: "easeOut" }}
+                />
+                <motion.path
+                  d="M6,30 C50,18 88,32 130,24"
+                  stroke="oklch(0.655 0.197 10)"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  fill="none"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  whileInView={{ pathLength: 1, opacity: 0.55 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.9, delay: 1.2, ease: "easeOut" }}
+                />
+              </svg>
+            </div>
+          </div>
+
+          <p className="text-gray-400 mt-4 max-w-xl mx-auto">
+            Verified organizations making a direct impact on Tampa Bay neighbors every single day.
+          </p>
         </div>
 
-        {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="h-8 w-8 text-secondary animate-spin" />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {featured.map((resource, idx) => {
-              const IconComponent = categoryIconMap[resource.category] || Heart;
-              const colorClass = categoryColorMap[resource.category] || "text-secondary bg-secondary/10";
-              return (
-                <motion.div
-                  key={resource.id}
-                  variants={fadeUp}
-                  initial="initial"
-                  whileInView="animate"
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.55, delay: idx * 0.08 }}
-                  whileHover={{ y: -6 }}
-                  className="group"
-                >
-                  <Card className="h-full bg-white/85 backdrop-blur-sm border border-white/60 shadow-lg hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 overflow-hidden">
-                    {/* Teal accent bar */}
-                    <div className="h-1 w-full bg-gradient-to-r from-secondary to-aqua group-hover:h-1.5 transition-all" />
+        {/* ── 3-column card grid ── */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {FEATURED_CARDS.map((card, idx) =>
+            card.type === "light" ? (
+              <LightResourceCard key={idx} card={card} idx={idx} />
+            ) : (
+              <DarkResourceCard key={idx} card={card} idx={idx} />
+            )
+          )}
+        </div>
 
-                    <CardHeader className="pb-3 pt-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className={`h-11 w-11 rounded-xl flex items-center justify-center ${colorClass}`}>
-                          <IconComponent className="h-5 w-5" />
-                        </div>
-                        <Badge
-                          variant="outline"
-                          className="border-secondary/25 text-secondary bg-secondary/8 text-xs font-semibold"
-                        >
-                          {resource.category}
-                        </Badge>
-                      </div>
-                      <CardTitle className="text-xl font-heading text-primary group-hover:text-secondary transition-colors line-clamp-1">
-                        {resource.name}
-                      </CardTitle>
-                    </CardHeader>
-
-                    <CardContent className="space-y-5">
-                      <CardDescription className="text-sm text-foreground/70 line-clamp-3 leading-relaxed min-h-[4rem]">
-                        {resource.longDescription || resource.description}
-                      </CardDescription>
-
-                      <div className="space-y-2.5 border-t pt-4">
-                        <a
-                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(resource.location)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center text-sm text-muted-foreground hover:text-secondary transition-colors group/link"
-                        >
-                          <MapPin className="mr-2.5 h-4 w-4 shrink-0 text-secondary" />
-                          <span className="truncate group-hover/link:underline">{resource.location}</span>
-                        </a>
-                        <a
-                          href={`tel:${resource.phone.replace(/\D/g, "")}`}
-                          className="flex items-center text-sm text-muted-foreground hover:text-secondary transition-colors group/link"
-                        >
-                          <Phone className="mr-2.5 h-4 w-4 shrink-0 text-secondary" />
-                          <span className="group-hover/link:underline">{resource.phone}</span>
-                        </a>
-                      </div>
-
-                      <Link href={`/resources/${resource.id}`} className="block">
-                        <Button className="w-full bg-primary hover:bg-secondary text-white font-medium transition-colors shadow-sm">
-                          View Organization Details
-                        </Button>
-                      </Link>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </div>
-        )}
+        {/* ── CTA ── */}
+        <div className="text-center mt-14">
+          <Link
+            href="/directory"
+            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-semibold text-white transition-all duration-300 hover:scale-105 hover:shadow-lg"
+            style={{ backgroundColor: "oklch(0.655 0.197 10)" }}
+          >
+            View All Resources
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
       </div>
-
-      <WaveDivider fill="#ffffff" />
     </section>
   );
 }

@@ -1,7 +1,8 @@
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { EmergencyBanner } from "@/components/emergency-banner";
-import { Hero, FeaturedResources, HowItWorks, InsightsPreview, NewsTeaser, EventsTeaser, CTASection } from "@/components/sections";
+import { FeaturedResources, HowItWorks, InsightsPreview, NewsTeaser, EventsTeaser, CTASection } from "@/components/sections";
+import { HeroGeometric } from "@/components/ui/shape-landing-hero";
 
 export default function Home() {
   return (
@@ -9,7 +10,7 @@ export default function Home() {
       <EmergencyBanner />
       <Navbar />
       <main className="flex-grow">
-        <Hero />
+        <HeroGeometric />
         <FeaturedResources />
         <NewsTeaser />
         <HowItWorks />
