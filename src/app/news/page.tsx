@@ -1,147 +1,192 @@
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
-import { EmergencyBanner } from "@/components/emergency-banner";
-import { getTampaNews } from "@/lib/api";
-import { getNews } from "@/lib/db";
+import { Reveal } from "@/components/reveal";
+import { ArrowRight, Bookmark, ExternalLink } from "lucide-react";
 import { getTampaGovNews } from "@/lib/tampa-api";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ExternalLink, Building2 } from "lucide-react";
-import { NewsCard } from "@/components/news-card";
-import { TampaGovNewsCard } from "@/components/tampa-gov-news-card";
-import { CommunityNewsCard } from "@/components/community-news-card";
+import { getTampaNews } from "@/lib/api";
+import { TAMPA_NEWS } from "@/lib/resources";
+import type { TampaGovNewsItem } from "@/lib/tampa-api";
+import type { NewsArticle } from "@/lib/api";
 
-export const revalidate = 3600; // Revalidate every hour
+interface DisplayNews {
+  title: string;
+  link: string;
+  date: string;
+  description: string;
+  category: string;
+  source: string;
+  imageUrl?: string;
+}
+
+function fmtDate(raw: string): string {
+  if (!raw) return "";
+  try {
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) return raw.slice(0, 12);
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  } catch { return raw.slice(0, 12); }
+}
+
+function fromGov(n: TampaGovNewsItem): DisplayNews {
+  return {
+    title: n.title,
+    link: n.link,
+    date: fmtDate(n.pubDate),
+    description: n.description,
+    category: "City News",
+    source: "Tampa.gov",
+    imageUrl: n.imageUrl,
+  };
+}
+
+function fromApi(n: NewsArticle): DisplayNews {
+  return {
+    title: n.title,
+    link: n.link,
+    date: fmtDate(n.pubDate),
+    description: n.description || "",
+    category: "Tampa Bay",
+    source: n.source_id,
+    imageUrl: n.image_url || undefined,
+  };
+}
+
+const thumbVariants = ["", "t-2", "t-3", "", "t-2", "t-3"];
 
 export default async function NewsPage() {
-  const [liveNews, communityNews, tampaGovNews] = await Promise.all([
-    getTampaNews(12),
-    getNews(),
-    getTampaGovNews(6),
+  const [govNews, apiNews] = await Promise.all([
+    getTampaGovNews(12).catch(() => [] as TampaGovNewsItem[]),
+    getTampaNews(8).catch(() => [] as NewsArticle[]),
   ]);
-  
+
+  const govItems = govNews.map(fromGov);
+  const apiItems = apiNews.map(fromApi);
+
+  // Merge: gov news first (authoritative city source), then API news
+  const allNews: DisplayNews[] = [...govItems, ...apiItems];
+
+  // Fall back to static if both APIs fail
+  const useStatic = allNews.length === 0;
+  const displayNews: DisplayNews[] = useStatic
+    ? TAMPA_NEWS.map((n) => ({
+        title: n.title,
+        link: n.link,
+        date: n.date,
+        description: n.excerpt,
+        category: n.category,
+        source: n.source,
+        imageUrl: n.imageUrl,
+      }))
+    : allNews;
+
+  const featured = displayNews[0];
+  const trending = displayNews.slice(1, 5);
+  const editorial = displayNews.slice(5, 11);
+
+  const cats = ["All", "City News", "Tampa Bay", "Community", "Events", "Housing", "Education"];
+
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <EmergencyBanner />
+    <>
       <Navbar />
-      
-      <main className="flex-grow container mx-auto px-4 py-12">
-        <div className="mb-12 text-center">
-          <Badge variant="outline" className="mb-4 px-3 py-1 text-secondary border-secondary uppercase tracking-widest text-xs">
-            Tampa Pulse
-          </Badge>
-          <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4 font-heading">
-            Community News & Updates
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Stay informed about local developments, housing updates, and community achievements in the Tampa Bay area.
-          </p>
-        </div>
-
-        {/* Live News Grid – only shown when real-time news is available */}
-        {liveNews.length > 0 && (
-          <div className="mb-12">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="h-8 w-1 bg-secondary rounded-full" />
-              <h2 className="text-2xl font-bold text-primary">Real-time Tampa Pulse</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {liveNews.map((news) => (
-                <NewsCard
-                  key={news.article_id}
-                  article_id={news.article_id}
-                  title={news.title}
-                  description={news.description}
-                  image_url={news.image_url}
-                  link={news.link}
-                  pubDate={news.pubDate}
-                  source_id={news.source_id}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* City of Tampa official news */}
-        {tampaGovNews.length > 0 && (
-          <div className="mt-16">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="h-8 w-1 bg-primary rounded-full" />
-              <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
-                <Building2 className="h-6 w-6 text-primary" />
-                City of Tampa News & Press Releases
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {tampaGovNews.map((item, i) => (
-                <TampaGovNewsCard
-                  key={item.link || i}
-                  title={item.title}
-                  description={item.description}
-                  imageUrl={item.imageUrl}
-                  link={item.link}
-                  pubDate={item.pubDate}
-                  index={i}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Static Community News Section */}
-        <div className="mt-20">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="h-8 w-1 bg-accent rounded-full" />
-            <h2 className="text-2xl font-bold text-primary">Community Highlights & Local Updates</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {communityNews.map((news) => (
-              <CommunityNewsCard
-                key={news.id}
-                id={news.id}
-                title={news.title}
-                excerpt={news.excerpt}
-                imageUrl={news.imageUrl}
-                link={news.link}
-                date={news.date}
-                source={news.source}
-                category={news.category}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* City of Tampa – official source for credibility */}
-        <section className="mt-24 p-8 md:p-12 rounded-3xl bg-primary text-white overflow-hidden relative">
-          <div className="absolute top-0 right-0 p-8 opacity-10">
-            <Building2 className="w-64 h-64" />
-          </div>
-          <div className="relative z-10 max-w-3xl">
-            <h2 className="text-3xl font-bold mb-6 font-heading">City of Tampa – Official Source</h2>
-            <p className="text-lg opacity-90 mb-8 leading-relaxed">
-              News and press releases on this page are sourced from the official City of Tampa website. For the most accurate and up-to-date information on Tampa&apos;s government, development, and community resources, visit the City directly.
+      <main style={{ background: "linear-gradient(180deg, #f3eee5 0%, #e8efee 100%)" }}>
+        <section id="news" className="section">
+          <Reveal>
+            <span className="section-eyebrow"><span className="dot" />Newsroom</span>
+            <h2 className="section-title">Community News &amp; <em>Updates</em>.</h2>
+            <p className="section-sub">
+              Live coverage from Tampa.gov and local outlets — updated automatically every hour.
             </p>
-            <Button
-              asChild
-              variant="secondary"
-              className="bg-white text-primary hover:bg-white/90 font-semibold px-6 py-3"
-            >
-              <a
-                href="https://www.tampa.gov"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2"
-              >
-                <Building2 className="h-5 w-5" />
-                Visit Tampa.gov
-                <ExternalLink className="h-4 w-4" />
-              </a>
-            </Button>
-          </div>
+
+            <div className="filter-row" style={{ marginTop: 28 }}>
+              {cats.map((c) => (
+                <button key={c} className="tag-chip">{c}</button>
+              ))}
+            </div>
+          </Reveal>
+
+          {featured && (
+            <div className="news-hero">
+              <Reveal>
+                <article className="featured-news">
+                  <div className="img" style={featured.imageUrl ? { backgroundImage: `url(${featured.imageUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}>
+                    {!featured.imageUrl && <div className="stripe" />}
+                    <span className="badge">Featured · {featured.source}</span>
+                    <svg style={{ position: "absolute", right: 24, bottom: 24, opacity: .5 }} width="120" height="120" viewBox="0 0 120 120">
+                      <circle cx="60" cy="60" r="50" fill="none" stroke="#fff" strokeWidth="1.5" />
+                      <circle cx="60" cy="60" r="30" fill="none" stroke="#fff" strokeWidth="1" />
+                      <circle cx="60" cy="60" r="10" fill="#fff" opacity=".5" />
+                    </svg>
+                  </div>
+                  <div className="body">
+                    <div className="meta">
+                      <span>{featured.date}</span>
+                      <span>·</span>
+                      <span>{featured.category}</span>
+                      <span>·</span>
+                      <span>{featured.source}</span>
+                    </div>
+                    <h3>{featured.title}</h3>
+                    <p>{featured.description}</p>
+                    <div style={{ display: "flex", gap: 10, marginTop: 28, flexWrap: "wrap" }}>
+                      <a href={featured.link} target="_blank" rel="noopener noreferrer" className="btn-pill-dark" style={{ display: "inline-flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
+                        Read full story <ExternalLink size={14} />
+                      </a>
+                      <button className="btn-pill-ghost"><Bookmark size={14} /> Save for later</button>
+                    </div>
+                  </div>
+                </article>
+              </Reveal>
+
+              <Reveal>
+                <aside className="trending">
+                  <h4>Trending stories</h4>
+                  {trending.map((t, i) => (
+                    <a key={i} href={t.link} target="_blank" rel="noopener noreferrer" className="item" style={{ textDecoration: "none", color: "inherit", display: "flex", gap: 16, alignItems: "flex-start", padding: "12px 0", borderBottom: "1px solid var(--line)" }}>
+                      <div className="num">{String(i + 1).padStart(2, "0")}</div>
+                      <div>
+                        <div className="ttl">{t.title}</div>
+                        <div className="sub">{t.category} · {t.date}</div>
+                      </div>
+                    </a>
+                  ))}
+                </aside>
+              </Reveal>
+            </div>
+          )}
+
+          {editorial.length > 0 && (
+            <div className="editorial-grid">
+              {editorial.map((a, i) => (
+                <Reveal key={i}>
+                  <article className="news-card">
+                    <div
+                      className={`thumb ${thumbVariants[i]}`}
+                      style={a.imageUrl ? { backgroundImage: `url(${a.imageUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
+                    >
+                      <span className="tag">{a.category}</span>
+                      {!a.imageUrl && (
+                        <svg width="120" height="120" viewBox="0 0 120 120" style={{ opacity: .35 }}>
+                          <rect x="30" y="30" width="60" height="60" rx="14" fill="none" stroke="#fff" strokeWidth="1.5" />
+                          <circle cx="60" cy="60" r="14" fill="#fff" opacity=".4" />
+                        </svg>
+                      )}
+                    </div>
+                    <div className="body">
+                      <div className="meta"><span>{a.date}</span><span>·</span><span>{a.source}</span></div>
+                      <h3>{a.title}</h3>
+                      <p>{a.description.slice(0, 120)}{a.description.length > 120 ? "…" : ""}</p>
+                      <a href={a.link} target="_blank" rel="noopener noreferrer" className="read-more">
+                        Read article <ArrowRight size={14} />
+                      </a>
+                    </div>
+                  </article>
+                </Reveal>
+              ))}
+            </div>
+          )}
         </section>
       </main>
-
       <Footer />
-    </div>
+    </>
   );
 }

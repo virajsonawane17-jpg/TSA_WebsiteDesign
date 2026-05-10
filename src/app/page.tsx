@@ -1,24 +1,46 @@
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
-import { EmergencyBanner } from "@/components/emergency-banner";
-import { FeaturedResources, HowItWorks, InsightsPreview, NewsTeaser, EventsTeaser, CTASection } from "@/components/sections";
-import { HeroGeometric } from "@/components/ui/shape-landing-hero";
+import {
+  Hero,
+  FeaturedResources,
+  StatsBand,
+  Categories,
+  NewsTeaser,
+  EventsTeaser,
+  InsightsPreview,
+  CTASection,
+} from "@/components/sections";
+import { getTampaGovNews } from "@/lib/tampa-api";
+import { getTampaGovEvents } from "@/lib/tampa-api";
+import { TAMPA_RESOURCES } from "@/lib/resources";
 
-export default function Home() {
+export default async function Home() {
+  const [news, events] = await Promise.all([
+    getTampaGovNews(3).catch(() => []),
+    getTampaGovEvents().catch(() => []),
+  ]);
+
   return (
-    <div className="flex min-h-screen flex-col">
-      <EmergencyBanner />
+    <>
       <Navbar />
-      <main className="flex-grow">
-        <HeroGeometric />
-        <FeaturedResources />
-        <NewsTeaser />
-        <HowItWorks />
-        <EventsTeaser />
-        <InsightsPreview />
-        <CTASection />
+      <div className="page-wrap">
+        <Hero />
+      </div>
+      <main>
+        <div id="home">
+          <FeaturedResources />
+          <StatsBand />
+          <Categories />
+          <NewsTeaser news={news} />
+          <EventsTeaser events={events.slice(0, 3)} />
+          <InsightsPreview
+            resourceCount={TAMPA_RESOURCES.length}
+            eventCount={events.length || 25}
+          />
+          <CTASection />
+        </div>
       </main>
       <Footer />
-    </div>
+    </>
   );
 }

@@ -1,21 +1,25 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { VisualEditsMessenger } from "orchids-visual-edits";
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const plusJakartaSans = Plus_Jakarta_Sans({
-  variable: "--font-plus-jakarta-sans",
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
   subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Tampa Community Resource Hub",
-  description: "A centralized digital hub for residents of Tampa, Florida to discover local community resources, nonprofit organizations, and support services.",
+  title: "Tampa Resource Hub",
+  description: "A community-funded civic platform connecting Tampa Bay residents with trusted local resources, nonprofits, and support programs.",
 };
 
 export default function RootLayout({
@@ -25,9 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${spaceGrotesk.variable} ${plusJakartaSans.variable} font-sans antialiased`}
-      >
+      <body className={`${inter.variable} ${instrumentSerif.variable}`}>
         {children}
         <VisualEditsMessenger />
       </body>
