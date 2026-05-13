@@ -5,21 +5,25 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { TRHMark } from "@/components/trh-mark";
 import { ArrowRight, Plus, Menu, X } from "lucide-react";
-
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/directory", label: "Resources" },
-  { href: "/news", label: "News" },
-  { href: "/events", label: "Events" },
-  { href: "/insights", label: "Insights" },
-  { href: "/submit", label: "Submit" },
-  { href: "/references", label: "References" },
-];
+import { useLanguage } from "@/contexts/language-context";
+import type { Lang } from "@/lib/i18n";
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const { lang, setLang, s } = useLanguage();
+  const n = s.nav;
+
+  const navLinks = [
+    { href: "/", label: n.home },
+    { href: "/directory", label: n.resources },
+    { href: "/news", label: n.news },
+    { href: "/events", label: n.events },
+    { href: "/insights", label: n.insights },
+    { href: "/submit", label: n.submit },
+    { href: "/references", label: n.references },
+  ];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -51,12 +55,26 @@ export function Navbar() {
         </div>
 
         <div className="nav-right">
+          {/* Language toggle */}
+          <div className="lang-toggle" role="group" aria-label="Language">
+            {(["en", "es"] as Lang[]).map((l) => (
+              <button
+                key={l}
+                className={`lang-btn ${lang === l ? "active" : ""}`}
+                onClick={() => setLang(l)}
+                aria-pressed={lang === l}
+              >
+                {l.toUpperCase()}
+              </button>
+            ))}
+          </div>
+
           <Link href="/submit" className="btn-ghost">
             <Plus size={14} />
-            Add resource
+            {n.addResource}
           </Link>
           <Link href="/directory" className="btn-coral">
-            <span>Explore</span>
+            <span>{n.explore}</span>
             <span className="ico">
               <ArrowRight size={14} />
             </span>
@@ -82,6 +100,20 @@ export function Navbar() {
                 {it.label}
               </Link>
             ))}
+            {/* Mobile language toggle */}
+            <div style={{ padding: "12px 20px", borderTop: "1px solid var(--line)" }}>
+              <div className="lang-toggle" role="group" aria-label="Language">
+                {(["en", "es"] as Lang[]).map((l) => (
+                  <button
+                    key={l}
+                    className={`lang-btn ${lang === l ? "active" : ""}`}
+                    onClick={() => { setLang(l); setOpen(false); }}
+                  >
+                    {l.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </nav>

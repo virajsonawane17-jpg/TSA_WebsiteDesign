@@ -24,7 +24,7 @@ export default async function Home() {
     <>
       <Navbar />
       <div className="page-wrap">
-        <Hero />
+        <Hero eventCount={events.length} />
       </div>
       <main>
         <div id="home">
@@ -32,7 +32,7 @@ export default async function Home() {
           <StatsBand />
           <Categories />
           <NewsTeaser news={news} />
-          <EventsTeaser events={events.slice(0, 3)} />
+          <EventsTeaser events={events} />
           <InsightsPreview
             resourceCount={TAMPA_RESOURCES.length}
             eventCount={events.length || 25}

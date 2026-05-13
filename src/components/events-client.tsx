@@ -6,9 +6,14 @@ import { Footer } from "@/components/footer";
 import { Reveal } from "@/components/reveal";
 import { HoverGlow } from "@/components/hover-glow";
 import type { CommunityEventWithSource } from "@/lib/resources";
-import { ArrowRight, MapPin, Clock, Users, Calendar, Share, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
+import { useLanguage } from "@/contexts/language-context";
+import {
+  ArrowRight, MapPin, Clock, Users, Calendar,
+  CalendarDays, List, ChevronLeft, ChevronRight,
+  ExternalLink, RefreshCw, X,
+} from "lucide-react";
 
-const DOWS = ["S", "M", "T", "W", "T", "F", "S"];
+const DOWS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 interface ParsedDate {
   year: number;
@@ -23,7 +28,6 @@ function parseDate(dateStr: string): ParsedDate | null {
       return { year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate() };
     }
   } catch { /* fall through */ }
-  // Try "Sat, May 10, 2026" or "May 10, 2026"
   const m = dateStr.match(/([A-Za-z]+)\s+(\d+),\s*(\d{4})/);
   if (m) {
     const months: Record<string, number> = {
@@ -51,41 +55,92 @@ function monthLabel(year: number, month: number) {
   return new Date(year, month - 1, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }
 
+function addToGoogleCalendar(ev: CommunityEventWithSource) {
+  const title   = encodeURIComponent(ev.title);
+  const loc     = encodeURIComponent(ev.location);
+  const details = encodeURIComponent(ev.description || "");
+  const p = parseDate(ev.date);
+  let dates = "";
+  if (p) {
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const day = `${p.year}${pad(p.month)}${pad(p.day)}`;
+    dates = `${day}/${day}`;
+  }
+  const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&location=${loc}&details=${details}`;
+  window.open(url, "_blank");
+}
+
+const eventAccentColors = [
+  { bg: "var(--coral-soft)", text: "var(--coral)", border: "var(--coral)" },
+  { bg: "var(--teal-soft)",  text: "var(--teal)",  border: "var(--teal)" },
+  { bg: "#fdf3da",            text: "#b07a14",      border: "#f5b945" },
+];
+
 export function EventsClient({ events }: { events: CommunityEventWithSource[] }) {
+  const { s } = useLanguage();
+  const ev = s.events;
   const now = new Date();
-  const [calYear, setCalYear] = useState(now.getFullYear());
+  const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  const [calYear,  setCalYear]  = useState(now.getFullYear());
   const [calMonth, setCalMonth] = useState(now.getMonth() + 1);
   const [activeFilter, setActiveFilter] = useState("All Events");
+  const [viewMode, setViewMode] = useState<"calendar" | "list">("list");
+  const [modalDay, setModalDay] = useState<number | null>(null);
 
-  const categories = useMemo(() => {
-    const cats = new Set(events.map((e) => e.category));
-    return ["All Events", ...Array.from(cats).slice(0, 6)];
+  /* ─── Upcoming events only (≥ today, sorted asc) ─── */
+  const upcomingEvents = useMemo(() => {
+    return events
+      .filter((ev) => {
+        const p = parseDate(ev.date);
+        if (!p) return true;
+        return new Date(p.year, p.month - 1, p.day) >= todayMidnight;
+      })
+      .sort((a, b) => {
+        const pa = parseDate(a.date), pb = parseDate(b.date);
+        if (!pa || !pb) return 0;
+        return new Date(pa.year, pa.month - 1, pa.day).getTime()
+             - new Date(pb.year, pb.month - 1, pb.day).getTime();
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [events]);
 
+  const categories = useMemo(() => {
+    const cats = new Set(upcomingEvents.map((e) => e.category));
+    return [ev.allEvents, ...Array.from(cats).slice(0, 6)];
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [upcomingEvents, ev.allEvents]);
+
   const filteredEvents = useMemo(() => {
-    if (activeFilter === "All Events") return events;
-    return events.filter((e) => e.category === activeFilter);
-  }, [events, activeFilter]);
+    return activeFilter === ev.allEvents
+      ? upcomingEvents
+      : upcomingEvents.filter((e) => e.category === activeFilter);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [upcomingEvents, activeFilter, ev.allEvents]);
 
-  const eventDaysInCal = useMemo(() => {
-    const days = new Set<number>();
-    events.forEach((ev) => {
+  /* ─── Events grouped by day in current calendar month ─── */
+  const eventsByDay = useMemo(() => {
+    const map: Record<number, CommunityEventWithSource[]> = {};
+    filteredEvents.forEach((ev) => {
       const p = parseDate(ev.date);
-      if (p && p.month === calMonth && p.year === calYear) days.add(p.day);
+      if (p && p.month === calMonth && p.year === calYear) {
+        map[p.day] = map[p.day] ?? [];
+        map[p.day].push(ev);
+      }
     });
-    return days;
-  }, [events, calMonth, calYear]);
+    return map;
+  }, [filteredEvents, calMonth, calYear]);
 
+  /* ─── Calendar grid ─── */
   const daysInMonth = new Date(calYear, calMonth, 0).getDate();
-  const firstDow = new Date(calYear, calMonth - 1, 1).getDay();
+  const firstDow    = new Date(calYear, calMonth - 1, 1).getDay();
 
   const calDays = useMemo(() => {
-    const days: Array<{ n: number | ""; muted?: boolean; today?: boolean; has?: boolean }> = [];
+    const days: Array<{ n: number | ""; muted?: boolean; today?: boolean }> = [];
     for (let i = 0; i < firstDow; i++) days.push({ n: "", muted: true });
     for (let d = 1; d <= daysInMonth; d++) {
       days.push({
         n: d,
-        has: eventDaysInCal.has(d),
         today:
           d === now.getDate() &&
           calMonth === now.getMonth() + 1 &&
@@ -94,34 +149,49 @@ export function EventsClient({ events }: { events: CommunityEventWithSource[] })
     }
     while (days.length % 7 !== 0) days.push({ n: "", muted: true });
     return days;
-  }, [firstDow, daysInMonth, eventDaysInCal, calMonth, calYear]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [firstDow, daysInMonth, calMonth, calYear]);
+
+  /* ─── Modal events ─── */
+  const modalEvents = useMemo(() => {
+    if (modalDay === null) return [];
+    return eventsByDay[modalDay] ?? [];
+  }, [modalDay, eventsByDay]);
 
   function prevMonth() {
+    setModalDay(null);
     if (calMonth === 1) { setCalMonth(12); setCalYear((y) => y - 1); }
     else setCalMonth((m) => m - 1);
   }
   function nextMonth() {
+    setModalDay(null);
     if (calMonth === 12) { setCalMonth(1); setCalYear((y) => y + 1); }
     else setCalMonth((m) => m + 1);
   }
 
-  const featured = events.find((e) => e.featured) ?? events[0];
+  const featured = upcomingEvents.find((e) => e.featured) ?? upcomingEvents[0];
+  const listEvents = filteredEvents.slice(0, 20);
 
   return (
     <>
       <Navbar />
-      <main style={{ background: "linear-gradient(180deg, #e8efee 0%, #e2ece8 100%)" }}>
+      <main style={{ background: "linear-gradient(180deg, #c8e2ef 0%, #c4dded 100%)" }}>
         <section id="events" className="section">
           <Reveal>
-            <span className="section-eyebrow"><span className="dot" />Events</span>
-            <h2 className="section-title">Upcoming Community <em>Events</em>.</h2>
+            <span className="section-eyebrow"><span className="dot" />{ev.eyebrow}</span>
+            <h2 className="section-title">{ev.pageTitle} <em>{ev.pageTitleEm}</em></h2>
             <p className="section-sub">
-              {events.length > 0
-                ? `${events.length} upcoming events — live from the City of Tampa and community partners.`
-                : "Family fairs, workshops, walks, and gatherings — all happening across Tampa Bay this season."}
+              {upcomingEvents.length > 0
+                ? `${upcomingEvents.length} ${ev.countSuffix} — live from the City of Tampa and community partners, updated daily.`
+                : ev.noEvents}
             </p>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10 }}>
+              <RefreshCw size={13} style={{ color: "var(--teal)" }} />
+              <span style={{ fontSize: 12, color: "var(--teal)" }}>{ev.autoUpdated}</span>
+            </div>
           </Reveal>
 
+          {/* ─── Featured event ─── */}
           {featured && (
             <Reveal>
               <div className="events-feature" style={{ marginTop: 36 }}>
@@ -138,7 +208,7 @@ export function EventsClient({ events }: { events: CommunityEventWithSource[] })
                 </div>
                 <div className="body">
                   <span className="badge-cat" style={{ alignSelf: "flex-start" }}>
-                    Featured · {featured.category}
+                    {ev.featured} · {featured.category}
                   </span>
                   <h3>{featured.title}</h3>
                   <p>{featured.description}</p>
@@ -150,26 +220,42 @@ export function EventsClient({ events }: { events: CommunityEventWithSource[] })
                       <Clock size={14} /> {featured.time}
                     </span>
                     <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                      <Users size={14} /> All ages
+                      <Users size={14} /> {ev.allAges}
                     </span>
                   </div>
                   <div className="footer-row">
                     <a href={featured.link} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
-                      <HoverGlow size="md" background="#0E1525" glowColor="#FFB37A" color="#fff" hoverColor="#FFD8B8" icon={<ExternalLink size={14} />}>
-                        Learn more
+                      <HoverGlow size="md" background="#0E1525" glowColor="#5bc8f0" color="#fff" hoverColor="#b8e8f8" icon={<ExternalLink size={14} />}>
+                        {ev.learnMore}
                       </HoverGlow>
                     </a>
-                    <button className="btn-pill-ghost"><Calendar size={14} /> Add to calendar</button>
-                    <button className="btn-pill-ghost"><Share size={14} /> Share</button>
+                    <button className="btn-pill-ghost" onClick={() => addToGoogleCalendar(featured)}>
+                      <Calendar size={14} /> {ev.addCal}
+                    </button>
                   </div>
                 </div>
               </div>
             </Reveal>
           )}
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 24, marginTop: 32 }}>
-            <Reveal>
-              <div className="filter-row">
+          {/* ─── View tabs + Category filter ─── */}
+          <Reveal>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", marginTop: 36, marginBottom: 24 }}>
+              <div className="evt-tabs">
+                <button
+                  className={`evt-tab ${viewMode === "list" ? "active" : ""}`}
+                  onClick={() => { setViewMode("list"); setModalDay(null); }}
+                >
+                  <List size={14} /> {ev.listView}
+                </button>
+                <button
+                  className={`evt-tab ${viewMode === "calendar" ? "active" : ""}`}
+                  onClick={() => setViewMode("calendar")}
+                >
+                  <CalendarDays size={14} /> {ev.calView}
+                </button>
+              </div>
+              <div className="filter-row" style={{ margin: 0 }}>
                 {categories.map((c) => (
                   <button
                     key={c}
@@ -180,76 +266,190 @@ export function EventsClient({ events }: { events: CommunityEventWithSource[] })
                   </button>
                 ))}
               </div>
-            </Reveal>
+            </div>
+          </Reveal>
 
-            <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr)", gap: 24 }}>
-              <Reveal>
-                <div className="calendar">
-                  <div className="cal-head">
-                    <h4>{monthLabel(calYear, calMonth)}</h4>
-                    <div className="cal-nav">
-                      <button className="icon-btn" onClick={prevMonth}><ChevronLeft size={14} /></button>
-                      <button className="icon-btn" onClick={nextMonth}><ChevronRight size={14} /></button>
-                    </div>
-                  </div>
-                  <div className="cal-grid">
-                    {DOWS.map((d, i) => <div key={i} className="cal-dow">{d}</div>)}
-                    {calDays.map((d, i) => (
-                      <div
-                        key={i}
-                        className={`cal-day ${d.muted ? "muted" : ""} ${d.today ? "today" : ""} ${d.has ? "has" : ""}`}
-                        title={d.has && !d.muted ? `Event on ${monthLabel(calYear, calMonth).split(" ")[0]} ${d.n}` : undefined}
-                      >
-                        {d.n}
-                      </div>
-                    ))}
+          {/* ─── CALENDAR VIEW ─── */}
+          {viewMode === "calendar" && (
+            <Reveal>
+              <div className="calendar" style={{ marginTop: 0 }}>
+                <div className="cal-head">
+                  <h4>{monthLabel(calYear, calMonth)}</h4>
+                  <div className="cal-nav">
+                    <button className="icon-btn" onClick={prevMonth}><ChevronLeft size={14} /></button>
+                    <button className="icon-btn" onClick={nextMonth}><ChevronRight size={14} /></button>
                   </div>
                 </div>
-              </Reveal>
 
-              <div className="event-stack">
-                {filteredEvents.slice(0, 8).map((ev, i) => {
-                  const { m, d, y } = fmtEvtDate(ev.date);
-                  return (
-                    <Reveal key={i}>
-                      <div className="event-row">
-                        <div className="event-date">
-                          <span className="m">{m}</span>
-                          <span className="d">{d}</span>
-                          <span className="y">{y}</span>
-                        </div>
-                        <div className="event-info">
-                          <h4>{ev.title}</h4>
-                          <p style={{ color: "var(--mute)", fontSize: 14, margin: "4px 0 8px", lineHeight: 1.5 }}>
-                            {ev.description.slice(0, 120)}{ev.description.length > 120 ? "…" : ""}
-                          </p>
-                          <div className="row">
-                            <span><MapPin size={14} /> {ev.location}</span>
-                            <span><Clock size={14} /> {ev.time}</span>
-                            <span className="badge-cat ink" style={{ padding: "4px 10px" }}>{ev.category}</span>
+                <div className="cal-grid">
+                  {DOWS.map((d, i) => (
+                    <div key={i} className="cal-dow">{d}</div>
+                  ))}
+
+                  {calDays.map((d, i) => {
+                    const dayNum = typeof d.n === "number" ? d.n : null;
+                    const eventsOnDay = dayNum ? (eventsByDay[dayNum] ?? []) : [];
+                    const hasEvents = eventsOnDay.length > 0;
+
+                    return (
+                      <div
+                        key={i}
+                        className={`cal-day ${d.muted ? "muted" : ""} ${d.today ? "today" : ""} ${hasEvents ? "has" : ""}`}
+                        onClick={() => {
+                          if (!d.muted && dayNum !== null && hasEvents) {
+                            setModalDay((prev) => (prev === dayNum ? null : dayNum));
+                          }
+                        }}
+                        style={{ cursor: hasEvents && !d.muted ? "pointer" : "default" }}
+                      >
+                        {d.n !== "" && d.n}
+                        {hasEvents && (
+                          <span className="cal-evt-badge" title={`${eventsOnDay.length} event${eventsOnDay.length !== 1 ? "s" : ""}`}>
+                            {eventsOnDay.length}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Legend */}
+                <div style={{ marginTop: 14, display: "flex", gap: 18, fontSize: 12, color: "var(--mute)", flexWrap: "wrap" }}>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+                    <span style={{ width: 10, height: 10, borderRadius: 3, background: "var(--coral-soft)", border: "1px solid rgba(232,90,58,.3)", display: "inline-block" }} />
+                    {ev.dayWithEvents}
+                  </span>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+                    <span style={{ width: 18, height: 18, borderRadius: "50%", background: "var(--coral)", display: "inline-block", boxShadow: "0 0 8px rgba(23,135,184,.5)" }} />
+                    {ev.today}
+                  </span>
+                </div>
+              </div>
+
+              {/* ─── Day popup modal ─── */}
+              {modalDay !== null && (
+                <div
+                  className="cal-modal-overlay"
+                  onClick={() => setModalDay(null)}
+                >
+                  <div
+                    className="cal-modal"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="cal-modal-head">
+                      <div>
+                        <h4>
+                          {monthLabel(calYear, calMonth).split(" ")[0]} {modalDay}, {calYear}
+                        </h4>
+                        <span style={{ fontSize: 13, color: "var(--mute)" }}>
+                          {modalEvents.length} event{modalEvents.length !== 1 ? "s" : ""}
+                        </span>
+                      </div>
+                      <button className="cal-modal-close" onClick={() => setModalDay(null)}>
+                        <X size={16} />
+                      </button>
+                    </div>
+
+                    <div className="cal-modal-body">
+                      {modalEvents.map((mev, i) => (
+                        <div key={mev.id || i} className="cal-modal-evt">
+                          <div
+                            className="cal-modal-evt-accent"
+                            style={{ background: eventAccentColors[i % eventAccentColors.length].border }}
+                          />
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div className="cal-modal-evt-title">{mev.title}</div>
+                            <div className="cal-modal-evt-meta">
+                              <span><MapPin size={11} /> {mev.location}</span>
+                              <span><Clock size={11} /> {mev.time}</span>
+                            </div>
+                            {mev.description && (
+                              <p className="cal-modal-evt-desc">
+                                {mev.description.slice(0, 100)}{mev.description.length > 100 ? "…" : ""}
+                              </p>
+                            )}
+                            <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                              <a
+                                href={mev.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="event-cta"
+                                style={{ textDecoration: "none", fontSize: 12, padding: "6px 12px" }}
+                              >
+                                {ev.details} <ArrowRight size={12} />
+                              </a>
+                              <button
+                                className="btn-pill-ghost"
+                                style={{ fontSize: 11, padding: "6px 10px", whiteSpace: "nowrap" }}
+                                onClick={() => addToGoogleCalendar(modalEvents[i])}
+                              >
+                                <Calendar size={11} /> {ev.add}
+                              </button>
+                            </div>
                           </div>
                         </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </Reveal>
+          )}
+
+          {/* ─── LIST VIEW ─── */}
+          {viewMode === "list" && (
+            <div className="event-stack">
+              {listEvents.map((lev, i) => {
+                const { m, d, y } = fmtEvtDate(lev.date);
+                const accent = eventAccentColors[i % eventAccentColors.length];
+                return (
+                  <Reveal key={`${lev.id}-${i}`}>
+                    <div className="event-row" style={{ borderLeft: `4px solid ${accent.border}` }}>
+                      <div className="event-date" style={{ background: accent.bg, borderColor: accent.border + "40" }}>
+                        <span className="m" style={{ color: accent.text }}>{m}</span>
+                        <span className="d">{d}</span>
+                        <span className="y">{y}</span>
+                      </div>
+                      <div className="event-info">
+                        <h4>{lev.title}</h4>
+                        <p style={{ color: "var(--mute)", fontSize: 14, margin: "4px 0 8px", lineHeight: 1.5 }}>
+                          {lev.description.slice(0, 120)}{lev.description.length > 120 ? "…" : ""}
+                        </p>
+                        <div className="row">
+                          <span><MapPin size={14} /> {lev.location}</span>
+                          <span><Clock size={14} /> {lev.time}</span>
+                          <span className="badge-cat ink" style={{ padding: "4px 10px", background: accent.bg, color: accent.text }}>{lev.category}</span>
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-end" }}>
                         <a
-                          href={ev.link}
+                          href={lev.link}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="event-cta"
                           style={{ textDecoration: "none" }}
                         >
-                          Details <ArrowRight size={14} />
+                          {ev.details} <ArrowRight size={14} />
                         </a>
+                        <button
+                          className="btn-pill-ghost"
+                          style={{ fontSize: 12, padding: "7px 12px", whiteSpace: "nowrap" }}
+                          onClick={() => addToGoogleCalendar(listEvents[i])}
+                        >
+                          <Calendar size={12} /> {ev.addCal}
+                        </button>
                       </div>
-                    </Reveal>
-                  );
-                })}
-                {filteredEvents.length === 0 && (
-                  <div style={{ textAlign: "center", padding: "32px 0", color: "var(--mute)" }}>
-                    No events in this category.
-                  </div>
-                )}
-              </div>
+                    </div>
+                  </Reveal>
+                );
+              })}
+              {listEvents.length === 0 && (
+                <div style={{ textAlign: "center", padding: "32px 0", color: "var(--mute)" }}>
+                  {upcomingEvents.length === 0 ? ev.noUpcoming : ev.noMatch}
+                </div>
+              )}
             </div>
-          </div>
+          )}
         </section>
       </main>
       <Footer />

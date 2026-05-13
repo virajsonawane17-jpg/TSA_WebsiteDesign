@@ -1,450 +1,206 @@
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
-import { EmergencyBanner } from "@/components/emergency-banner";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Shield, Database, Cookie, Settings, Mail, Phone, MapPin, Calendar, AlertCircle, CheckCircle, Lock, Eye, FileText, Users, Globe, RefreshCw, HelpCircle } from "lucide-react";
+import { Reveal } from "@/components/reveal";
+import { Shield, Eye, Database, Lock, Mail, RefreshCw, Globe, Users, CheckCircle } from "lucide-react";
 
-export default function PrivacyPolicy() {
+const EFFECTIVE_DATE = "May 1, 2026";
+
+const sections = [
+  {
+    icon: <Eye size={18} />,
+    title: "What We Collect",
+    accent: "coral" as const,
+    body: (
+      <>
+        <p>Tampa Resource Hub is designed to be a read-only civic tool. For the vast majority of visitors, <strong>we collect no personal information whatsoever.</strong></p>
+        <ul>
+          <li><strong>Resource directory browsing</strong> — no account, login, or tracking required.</li>
+          <li><strong>Events and news pages</strong> — data is pulled live from Tampa.gov public feeds. No user data is stored or transmitted.</li>
+          <li><strong>Resource submissions</strong> — if you voluntarily submit an organization via the Submit page, we collect the information you provide (organization name, contact details, description). This data is used solely to review and potentially add the resource to the directory.</li>
+          <li><strong>Language preference</strong> — your EN/ES toggle choice is saved in <code>localStorage</code> on your own device. It never leaves your browser.</li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    icon: <Database size={18} />,
+    title: "How We Use Your Data",
+    accent: "teal" as const,
+    body: (
+      <>
+        <p>Any information collected through the Submit page is used exclusively to:</p>
+        <ul>
+          <li>Review whether the submitted resource meets our community guidelines</li>
+          <li>Contact the submitter if we need clarification before listing</li>
+          <li>Add verified organizations to the public resource directory</li>
+        </ul>
+        <p>We do not use your data for advertising, profiling, or any commercial purpose. We do not sell data — ever.</p>
+      </>
+    ),
+  },
+  {
+    icon: <Lock size={18} />,
+    title: "Storage & Security",
+    accent: "coral" as const,
+    body: (
+      <>
+        <p>Submitted resource data is stored in <strong>Supabase</strong>, a SOC 2 Type II certified cloud database hosted on AWS. Data is encrypted at rest and in transit (TLS 1.2+).</p>
+        <p>The site is hosted on <strong>Vercel</strong>, which provides automatic HTTPS, DDoS protection, and edge security for all requests. No raw user data is stored on local machines or exported outside these platforms.</p>
+      </>
+    ),
+  },
+  {
+    icon: <Shield size={18} />,
+    title: "Cookies & Tracking",
+    accent: "teal" as const,
+    body: (
+      <>
+        <p>Tampa Resource Hub uses <strong>no third-party tracking cookies, analytics pixels, or advertising scripts.</strong></p>
+        <ul>
+          <li>No Google Analytics, Meta Pixel, or similar trackers are embedded on this site.</li>
+          <li>Vercel may collect anonymous, aggregate performance metrics (load times, error rates) as part of its infrastructure. This data cannot identify individual users.</li>
+          <li>The only browser storage used is <code>localStorage</code> for your EN/ES language preference.</li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    icon: <Globe size={18} />,
+    title: "Third-Party Services",
+    accent: "coral" as const,
+    body: (
+      <>
+        <p>The site integrates with the following services to deliver its features:</p>
+        <ul>
+          <li><strong>Tampa.gov public APIs</strong> — events and news data. No user data is sent to Tampa.gov.</li>
+          <li><strong>OpenStreetMap / Leaflet</strong> — map tiles for the resource directory. Tile requests may include your IP as part of standard HTTP requests to OSM servers.</li>
+          <li><strong>Unsplash CDN</strong> — photography. Standard CDN request logs may include IP addresses per Unsplash&apos;s own policy.</li>
+          <li><strong>Google Calendar</strong> — the &quot;Add to Calendar&quot; button uses a public URL scheme and opens in a new tab. No data is sent unless you click the link.</li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    icon: <Users size={18} />,
+    title: "Children&apos;s Privacy",
+    accent: "teal" as const,
+    body: (
+      <p>This service is not directed to children under 13. We do not knowingly collect personal information from children under 13. If we become aware such information was collected, we will delete it promptly.</p>
+    ),
+  },
+  {
+    icon: <CheckCircle size={18} />,
+    title: "Your Rights",
+    accent: "coral" as const,
+    body: (
+      <>
+        <p>Because we collect minimal personal data, there is very little to manage. If you submitted a resource and wish to have your contact information removed, email us and we will delete it within 5 business days.</p>
+        <p style={{ marginTop: 12 }}>
+          <strong>Contact:</strong>{" "}
+          <a href="mailto:webmastertsa2026@gmail.com" style={{ color: "var(--coral)", textDecoration: "none" }}>
+            webmastertsa2026@gmail.com
+          </a>
+        </p>
+      </>
+    ),
+  },
+  {
+    icon: <RefreshCw size={18} />,
+    title: "Policy Updates",
+    accent: "teal" as const,
+    body: (
+      <p>If this policy changes materially, the effective date at the top of this page will be updated. Continued use of the site after an update constitutes acceptance of the revised policy.</p>
+    ),
+  },
+  {
+    icon: <Mail size={18} />,
+    title: "Contact",
+    accent: "coral" as const,
+    body: (
+      <>
+        <p>Questions about this statement or our data practices?</p>
+        <p style={{ marginTop: 10 }}>
+          <strong>Email:</strong>{" "}
+          <a href="mailto:webmastertsa2026@gmail.com" style={{ color: "var(--coral)", textDecoration: "none" }}>
+            webmastertsa2026@gmail.com
+          </a>
+          <br />
+          <strong>Location:</strong> Hillsborough County, Florida
+          <br />
+          <strong>Response time:</strong> Within 5 business days
+        </p>
+      </>
+    ),
+  },
+];
+
+export default function PrivacyPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <EmergencyBanner />
+    <>
       <Navbar />
-      
-      <main className="flex-grow">
-        <div className="container mx-auto px-4 py-16 sm:px-6">
-          <div className="max-w-4xl mx-auto">
-            <div className="mb-8">
-              <h1 className="text-4xl font-bold font-heading text-primary mb-2">Privacy Policy</h1>
-              <p className="text-muted-foreground text-lg">Last updated: February 28, 2026</p>
+      <main style={{ background: "linear-gradient(180deg, #e0f1f8 0%, #d4e8f5 100%)", minHeight: "100vh" }}>
+        <section className="section" style={{ maxWidth: 820 }}>
+          <Reveal>
+            <span className="section-eyebrow"><span className="dot" />Legal</span>
+            <h2 className="section-title">Privacy <em>Statement.</em></h2>
+            <p className="section-sub">
+              Tampa Resource Hub is a community-funded civic project. We believe in full transparency — here is everything we collect, store, and do with it.
+            </p>
+            <p style={{ fontSize: 13, color: "var(--mute)", marginTop: 8 }}>
+              Effective date: {EFFECTIVE_DATE}
+            </p>
+          </Reveal>
+
+          {/* Summary callout */}
+          <Reveal>
+            <div style={{
+              marginTop: 40, padding: "20px 28px",
+              background: "var(--teal-soft)", border: "1px solid var(--teal)",
+              borderRadius: "var(--r-lg)",
+              fontSize: 14, color: "var(--ink-2)", lineHeight: 1.7,
+            }}>
+              <strong style={{ color: "var(--ink)" }}>The short version:</strong> We don&apos;t track you, sell your data, or use advertising. The site works without any personal information. The only data we ever receive is what you voluntarily submit through the resource submission form.
             </div>
-            
-            <div className="grid gap-8 lg:grid-cols-2">
-              <Card className="h-full">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-full bg-primary/10">
-                      <Database className="h-6 w-6 text-primary" />
-                    </div>
-                    <h2 className="text-xl font-bold text-primary">Information We Collect</h2>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-muted-foreground leading-relaxed">
-                    Tampa Community Resource Hub is committed to protecting your privacy. We collect minimal information necessary to provide our services:
-                  </p>
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Resource Submissions:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">Name, email, and organization details when you submit resources</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Profile Information:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">Optional profile data including name, phone, and address</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Usage Analytics:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">Anonymous usage data to improve our services</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Location Data:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">General location information for finding nearby resources</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+          </Reveal>
 
-              <Card className="h-full">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-full bg-secondary/10">
-                      <Settings className="h-6 w-6 text-secondary" />
-                    </div>
-                    <h2 className="text-xl font-bold text-primary">How We Use Your Information</h2>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid gap-4">
-                    <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30">
-                      <FileText className="h-5 w-5 text-secondary mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Service Delivery:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">To connect you with Tampa community resources and organizations</p>
+          {/* Policy sections */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 40 }}>
+            {sections.map((s, i) => {
+              const accentColor = s.accent === "coral" ? "var(--coral)" : "var(--teal)";
+              const accentBg    = s.accent === "coral" ? "var(--coral-soft)" : "var(--teal-soft)";
+              return (
+                <Reveal key={i}>
+                  <div style={{
+                    background: "var(--paper)",
+                    border: "1px solid var(--line)",
+                    borderRadius: "var(--r-xl)",
+                    padding: "24px 28px",
+                  }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
+                      <div style={{
+                        width: 34, height: 34, borderRadius: 10, flexShrink: 0,
+                        background: accentBg, color: accentColor,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                      }}>
+                        {s.icon}
                       </div>
+                      <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: "var(--ink)" }}>
+                        {s.title}
+                      </h3>
                     </div>
-                    <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30">
-                      <Mail className="h-5 w-5 text-secondary mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Communication:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">To respond to inquiries and provide service updates</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30">
-                      <RefreshCw className="h-5 w-5 text-secondary mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Improvement:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">To analyze usage patterns and enhance our platform functionality</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30">
-                      <Users className="h-5 w-5 text-secondary mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Research:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">To understand community needs and resource gaps</p>
-                      </div>
+                    <div style={{ fontSize: 14, lineHeight: 1.75, color: "var(--ink-2)" }}
+                      className="privacy-body"
+                    >
+                      {s.body}
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-
-              <Card className="h-full">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-full bg-orange-100">
-                      <Shield className="h-6 w-6 text-orange-600" />
-                    </div>
-                    <h2 className="text-xl font-bold text-primary">Data Storage & Security</h2>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-muted-foreground leading-relaxed">
-                    We use industry-standard security measures to protect your information:
-                  </p>
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <Lock className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Secure Database:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">All data stored in encrypted Supabase database</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Lock className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">HTTPS Encryption:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">All data transmissions use secure HTTPS protocols</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Lock className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Access Controls:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">Limited access to sensitive user information</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Lock className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Regular Updates:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">Security measures regularly updated and monitored</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="h-full">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-full bg-primary/10">
-                      <Globe className="h-6 w-6 text-primary" />
-                    </div>
-                    <h2 className="text-xl font-bold text-primary">Third-Party Services</h2>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-muted-foreground leading-relaxed">
-                    We integrate with trusted third-party services to enhance functionality:
-                  </p>
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <Database className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Supabase:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">Database hosting and authentication services</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Eye className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Google Fonts:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">Typography and font delivery</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Eye className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Unsplash:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">Stock images for resource illustrations</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <MapPin className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Tampa Government APIs:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">Official community event and news data</p>
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-muted-foreground text-sm mt-4 bg-muted/30 p-3 rounded-lg">
-                    These services have their own privacy policies and we encourage you to review them.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="h-full">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-full bg-orange-100">
-                      <Cookie className="h-6 w-6 text-orange-600" />
-                    </div>
-                    <h2 className="text-xl font-bold text-primary">Cookies & Tracking</h2>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid gap-4">
-                    <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30">
-                      <Cookie className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Essential Cookies:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">Required for basic site functionality and authentication</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30">
-                      <Cookie className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Analytics Cookies:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">Anonymous usage statistics to improve user experience</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30">
-                      <Cookie className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Preference Cookies:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">Remember your settings and preferences</p>
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-muted-foreground text-sm mt-4 bg-muted/30 p-3 rounded-lg">
-                    You can control cookie settings through your browser preferences.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="h-full">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-full bg-secondary/10">
-                      <CheckCircle className="h-6 w-6 text-secondary" />
-                    </div>
-                    <h2 className="text-xl font-bold text-primary">Your Rights & Choices</h2>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-muted-foreground leading-relaxed">
-                    You have the following rights regarding your personal information:
-                  </p>
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-secondary mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Access:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">Request copies of your personal information</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-secondary mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Correction:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">Update or correct inaccurate information</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-secondary mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Deletion:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">Request removal of your personal information</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-secondary mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Portability:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">Transfer your data to other services</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-secondary mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Opt-out:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">Choose not to receive certain communications</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="h-full">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-full bg-primary/10">
-                      <Users className="h-6 w-6 text-primary" />
-                    </div>
-                    <h2 className="text-xl font-bold text-primary">Data Sharing</h2>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-muted-foreground leading-relaxed">
-                    We do not sell your personal information. We may share data only in these circumstances:
-                  </p>
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <Users className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Resource Organizations:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">Contact information when you request assistance</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <AlertCircle className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Legal Requirements:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">When required by law or to protect our rights</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Shield className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Safety:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">To prevent harm or protect users</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <RefreshCw className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
-                      <div>
-                        <strong className="text-foreground">Business Transfer:</strong>
-                        <p className="text-muted-foreground text-sm mt-1">In case of merger, acquisition, or asset sale</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="h-full">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-full bg-orange-100">
-                      <Users className="h-6 w-6 text-orange-600" />
-                    </div>
-                    <h2 className="text-xl font-bold text-primary">Children's Privacy</h2>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-muted-foreground leading-relaxed">
-                    Our service is not directed to children under 13. We do not knowingly collect personal information 
-                    from children under 13. If we become aware that we have collected such information, 
-                    we will take steps to delete it immediately.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="h-full">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-full bg-primary/10">
-                      <Globe className="h-6 w-6 text-primary" />
-                    </div>
-                    <h2 className="text-xl font-bold text-primary">International Users</h2>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-muted-foreground leading-relaxed">
-                    Tampa Community Resource Hub is operated from the United States and intended for Tampa, Florida residents. 
-                    If you are accessing our service from outside the U.S., you are responsible for compliance with 
-                    local laws regarding data collection and processing.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="h-full">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-full bg-secondary/10">
-                      <RefreshCw className="h-6 w-6 text-secondary" />
-                    </div>
-                    <h2 className="text-xl font-bold text-primary">Policy Updates</h2>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-muted-foreground leading-relaxed">
-                    We may update this privacy policy from time to time. Changes will be posted on this page 
-                    with an updated revision date. We encourage you to review this policy periodically.
-                  </p>
-                  <div className="bg-muted/30 p-4 rounded-lg mt-4">
-                    <p className="text-muted-foreground text-sm">
-                      <strong>Last Updated:</strong> February 28, 2026
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="h-full">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-full bg-orange-100">
-                      <HelpCircle className="h-6 w-6 text-orange-600" />
-                    </div>
-                    <h2 className="text-xl font-bold text-primary">Contact Us</h2>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-muted-foreground leading-relaxed">
-                    If you have questions about this Privacy Policy or our data practices, please contact us:
-                  </p>
-                  <div className="bg-muted/50 p-6 rounded-lg mt-4">
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <Mail className="h-5 w-5 text-orange-600" />
-                        <div>
-                          <strong className="text-foreground">Email:</strong>
-                          <p className="text-muted-foreground text-sm">privacy@tamparesourcehub.org</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <MapPin className="h-5 w-5 text-orange-600" />
-                        <div>
-                          <strong className="text-foreground">Location:</strong>
-                          <p className="text-muted-foreground text-sm">Hillsborough County, Florida</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Calendar className="h-5 w-5 text-orange-600" />
-                        <div>
-                          <strong className="text-foreground">Response Time:</strong>
-                          <p className="text-muted-foreground text-sm">We respond to privacy inquiries within 30 days</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                </Reveal>
+              );
+            })}
           </div>
-        </div>
+        </section>
       </main>
-      
       <Footer />
-    </div>
+    </>
   );
 }

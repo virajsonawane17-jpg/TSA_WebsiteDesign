@@ -4,24 +4,21 @@ import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import { Counter } from "@/components/counter";
 import { HoverGlow } from "@/components/hover-glow";
+import { TAMPA_RESOURCES } from "@/lib/resources";
 import type { CommunityEventWithSource } from "@/lib/resources";
 import type { TampaGovNewsItem } from "@/lib/tampa-api";
+import { useLanguage } from "@/contexts/language-context";
 import {
-  ArrowRight,
-  Plus,
-  Utensils,
-  Heart,
-  Home,
-  Book,
-  Users,
-  Activity,
-  Briefcase,
-  ShieldAlert,
-  MapPin,
-  Clock,
-  TrendingUp,
+  ArrowRight, Plus, Utensils, Heart, Home, Book,
+  Users, Activity, Briefcase, ShieldAlert, MapPin, Clock,
+  TrendingUp, CalendarDays, Sparkles,
 } from "lucide-react";
 
+/* ─── Derived real stats ─── */
+const RESOURCE_COUNT = TAMPA_RESOURCES.length;
+const CATEGORY_COUNT = new Set(TAMPA_RESOURCES.map((r) => r.category)).size;
+
+/* ─── Helpers ─── */
 function fmtPubDate(pubDate: string): string {
   if (!pubDate) return "";
   try {
@@ -47,76 +44,86 @@ function parseEvtDate(dateStr: string): { m: string; d: string; y: string } {
   return { m: "", d: "", y: "" };
 }
 
+/* ─── Filter helper ─── */
+const MONTH_MAP: Record<string, number> = {
+  Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+  Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11,
+};
+function isFutureOrToday(dateStr: string): boolean {
+  if (!dateStr) return true;
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  try {
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) {
+      return new Date(d.getFullYear(), d.getMonth(), d.getDate()) >= today;
+    }
+  } catch { /* fall through */ }
+  const m = dateStr.match(/([A-Za-z]+)\s+(\d+),\s*(\d{4})/);
+  if (m) {
+    const mo = MONTH_MAP[m[1]];
+    if (mo !== undefined) {
+      return new Date(parseInt(m[3]), mo, parseInt(m[2])) >= today;
+    }
+  }
+  return true;
+}
+
+const COMMUNITY_FALLBACKS = [
+  "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=700&q=75",
+  "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=700&q=75",
+  "https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=700&q=75",
+];
+
 /* ─── Hero ─── */
-export function Hero() {
+export function Hero({ eventCount = 0 }: { eventCount?: number }) {
+  const { s } = useLanguage();
+  const h = s.hero;
   return (
     <div className="hero">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        className="hero-bg"
-        alt=""
-        src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1800&q=70"
-      />
+      <img className="hero-bg" alt=""
+        src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1800&q=70" />
       <div className="hero-overlay" />
       <div className="hero-grain" />
-
       <div className="fg">
         <div className="nav-spacer" />
-
         <div className="hero-inner">
           <h1 className="hero-h1">
-            A trusted hub for the<br />
-            <em>community</em> that raises us
+            {h.lineA}<br />
+            <em>{h.lineEm}</em> {h.lineB}
           </h1>
-          <p className="hero-sub">
-            Discover food assistance, mental health support, housing programs,
-            and the local organizations making Tampa a place where everyone belongs.
-          </p>
+          <p className="hero-sub">{h.sub}</p>
           <div className="hero-ctas">
-            <HoverGlow
-              size="lg"
-              background="#0E1525"
-              glowColor="#FFB37A"
-              color="#fff"
-              hoverColor="#FFD8B8"
-              icon={<ArrowRight size={16} />}
-              onClick={() => {
-                document.getElementById("resources")?.scrollIntoView({ behavior: "smooth" });
-                window.location.href = "/directory";
-              }}
-            >
-              Browse resources
+            <HoverGlow size="lg" background="#0E1525" glowColor="#5bc8f0"
+              color="#fff" hoverColor="#b8e8f8" icon={<ArrowRight size={16} />}
+              onClick={() => (window.location.href = "/directory")}>
+              {h.browse}
             </HoverGlow>
-            <HoverGlow
-              size="lg"
-              background="rgba(255,255,255,.16)"
-              glowColor="#5fd1c8"
-              color="#fff"
-              hoverColor="#cdf3ef"
-              className="hg-glass"
-              onClick={() => (window.location.href = "/submit")}
-            >
-              <Plus size={14} /> Submit a resource
+            <HoverGlow size="lg" background="rgba(255,255,255,.16)" glowColor="#5fd1c8"
+              color="#fff" hoverColor="#cdf3ef" className="hg-glass"
+              onClick={() => (window.location.href = "/submit")}>
+              <Plus size={14} /> {h.submit}
             </HoverGlow>
           </div>
         </div>
-
         <div className="hero-strip">
           <div className="item">
-            <div className="num"><Counter to={150} suffix="+" /></div>
-            <div className="lbl">Local resources</div>
+            <div className="num"><Counter to={RESOURCE_COUNT} suffix="+" /></div>
+            <div className="lbl">{h.statResources}</div>
           </div>
           <div className="item">
-            <div className="num"><Counter to={25} suffix="+" /></div>
-            <div className="lbl">Community events</div>
+            <div className="num">
+              {eventCount > 0 ? <Counter to={eventCount} suffix="+" /> : <em>{h.live}</em>}
+            </div>
+            <div className="lbl">{h.statEvents}</div>
           </div>
           <div className="item">
-            <div className="num"><Counter to={10} suffix="+" /></div>
-            <div className="lbl">Support categories</div>
+            <div className="num"><Counter to={CATEGORY_COUNT} /></div>
+            <div className="lbl">{h.statCategories}</div>
           </div>
           <div className="item">
-            <div className="num"><em>Thousands</em></div>
-            <div className="lbl">Residents supported</div>
+            <div className="num"><em>{h.free}</em></div>
+            <div className="lbl">{h.statFree}</div>
           </div>
         </div>
       </div>
@@ -125,44 +132,39 @@ export function Hero() {
 }
 
 /* ─── Featured Resources ─── */
-const spotlightCards = [
-  {
-    icon: <Utensils size={22} />, tile: "",
-    cat: "Food Assistance", tone: "",
-    title: "Feeding Tampa Families",
-    desc: "Connect with local food banks, meal programs, and emergency grocery assistance available across Tampa neighborhoods.",
-    href: "/directory?cat=Food+Assistance",
-  },
-  {
-    icon: <Heart size={22} />, tile: "teal",
-    cat: "Mental Health", tone: "t-teal",
-    title: "Youth Mental Health Support",
-    desc: "Discover counseling programs, peer support groups, and crisis resources helping Tampa teens and families.",
-    href: "/directory?cat=Mental+Health",
-  },
-  {
-    icon: <Home size={22} />, tile: "sun",
-    cat: "Housing Assistance", tone: "",
-    title: "Housing & Shelter Services",
-    desc: "Find affordable housing programs, temporary shelters, and local organizations supporting families in need.",
-    href: "/directory?cat=Housing",
-  },
-];
-
 export function FeaturedResources() {
+  const { s } = useLanguage();
+  const f = s.featured;
+
+  const spotlightCards = [
+    {
+      icon: <Utensils size={22} />, tile: "", tone: "",
+      cat: f.food_cat, title: f.food_title, desc: f.food_desc,
+      href: "/directory?cat=Food+Assistance",
+    },
+    {
+      icon: <Heart size={22} />, tile: "teal", tone: "t-teal",
+      cat: f.mental_cat, title: f.mental_title, desc: f.mental_desc,
+      href: "/directory?cat=Mental+Health",
+    },
+    {
+      icon: <Home size={22} />, tile: "sun", tone: "",
+      cat: f.housing_cat, title: f.housing_title, desc: f.housing_desc,
+      href: "/directory?cat=Housing",
+    },
+  ];
+
   return (
     <section className="section">
       <Reveal>
-        <span className="section-eyebrow"><span className="dot" />Featured</span>
+        <span className="section-eyebrow"><span className="dot" />{f.eyebrow}</span>
         <div className="head-row">
           <div>
             <h2 className="section-title">
-              Spotlight on the <em>community</em><br />programs working today.
+              {f.title} <em>{f.titleEm}</em><br />{f.titleEnd}
             </h2>
           </div>
-          <p className="section-sub">
-            A curated selection of trusted organizations residents are turning to right now in Tampa Bay.
-          </p>
+          <p className="section-sub">{f.sub}</p>
         </div>
       </Reveal>
       <div className="resource-grid">
@@ -176,16 +178,14 @@ export function FeaturedResources() {
               <h3>{c.title}</h3>
               <p>{c.desc}</p>
               <div style={{ marginTop: 18 }}>
-                <HoverGlow
-                  size="sm"
-                  background={c.tile === "teal" ? "#0f3a3a" : c.tile === "sun" ? "#3a2a14" : "#1a0f08"}
-                  glowColor={c.tile === "teal" ? "#5fd1c8" : c.tile === "sun" ? "#ffcf6b" : "#ff8a5c"}
+                <HoverGlow size="sm"
+                  background={c.tile === "teal" ? "#0f3a3a" : c.tile === "sun" ? "#3a2a14" : "#0a1e30"}
+                  glowColor={c.tile === "teal" ? "#5fd1c8" : c.tile === "sun" ? "#ffcf6b" : "#60c4f0"}
                   color="#fff"
-                  hoverColor={c.tile === "teal" ? "#cdf3ef" : c.tile === "sun" ? "#ffe6b3" : "#ffd6c2"}
+                  hoverColor={c.tile === "teal" ? "#cdf3ef" : c.tile === "sun" ? "#ffe6b3" : "#c0e8f8"}
                   icon={<ArrowRight size={14} />}
-                  onClick={() => (window.location.href = c.href)}
-                >
-                  Explore Resource
+                  onClick={() => (window.location.href = c.href)}>
+                  {f.explore}
                 </HoverGlow>
               </div>
             </div>
@@ -198,31 +198,33 @@ export function FeaturedResources() {
 
 /* ─── Stats Band ─── */
 export function StatsBand() {
+  const { s } = useLanguage();
+  const st = s.stats;
   return (
     <Reveal>
       <div className="stats-band">
         <div style={{ position: "relative", maxWidth: 1280, margin: "0 auto" }}>
-          <span className="section-eyebrow"><span className="dot" />Community impact</span>
-          <h2 className="section-title">Tampa shows up<br />for <em>Tampa</em>.</h2>
+          <span className="section-eyebrow"><span className="dot" />{st.eyebrow}</span>
+          <h2 className="section-title">{st.title}<br /><em>{st.titleEm}</em></h2>
           <p className="section-sub" style={{ color: "rgba(255,255,255,.7)" }}>
-            What the network looks like today — built by neighbors, nonprofits, and local partners across Hillsborough County.
+            {RESOURCE_COUNT} {st.sub_a} {CATEGORY_COUNT} {st.sub_b}
           </p>
           <div className="stats-grid">
             <div className="stat">
-              <div className="num"><Counter to={150} /><span className="plus">+</span></div>
-              <div className="lbl">Local resources verified across Tampa Bay</div>
+              <div className="num"><Counter to={RESOURCE_COUNT} /><span className="plus">+</span></div>
+              <div className="lbl">{st.s1_lbl}</div>
             </div>
             <div className="stat">
-              <div className="num"><Counter to={25} /><span className="plus">+</span></div>
-              <div className="lbl">Community events hosted this season</div>
+              <div className="num"><Counter to={CATEGORY_COUNT} /></div>
+              <div className="lbl">{st.s2_lbl}</div>
             </div>
             <div className="stat">
-              <div className="num"><Counter to={10} /><span className="plus">+</span></div>
-              <div className="lbl">Tampa support categories covered</div>
+              <div className="num"><em>{st.s3_val}</em></div>
+              <div className="lbl">{st.s3_lbl}</div>
             </div>
             <div className="stat">
-              <div className="num"><em>Thousands</em></div>
-              <div className="lbl">Of residents supported by partner programs</div>
+              <div className="num"><Counter to={1} /><span className="plus">M+</span></div>
+              <div className="lbl">{st.s4_lbl}</div>
             </div>
           </div>
         </div>
@@ -232,36 +234,39 @@ export function StatsBand() {
 }
 
 /* ─── Categories ─── */
-const cats = [
-  { ico: <Utensils size={18} />, lbl: "Food Support",        desc: "Pantries, meal kits, weekend programs",    tile: "" },
-  { ico: <Heart size={18} />,    lbl: "Mental Health",        desc: "Counseling, peer groups, crisis lines",    tile: "teal" },
-  { ico: <Home size={18} />,     lbl: "Housing",              desc: "Shelter, rental aid, housing navigation",  tile: "sun" },
-  { ico: <Book size={18} />,     lbl: "Education",            desc: "Tutoring, scholarships, adult learning",   tile: "" },
-  { ico: <Users size={18} />,    lbl: "Youth Programs",       desc: "After-school, mentorship, leadership",     tile: "teal" },
-  { ico: <Activity size={18} />, lbl: "Healthcare",           desc: "Free clinics, screenings, dental care",    tile: "ink" },
-  { ico: <Briefcase size={18} />,lbl: "Employment",           desc: "Job training, resume help, hiring fairs",  tile: "sun" },
-  { ico: <ShieldAlert size={18} />,lbl: "Emergency Assistance",desc: "Utility aid, disaster relief, hotlines", tile: "" },
-];
-
 export function Categories() {
+  const { s } = useLanguage();
+  const c = s.categories;
+
+  const cats = [
+    { ico: <Utensils size={18} />,    lbl: c.food,       desc: c.food_desc,       tile: "" },
+    { ico: <Heart size={18} />,       lbl: c.mental,     desc: c.mental_desc,     tile: "teal" },
+    { ico: <Home size={18} />,        lbl: c.housing,    desc: c.housing_desc,    tile: "sun" },
+    { ico: <Book size={18} />,        lbl: c.education,  desc: c.education_desc,  tile: "" },
+    { ico: <Users size={18} />,       lbl: c.youth,      desc: c.youth_desc,      tile: "teal" },
+    { ico: <Activity size={18} />,    lbl: c.health,     desc: c.health_desc,     tile: "ink" },
+    { ico: <Briefcase size={18} />,   lbl: c.employment, desc: c.employment_desc, tile: "sun" },
+    { ico: <ShieldAlert size={18} />, lbl: c.emergency,  desc: c.emergency_desc,  tile: "" },
+  ];
+
   return (
     <section className="section" style={{ background: "transparent" }}>
       <Reveal>
         <div className="head-row">
           <div>
-            <span className="section-eyebrow"><span className="dot" />Browse by need</span>
-            <h2 className="section-title">Find what you need by <em>category</em>.</h2>
+            <span className="section-eyebrow"><span className="dot" />{c.eyebrow}</span>
+            <h2 className="section-title">{c.title} <em>{c.titleEm}</em></h2>
           </div>
-          <p className="section-sub">Eight curated areas of support — each backed by vetted partners and updated weekly.</p>
+          <p className="section-sub">{c.sub}</p>
         </div>
       </Reveal>
       <div className="cat-grid">
-        {cats.map((c, i) => (
+        {cats.map((cat, i) => (
           <Reveal key={i}>
-            <Link href={`/directory?cat=${encodeURIComponent(c.lbl)}`} className="cat">
-              <div className={`icon-tile ${c.tile}`}>{c.ico}</div>
-              <div className="lbl">{c.lbl}</div>
-              <div className="desc">{c.desc}</div>
+            <Link href={`/directory?cat=${encodeURIComponent(cat.lbl)}`} className="cat">
+              <div className={`icon-tile ${cat.tile}`}>{cat.ico}</div>
+              <div className="lbl">{cat.lbl}</div>
+              <div className="desc">{cat.desc}</div>
               <span className="arr"><ArrowRight size={14} /></span>
             </Link>
           </Reveal>
@@ -272,23 +277,24 @@ export function Categories() {
 }
 
 /* ─── News Preview ─── */
-const staticNewsItems = [
-  { tag: "Community", date: "May 10", title: "Tampa Expands Free Weekend Meal Programs for Students", desc: "New community initiatives are helping students access meals outside school hours.", link: "/news", t: "" },
-  { tag: "Youth",     date: "May 8",  title: "Youth Volunteer Opportunities Increase Across Hillsborough County", desc: "Local nonprofits are opening more leadership and volunteer opportunities for teens.", link: "/news", t: "t-2" },
-  { tag: "Wellness",  date: "May 6",  title: "Community Wellness Fair Scheduled for Downtown Tampa", desc: "Residents can access free health screenings, local vendors, and family activities.", link: "/news", t: "t-3" },
-];
-
-const thumbVariants = ["", "t-2", "t-3"];
-
 export function NewsTeaser({ news }: { news?: TampaGovNewsItem[] }) {
+  const { s } = useLanguage();
+  const n = s.news;
+
+  const staticNewsItems = [
+    { tag: n.tag_community, date: "May 10", title: n.item1_title, desc: n.item1_desc, link: "/news", imgUrl: COMMUNITY_FALLBACKS[0] },
+    { tag: n.tag_youth,     date: "May 8",  title: n.item2_title, desc: n.item2_desc, link: "/news", imgUrl: COMMUNITY_FALLBACKS[1] },
+    { tag: n.tag_wellness,  date: "May 6",  title: n.item3_title, desc: n.item3_desc, link: "/news", imgUrl: COMMUNITY_FALLBACKS[2] },
+  ];
+
   const items = news && news.length > 0
-    ? news.slice(0, 3).map((n, i) => ({
+    ? news.slice(0, 3).map((item, i) => ({
         tag: "City News",
-        date: fmtPubDate(n.pubDate),
-        title: n.title,
-        desc: n.description || "",
-        link: n.link || "/news",
-        t: thumbVariants[i] ?? "",
+        date: fmtPubDate(item.pubDate),
+        title: item.title,
+        desc: item.description || "",
+        link: item.link || "/news",
+        imgUrl: item.imageUrl || COMMUNITY_FALLBACKS[i % COMMUNITY_FALLBACKS.length],
       }))
     : staticNewsItems;
 
@@ -297,31 +303,28 @@ export function NewsTeaser({ news }: { news?: TampaGovNewsItem[] }) {
       <Reveal>
         <div className="head-row">
           <div>
-            <span className="section-eyebrow"><span className="dot" />Latest updates</span>
-            <h2 className="section-title">From the <em>community</em> wire.</h2>
+            <span className="section-eyebrow"><span className="dot" />{n.eyebrow}</span>
+            <h2 className="section-title">{n.title} <em>{n.titleEm}</em> {n.titleEnd}</h2>
           </div>
           <Link href="/news" className="btn-pill-ghost">
-            All stories <ArrowRight size={14} />
+            {n.allStories} <ArrowRight size={14} />
           </Link>
         </div>
       </Reveal>
       <div className="news-grid">
         {items.map((a, i) => (
           <Reveal key={i}>
-            <article className="news-card">
-              <div className={`thumb ${a.t}`}>
+            <article className="news-card news-card--equal">
+              <div className="thumb"
+                style={{ backgroundImage: `url(${a.imgUrl})`, backgroundSize: "cover", backgroundPosition: "center" }}>
                 <span className="tag">{a.tag}</span>
-                <svg width="120" height="120" viewBox="0 0 120 120" style={{ opacity: .35 }}>
-                  <circle cx="60" cy="60" r="44" fill="none" stroke="#fff" strokeWidth="2" />
-                  <circle cx="60" cy="60" r="22" fill="none" stroke="#fff" strokeWidth="1.5" />
-                </svg>
               </div>
               <div className="body">
                 <div className="meta"><span>{a.date}</span></div>
                 <h3>{a.title}</h3>
                 <p>{a.desc.slice(0, 120)}{a.desc.length > 120 ? "…" : ""}</p>
                 <a href={a.link} target="_blank" rel="noopener noreferrer" className="read-more">
-                  Read article <ArrowRight size={14} />
+                  {n.readArticle} <ArrowRight size={14} />
                 </a>
               </div>
             </article>
@@ -333,37 +336,52 @@ export function NewsTeaser({ news }: { news?: TampaGovNewsItem[] }) {
 }
 
 /* ─── Events Preview ─── */
-const staticEvents = [
-  { date: "May 12, 2026", title: "Tampa Family Resource Fair",    location: "Curtis Hixon Park",  category: "Family",   time: "10:00 AM – 4:00 PM" },
-  { date: "May 19, 2026", title: "Youth Leadership Workshop",     location: "Tampa Bay Y",         category: "Youth",    time: "1:00 PM – 5:00 PM" },
-  { date: "May 25, 2026", title: "Mental Health Awareness Walk",  location: "Bayshore Boulevard",  category: "Wellness", time: "8:00 AM – 11:00 AM" },
-] as Pick<CommunityEventWithSource, "date" | "title" | "location" | "category" | "time">[];
+const eventAccents = ["var(--coral)", "var(--teal)", "#e8b530"];
+const eventBgs = ["var(--coral-soft)", "var(--teal-soft)", "#fdf3da"];
+const eventTextColors = ["var(--coral)", "var(--teal)", "#b07a14"];
 
 export function EventsTeaser({ events }: { events?: CommunityEventWithSource[] }) {
-  const items = events && events.length > 0 ? events.slice(0, 3) : staticEvents;
+  const { s } = useLanguage();
+  const e = s.eventsTeaser;
+
+  const staticEvents = [
+    { date: "May 17, 2026", title: e.staticEv1, location: "Curtis Hixon Park",  category: "Family",   time: "10:00 AM – 4:00 PM" },
+    { date: "May 21, 2026", title: e.staticEv2, location: "Tampa Bay Y",         category: "Youth",    time: "1:00 PM – 5:00 PM" },
+    { date: "May 28, 2026", title: e.staticEv3, location: "Bayshore Boulevard",  category: "Wellness", time: "8:00 AM – 11:00 AM" },
+  ] as Pick<CommunityEventWithSource, "date" | "title" | "location" | "category" | "time">[];
+
+  const upcoming = (events ?? []).filter((ev) => isFutureOrToday(ev.date));
+  const items = upcoming.length > 0 ? upcoming.slice(0, 3) : staticEvents;
 
   return (
-    <section className="section">
+    <section className="section events-teaser-section">
+      <div className="events-teaser-bg" aria-hidden="true" />
       <Reveal>
         <div className="head-row">
           <div>
-            <span className="section-eyebrow"><span className="dot" />Upcoming</span>
-            <h2 className="section-title">Mark your <em>calendar</em>.</h2>
+            <span className="section-eyebrow">
+              <span className="dot" /><CalendarDays size={12} style={{ marginRight: 2 }} /> {e.eyebrow}
+            </span>
+            <h2 className="section-title">{e.title} <em>{e.titleEm}</em></h2>
+            <p className="section-sub" style={{ marginTop: 12 }}>{e.sub}</p>
           </div>
           <Link href="/events" className="btn-pill-ghost">
-            Full calendar <ArrowRight size={14} />
+            {e.fullCal} <ArrowRight size={14} />
           </Link>
         </div>
       </Reveal>
       <div className="event-stack">
         {items.map((ev, i) => {
           const { m, d, y } = parseEvtDate(ev.date);
+          const accent = eventAccents[i % eventAccents.length];
+          const bg = eventBgs[i % eventBgs.length];
+          const textColor = eventTextColors[i % eventTextColors.length];
           return (
             <Reveal key={i}>
-              <div className="event-row">
-                <div className="event-date">
-                  <span className="m">{m}</span>
-                  <span className="d">{d}</span>
+              <div className="event-row event-row--vivid" style={{ borderLeft: `4px solid ${accent}` }}>
+                <div className="event-date" style={{ background: bg, borderColor: accent + "40" }}>
+                  <span className="m" style={{ color: textColor }}>{m}</span>
+                  <span className="d" style={{ color: "var(--ink)" }}>{d}</span>
                   <span className="y">{y}</span>
                 </div>
                 <div className="event-info">
@@ -371,33 +389,47 @@ export function EventsTeaser({ events }: { events?: CommunityEventWithSource[] }
                   <div className="row">
                     <span><MapPin size={14} /> {ev.location}</span>
                     <span><Clock size={14} /> {ev.time}</span>
-                    <span className="badge-cat ink" style={{ padding: "4px 10px" }}>{ev.category}</span>
+                    <span className="badge-cat ink" style={{ padding: "4px 10px", background: bg, color: textColor }}>{ev.category}</span>
                   </div>
                 </div>
                 <Link href="/events" className="event-cta">
-                  View Details <ArrowRight size={14} />
+                  {e.viewDetails} <ArrowRight size={14} />
                 </Link>
               </div>
             </Reveal>
           );
         })}
       </div>
+      <Reveal>
+        <div className="events-teaser-footer">
+          <Sparkles size={15} style={{ color: "var(--coral)" }} />
+          <span>{e.updated}</span>
+        </div>
+      </Reveal>
     </section>
   );
 }
 
 /* ─── Insights Preview ─── */
 export function InsightsPreview({
-  resourceCount = 12,
-  eventCount = 25,
+  resourceCount = RESOURCE_COUNT,
+  eventCount = 0,
 }: {
   resourceCount?: number;
   eventCount?: number;
 }) {
+  const { s } = useLanguage();
+  const ins = s.insightsTeaser;
+  const categoryCount = CATEGORY_COUNT;
+
   const kpis = [
-    { n: 3284,          lbl: "Resource requests this month", delta: "+12.4%" },
-    { n: resourceCount, lbl: "Verified community resources",  delta: "Live"   },
-    { n: eventCount,    lbl: "Upcoming Tampa events",         delta: "This season" },
+    { n: resourceCount,                       lbl: ins.kpi1_lbl, delta: ins.kpi1_delta },
+    { n: categoryCount,                       lbl: ins.kpi2_lbl, delta: ins.kpi2_delta },
+    {
+      n: eventCount > 0 ? eventCount : resourceCount,
+      lbl: eventCount > 0 ? ins.kpi3_lbl_events : ins.kpi3_lbl_res,
+      delta: eventCount > 0 ? ins.kpi3_delta_events : ins.kpi3_delta_res,
+    },
   ];
 
   return (
@@ -405,11 +437,13 @@ export function InsightsPreview({
       <Reveal>
         <div className="head-row">
           <div>
-            <span className="section-eyebrow"><span className="dot" />Data</span>
-            <h2 className="section-title">Community <em>impact</em> at a glance.</h2>
+            <span className="section-eyebrow"><span className="dot" />{ins.eyebrow}</span>
+            <h2 className="section-title">
+              {ins.title} <em>{ins.titleEm}</em> {ins.titleEnd}
+            </h2>
           </div>
           <Link href="/insights" className="btn-pill-ghost">
-            Full insights <ArrowRight size={14} />
+            {ins.fullInsights} <ArrowRight size={14} />
           </Link>
         </div>
       </Reveal>
@@ -419,9 +453,7 @@ export function InsightsPreview({
             <div className="insight kpi-card" style={{ background: "var(--paper)", border: "1px solid var(--line)", borderRadius: "var(--r-xl)", padding: 24, display: "flex", flexDirection: "column" }}>
               <div className="lbl">{k.lbl}</div>
               <div className="num"><Counter to={k.n} /></div>
-              <span className="delta up">
-                <TrendingUp size={11} /> {k.delta}
-              </span>
+              <span className="delta up"><TrendingUp size={11} /> {k.delta}</span>
             </div>
           </Reveal>
         ))}
@@ -432,6 +464,8 @@ export function InsightsPreview({
 
 /* ─── CTA Section ─── */
 export function CTASection() {
+  const { s } = useLanguage();
+  const c = s.cta;
   return (
     <Reveal>
       <div className="big-cta">
@@ -439,30 +473,19 @@ export function CTASection() {
         <span className="glass-orb b" />
         <span className="glass-orb c" />
         <div className="inner">
-          <span className="section-eyebrow"><span className="dot" />Get involved</span>
-          <h2>Helping Tampa <em>communities</em><br />stay connected.</h2>
-          <p>Explore trusted local resources, discover community events, and support organizations making a difference throughout Tampa Bay.</p>
+          <span className="section-eyebrow"><span className="dot" />{c.eyebrow}</span>
+          <h2>{c.title} <em>{c.titleEm}</em><br />{c.titleEnd}</h2>
+          <p>{c.sub}</p>
           <div className="ctas">
-            <HoverGlow
-              size="lg"
-              background="#0E1525"
-              glowColor="#FFB37A"
-              color="#fff"
-              hoverColor="#FFD8B8"
-              icon={<ArrowRight size={16} />}
-              onClick={() => (window.location.href = "/directory")}
-            >
-              Explore Resources
+            <HoverGlow size="lg" background="#0E1525" glowColor="#5bc8f0"
+              color="#fff" hoverColor="#b8e8f8" icon={<ArrowRight size={16} />}
+              onClick={() => (window.location.href = "/directory")}>
+              {c.explore}
             </HoverGlow>
-            <HoverGlow
-              size="lg"
-              background="#fff"
-              glowColor="#5fd1c8"
-              color="#0E1525"
-              hoverColor="#0f3a3a"
-              onClick={() => (window.location.href = "/submit")}
-            >
-              <Plus size={14} /> Submit a Resource
+            <HoverGlow size="lg" background="#fff" glowColor="#5fd1c8"
+              color="#0E1525" hoverColor="#0f3a3a"
+              onClick={() => (window.location.href = "/submit")}>
+              <Plus size={14} /> {c.submit}
             </HoverGlow>
           </div>
         </div>

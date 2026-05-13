@@ -4,10 +4,10 @@ import { Reveal } from "@/components/reveal";
 import { Counter } from "@/components/counter";
 import { TAMPA_RESOURCES } from "@/lib/resources";
 import { getTampaGovEvents } from "@/lib/tampa-api";
-import { TrendingUp, ArrowUpRight } from "lucide-react";
+import { TrendingUp, ArrowUpRight, RefreshCw } from "lucide-react";
 import type { CommunityEventWithSource } from "@/lib/resources";
 
-// Compute category breakdown from real resources
+/* ─── Compute category breakdown from real resources ─── */
 function buildCategoryStats(resources: typeof TAMPA_RESOURCES) {
   const counts: Record<string, number> = {};
   for (const r of resources) {
@@ -24,11 +24,6 @@ function buildCategoryStats(resources: typeof TAMPA_RESOURCES) {
 }
 
 const PALETTE = ["#e85a3a", "#2d8a8a", "#f5b945", "#0c1220", "#c8c1b6", "#6b6055"];
-
-const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
-const foodData  = [42, 48, 55, 62, 71, 84];
-const mentalData = [22, 28, 34, 38, 45, 52];
-const maxV = Math.max(...foodData, ...mentalData);
 
 const spark = [4, 8, 6, 12, 10, 18, 16, 22, 20, 28, 26, 34, 32, 40];
 const spW = 280, spH = 60;
@@ -59,10 +54,11 @@ export default async function InsightsPage() {
 
   const catStats = buildCategoryStats(TAMPA_RESOURCES);
   const totalResources = TAMPA_RESOURCES.length;
+  const categoryCount = catStats.length;
   const featuredPartners = TAMPA_RESOURCES.filter((r) => r.featured);
-  const eventCount = events.length || 25;
+  const eventCount = events.length;
 
-  // Build donut segments from real category data (top 5 + Other)
+  /* ─── Donut from real category data (top 5 + Other) ─── */
   const topCats = catStats.slice(0, 5);
   const otherPct = catStats.slice(5).reduce((s, c) => s + c.pct, 0);
   const donutSegs = [
@@ -70,33 +66,42 @@ export default async function InsightsPage() {
     ...(otherPct > 0 ? [{ lbl: "Other", pct: otherPct, color: PALETTE[5] }] : []),
   ];
   const donutTotal = donutSegs.reduce((s, c) => s + c.pct, 0);
-  // Normalize to 100 if rounding caused drift
   if (donutTotal !== 100 && donutSegs.length > 0) {
     donutSegs[donutSegs.length - 1].pct += 100 - donutTotal;
   }
-
   const arcs = buildDonut(donutSegs);
+
+  /* ─── Bar chart: real category counts ─── */
+  const barCats = catStats.slice(0, 6);
+  const maxCount = Math.max(...barCats.map((c) => c.count), 1);
+
+  /* ─── Last-updated timestamp ─── */
+  const updatedAt = new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
 
   return (
     <>
       <Navbar />
-      <main style={{ background: "linear-gradient(180deg, #e2ece8 0%, #efe7d6 100%)" }}>
+      <main style={{ background: "linear-gradient(180deg, #c4dded 0%, #c8e8e2 100%)" }}>
         <section id="insights" className="section">
           <Reveal>
             <span className="section-eyebrow"><span className="dot" />Data</span>
             <h2 className="section-title">Community <em>Insights</em>.</h2>
             <p className="section-sub">
-              Understanding trends, needs, and opportunities across Tampa communities.
-              Data sourced from {totalResources} verified partner organizations.
+              Real data from {totalResources} verified partner organizations across {categoryCount} support categories in Tampa Bay.
             </p>
+            <div className="insights-updated">
+              <RefreshCw size={11} />
+              Data refreshed at {updatedAt} — sourced from live Tampa.gov feed and partner directory
+            </div>
           </Reveal>
 
           <div className="insights-grid">
+            {/* KPI 1 — Verified resources (real) */}
             <Reveal className="i-2">
               <div className="insight kpi-card">
-                <div className="lbl">Resource requests · this month</div>
-                <div className="num"><Counter to={3284} /></div>
-                <span className="delta up"><TrendingUp size={11} /> +12.4% vs last month</span>
+                <div className="lbl">Verified resources in directory</div>
+                <div className="num"><Counter to={totalResources} /></div>
+                <span className="delta up"><TrendingUp size={11} /> Live data</span>
                 <svg className="spark" viewBox={`0 0 ${spW} ${spH}`} preserveAspectRatio="none">
                   <path d={spPath} fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
                   <path d={`${spPath} L ${spW} ${spH} L 0 ${spH} Z`} fill="var(--coral)" opacity=".12" />
@@ -104,56 +109,74 @@ export default async function InsightsPage() {
               </div>
             </Reveal>
 
+            {/* KPI 2 — Support categories (real) */}
             <Reveal className="i-2">
               <div className="insight kpi-card">
-                <div className="lbl">Verified resources in directory</div>
-                <div className="num"><Counter to={totalResources} /></div>
-                <span className="delta up"><TrendingUp size={11} /> Live data</span>
+                <div className="lbl">Support categories covered</div>
+                <div className="num"><Counter to={categoryCount} /></div>
+                <span className="delta up"><TrendingUp size={11} /> From food to legal aid</span>
                 <div className="progress-list" style={{ marginTop: 18 }}>
                   <div className="progress-item">
-                    <div className="top"><span className="l">Coverage goal · 25</span><span className="r">{Math.round((totalResources / 25) * 100)}%</span></div>
-                    <div className="track"><div className="fill" style={{ width: `${Math.min((totalResources / 25) * 100, 100)}%` }} /></div>
+                    <div className="top"><span className="l">Coverage goal · 12</span><span className="r">{Math.round((categoryCount / 12) * 100)}%</span></div>
+                    <div className="track"><div className="fill" style={{ width: `${Math.min((categoryCount / 12) * 100, 100)}%` }} /></div>
                   </div>
                 </div>
               </div>
             </Reveal>
 
+            {/* KPI 3 — Upcoming events (real or labeled clearly) */}
             <Reveal className="i-2">
               <div className="insight kpi-card">
                 <div className="lbl">Upcoming city events tracked</div>
-                <div className="num"><em>{eventCount}</em></div>
-                <span className="delta up"><TrendingUp size={11} /> Live from Tampa.gov</span>
+                <div className="num">
+                  {eventCount > 0 ? <Counter to={eventCount} /> : <em style={{ fontSize: 28 }}>Live</em>}
+                </div>
+                <span className="delta up"><TrendingUp size={11} /> From Tampa.gov</span>
                 <div style={{ display: "flex", gap: 4, marginTop: 18 }}>
                   {Array.from({ length: 14 }).map((_, i) => (
-                    <div key={i} style={{ width: 8, height: 28, background: i < Math.min(Math.round((eventCount / 50) * 14), 14) ? "var(--coral)" : "var(--sand)", borderRadius: 3 }} />
+                    <div
+                      key={i}
+                      style={{
+                        width: 8, height: 28,
+                        background: eventCount > 0 && i < Math.min(Math.round((eventCount / 50) * 14), 14)
+                          ? "var(--coral)"
+                          : "var(--sand)",
+                        borderRadius: 3,
+                      }}
+                    />
                   ))}
                 </div>
               </div>
             </Reveal>
 
+            {/* Bar chart — real category distribution (replacing fake monthly data) */}
             <Reveal className="i-4">
               <div className="insight chart-card">
                 <div className="head">
-                  <h4>Resource requests by category</h4>
-                  <div className="legend">
-                    <span><i style={{ background: "var(--coral)" }} /> Food</span>
-                    <span><i style={{ background: "var(--teal)" }} /> Mental Health</span>
+                  <h4>Resources by category — actual distribution</h4>
+                  <div className="legend" style={{ fontSize: 11, color: "var(--mute)" }}>
+                    Live from {totalResources} partner organizations
                   </div>
                 </div>
                 <div className="bar-chart">
-                  {months.map((m, i) => (
-                    <div key={m} className="col">
+                  {barCats.map((cat, i) => (
+                    <div key={cat.lbl} className="col" title={`${cat.lbl}: ${cat.count} resource${cat.count !== 1 ? "s" : ""}`}>
                       <div style={{ display: "flex", gap: 4, alignItems: "flex-end", width: "100%", justifyContent: "center", height: "100%" }}>
-                        <div className="bar" style={{ height: `${(foodData[i] / maxV) * 100}%` }} />
-                        <div className="bar t-2" style={{ height: `${(mentalData[i] / maxV) * 100}%` }} />
+                        <div
+                          className={`bar ${i % 2 === 1 ? "t-2" : ""}`}
+                          style={{ height: `${(cat.count / maxCount) * 100}%` }}
+                        />
                       </div>
-                      <span className="lbl">{m}</span>
+                      <span className="lbl" style={{ fontSize: 10, textAlign: "center", lineHeight: 1.2 }}>
+                        {cat.lbl.split(" ")[0]}
+                      </span>
                     </div>
                   ))}
                 </div>
               </div>
             </Reveal>
 
+            {/* Donut — real category mix */}
             <Reveal className="i-2">
               <div className="insight chart-card">
                 <div className="head"><h4>Category mix · {totalResources} resources</h4></div>
@@ -177,23 +200,25 @@ export default async function InsightsPage() {
               </div>
             </Reveal>
 
+            {/* Callouts — updated with real/verifiable data */}
             <Reveal className="i-6">
               <div className="callouts">
                 <div className="callout t-coral">
-                  <div className="num-big"><Counter to={1} /><em>st</em></div>
-                  <p>Food insecurity remains the most requested community support service this season.</p>
+                  <div className="num-big"><Counter to={1} /><em>M+</em></div>
+                  <p>Residents reached annually by Feeding Tampa Bay alone — the region&apos;s largest food rescue network.</p>
                 </div>
                 <div className="callout t-teal">
-                  <div className="num-big">+<Counter to={37} />%</div>
-                  <p>Youth mentorship participation has increased significantly in the last year across Tampa Bay.</p>
+                  <div className="num-big"><Counter to={7} /><em>K+</em></div>
+                  <p>Youth served each year by Boys &amp; Girls Clubs of Tampa Bay across Hillsborough County.</p>
                 </div>
                 <div className="callout">
                   <div className="num-big"><Counter to={totalResources} /></div>
-                  <p>Verified community organizations now active in the Tampa Resource Hub directory.</p>
+                  <p>Verified community organizations active in the Tampa Resource Hub directory — all free to access.</p>
                 </div>
               </div>
             </Reveal>
 
+            {/* Progress bars — real category data */}
             <Reveal className="i-3">
               <div className="insight">
                 <h4 style={{ fontSize: 17, margin: "0 0 18px", fontWeight: 500 }}>Resources by category</h4>
@@ -207,7 +232,7 @@ export default async function InsightsPage() {
                       <div className="track">
                         <div
                           className={`fill ${i === 1 ? "t-teal" : i === 2 ? "t-sun" : i === 4 ? "t-teal" : ""}`}
-                          style={{ width: `${cat.pct * 3}%` }}
+                          style={{ width: `${Math.min(cat.pct * 3, 100)}%` }}
                         />
                       </div>
                     </div>
@@ -216,6 +241,7 @@ export default async function InsightsPage() {
               </div>
             </Reveal>
 
+            {/* Partner highlights — real data from featured resources */}
             <Reveal className="i-3">
               <div className="insight">
                 <h4 style={{ fontSize: 17, margin: "0 0 18px", fontWeight: 500 }}>Partner highlights</h4>
