@@ -91,9 +91,9 @@ export function Hero({ eventCount = 0 }: { eventCount?: number }) {
         <div className="nav-spacer" />
         <div className="hero-inner">
           <h1 className="hero-h1">
-            {h.lineA}<br />
-            <em>{h.lineEm}</em> {h.lineB}
+            <em>Tampa Resource Hub</em>
           </h1>
+          <p className="hero-tagline">{h.lineA} <em>{h.lineEm}</em> {h.lineB}</p>
           <p className="hero-sub">{h.sub}</p>
           <div className="hero-ctas">
             <HoverGlow size="lg" background="#0E1525" glowColor="#5bc8f0"
