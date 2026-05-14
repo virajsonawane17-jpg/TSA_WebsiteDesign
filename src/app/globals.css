@@ -370,17 +370,17 @@
 .crisis-btn {
   width: 34px; height: 34px; border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
-  background: rgba(23,135,184,.12);
-  border: 1.5px solid rgba(23,135,184,.45);
-  color: var(--coral);
+  background: rgba(220,38,38,.15);
+  border: 1.5px solid rgba(220,38,38,.6);
+  color: #dc2626;
   text-decoration: none;
   animation: crisis-pulse 2.4s ease-in-out infinite;
   transition: background .2s;
 }
-.crisis-btn:hover { background: rgba(23,135,184,.22); }
+.crisis-btn:hover { background: rgba(220,38,38,.28); }
 @keyframes crisis-pulse {
-  0%, 100% { box-shadow: 0 0 6px rgba(23,135,184,.35); }
-  50%       { box-shadow: 0 0 16px rgba(23,135,184,.7), 0 0 28px rgba(23,135,184,.25); }
+  0%, 100% { box-shadow: 0 0 6px rgba(220,38,38,.4); }
+  50%       { box-shadow: 0 0 16px rgba(220,38,38,.75), 0 0 28px rgba(220,38,38,.3); }
 }
 
 #home, #resources, #news, #events, #insights, #submit, #references {
