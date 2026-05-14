@@ -61,10 +61,13 @@ function ResourceCard({
   onToggle: () => void;
   onSelect: () => void;
 }) {
-  const { s } = useLanguage();
+  const { s, lang } = useLanguage();
   const d = s.directory;
   const initial = r.name.charAt(0).toUpperCase();
   const tone = CAT_TONE[r.category] ?? "";
+  const catLabel = s.catMap[r.category] ?? r.category;
+  const desc = lang === "es" ? (r.descriptionEs || r.description) : r.description;
+  const longDesc = lang === "es" ? (r.longDescriptionEs || r.longDescription || r.description) : (r.longDescription || r.description);
   const phoneDigits = extractPhone(r.phone || "");
 
   const handleShare = useCallback(async () => {
@@ -94,7 +97,7 @@ function ResourceCard({
         <div className="info">
           <h3 className="name">{r.name}</h3>
           <div className="meta">
-            <span className={`badge-cat ${tone}`}>{r.category}</span>
+            <span className={`badge-cat ${tone}`}>{catLabel}</span>
             <span><MapPin size={12} /> {r.location.split(",")[1]?.trim() || "Tampa, FL"}</span>
             {r.phone && <span><Phone size={12} /> {r.phone}</span>}
           </div>
@@ -131,7 +134,7 @@ function ResourceCard({
         </div>
       </div>
       <div className="res-body">
-        <p>{r.description}</p>
+        <p>{desc}</p>
         <button className="toggle-expand" onClick={onToggle}>
           {expanded ? d.hideDetails : d.seeDetails}
           <ChevronDown size={14} style={{ transform: expanded ? "rotate(180deg)" : "none", transition: "transform .2s" }} />
@@ -141,7 +144,7 @@ function ResourceCard({
             <div>
               <h5>{d.about}</h5>
               <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--ink)" }}>
-                {r.longDescription || r.description}
+                {longDesc}
               </p>
               {r.audiences.length > 0 && (
                 <>
@@ -149,7 +152,7 @@ function ResourceCard({
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 6 }}>
                     {r.audiences.map((a) => (
                       <span key={a} style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 12, padding: "3px 10px", background: "var(--sand)", borderRadius: 20, color: "var(--ink)" }}>
-                        <Check size={10} /> {a}
+                        <Check size={10} /> {s.audienceMap[a] ?? a}
                       </span>
                     ))}
                   </div>

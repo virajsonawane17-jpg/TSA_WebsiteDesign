@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { TRHMark } from "@/components/trh-mark";
-import { ArrowRight, Plus, Menu, X } from "lucide-react";
+import { ArrowRight, Plus, Menu, X, AlertTriangle } from "lucide-react";
 import { useLanguage } from "@/contexts/language-context";
 import type { Lang } from "@/lib/i18n";
 
@@ -55,6 +55,9 @@ export function Navbar() {
         </div>
 
         <div className="nav-right">
+          <Link href="/emergency" className="crisis-btn" aria-label="Emergency Resources">
+            <AlertTriangle size={15} />
+          </Link>
           {/* Language toggle */}
           <div className="lang-toggle" role="group" aria-label="Language">
             {(["en", "es"] as Lang[]).map((l) => (
@@ -117,6 +120,7 @@ export function Navbar() {
           </div>
         )}
       </nav>
+
     </div>
   );
 }

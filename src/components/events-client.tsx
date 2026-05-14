@@ -1,19 +1,19 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { Reveal } from "@/components/reveal";
 import { HoverGlow } from "@/components/hover-glow";
 import type { CommunityEventWithSource } from "@/lib/resources";
 import { useLanguage } from "@/contexts/language-context";
+import { translateItemList } from "@/lib/translate";
 import {
   ArrowRight, MapPin, Clock, Users, Calendar,
   CalendarDays, List, ChevronLeft, ChevronRight,
   ExternalLink, RefreshCw, X,
 } from "lucide-react";
 
-const DOWS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 interface ParsedDate {
   year: number;
@@ -51,8 +51,8 @@ function fmtEvtDate(dateStr: string) {
   };
 }
 
-function monthLabel(year: number, month: number) {
-  return new Date(year, month - 1, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+function monthLabel(year: number, month: number, locale: string) {
+  return new Date(year, month - 1, 1).toLocaleDateString(locale, { month: "long", year: "numeric" });
 }
 
 function addToGoogleCalendar(ev: CommunityEventWithSource) {
@@ -77,20 +77,33 @@ const eventAccentColors = [
 ];
 
 export function EventsClient({ events }: { events: CommunityEventWithSource[] }) {
-  const { s } = useLanguage();
+  const { s, lang } = useLanguage();
   const ev = s.events;
+  const locale = lang === "es" ? "es-US" : "en-US";
+
+  const [txEvents, setTxEvents] = useState(events);
+
+  useEffect(() => {
+    if (lang !== "es") { setTxEvents(events); return; }
+    let cancelled = false;
+    translateItemList(events, ["title", "description"] as (keyof CommunityEventWithSource)[], "es")
+      .then((translated) => { if (!cancelled) setTxEvents(translated); });
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang]);
+  const DOWS = ev.dows;
   const now = new Date();
   const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   const [calYear,  setCalYear]  = useState(now.getFullYear());
   const [calMonth, setCalMonth] = useState(now.getMonth() + 1);
-  const [activeFilter, setActiveFilter] = useState("All Events");
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"calendar" | "list">("list");
   const [modalDay, setModalDay] = useState<number | null>(null);
 
   /* ─── Upcoming events only (≥ today, sorted asc) ─── */
   const upcomingEvents = useMemo(() => {
-    return events
+    return txEvents
       .filter((ev) => {
         const p = parseDate(ev.date);
         if (!p) return true;
@@ -103,20 +116,20 @@ export function EventsClient({ events }: { events: CommunityEventWithSource[] })
              - new Date(pb.year, pb.month - 1, pb.day).getTime();
       });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [events]);
+  }, [txEvents]);
 
   const categories = useMemo(() => {
     const cats = new Set(upcomingEvents.map((e) => e.category));
-    return [ev.allEvents, ...Array.from(cats).slice(0, 6)];
+    return Array.from(cats).slice(0, 6);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [upcomingEvents, ev.allEvents]);
+  }, [upcomingEvents]);
 
   const filteredEvents = useMemo(() => {
-    return activeFilter === ev.allEvents
+    return activeFilter === null
       ? upcomingEvents
       : upcomingEvents.filter((e) => e.category === activeFilter);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [upcomingEvents, activeFilter, ev.allEvents]);
+  }, [upcomingEvents, activeFilter]);
 
   /* ─── Events grouped by day in current calendar month ─── */
   const eventsByDay = useMemo(() => {
@@ -182,7 +195,7 @@ export function EventsClient({ events }: { events: CommunityEventWithSource[] })
             <h2 className="section-title">{ev.pageTitle} <em>{ev.pageTitleEm}</em></h2>
             <p className="section-sub">
               {upcomingEvents.length > 0
-                ? `${upcomingEvents.length} ${ev.countSuffix} — live from the City of Tampa and community partners, updated daily.`
+                ? `${upcomingEvents.length} ${ev.countSuffix} ${ev.countDesc}`
                 : ev.noEvents}
             </p>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10 }}>
@@ -256,6 +269,12 @@ export function EventsClient({ events }: { events: CommunityEventWithSource[] })
                 </button>
               </div>
               <div className="filter-row" style={{ margin: 0 }}>
+                <button
+                  className={`tag-chip ${activeFilter === null ? "active" : ""}`}
+                  onClick={() => setActiveFilter(null)}
+                >
+                  {ev.allEvents}
+                </button>
                 {categories.map((c) => (
                   <button
                     key={c}
@@ -274,7 +293,7 @@ export function EventsClient({ events }: { events: CommunityEventWithSource[] })
             <Reveal>
               <div className="calendar" style={{ marginTop: 0 }}>
                 <div className="cal-head">
-                  <h4>{monthLabel(calYear, calMonth)}</h4>
+                  <h4>{monthLabel(calYear, calMonth, locale)}</h4>
                   <div className="cal-nav">
                     <button className="icon-btn" onClick={prevMonth}><ChevronLeft size={14} /></button>
                     <button className="icon-btn" onClick={nextMonth}><ChevronRight size={14} /></button>
@@ -304,7 +323,7 @@ export function EventsClient({ events }: { events: CommunityEventWithSource[] })
                       >
                         {d.n !== "" && d.n}
                         {hasEvents && (
-                          <span className="cal-evt-badge" title={`${eventsOnDay.length} event${eventsOnDay.length !== 1 ? "s" : ""}`}>
+                          <span className="cal-evt-badge" title={`${eventsOnDay.length} ${eventsOnDay.length !== 1 ? ev.eventsSuffix : ev.eventSuffix}`}>
                             {eventsOnDay.length}
                           </span>
                         )}
@@ -339,10 +358,10 @@ export function EventsClient({ events }: { events: CommunityEventWithSource[] })
                     <div className="cal-modal-head">
                       <div>
                         <h4>
-                          {monthLabel(calYear, calMonth).split(" ")[0]} {modalDay}, {calYear}
+                          {monthLabel(calYear, calMonth, locale).split(" ")[0]} {modalDay}, {calYear}
                         </h4>
                         <span style={{ fontSize: 13, color: "var(--mute)" }}>
-                          {modalEvents.length} event{modalEvents.length !== 1 ? "s" : ""}
+                          {modalEvents.length} {modalEvents.length !== 1 ? ev.eventsSuffix : ev.eventSuffix}
                         </span>
                       </div>
                       <button className="cal-modal-close" onClick={() => setModalDay(null)}>

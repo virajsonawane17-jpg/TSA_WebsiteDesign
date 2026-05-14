@@ -24,7 +24,7 @@ function Field({ k, label, type = "text", full = false, options, vals, set, sele
   return (
     <div className={`fl-field ${has ? "has-val" : ""} ${full ? "full" : ""}`}>
       {options ? (
-        <select value={vals[k] || ""} onChange={(e) => set(k, e.target.value)}>
+        <select value={vals[k] || ""} className={!vals[k] ? "no-val" : ""} onChange={(e) => set(k, e.target.value)}>
           <option value="">{selectPlaceholder || ""}</option>
           {options.map((o) => <option key={o} value={o}>{o}</option>)}
         </select>
@@ -44,6 +44,7 @@ export default function SubmitPage() {
 
   const [vals, setVals] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [logoName, setLogoName] = useState<string | null>(null);
   const set = (k: string, v: string) => setVals((prev) => ({ ...prev, [k]: v }));
 
   return (
@@ -71,11 +72,17 @@ export default function SubmitPage() {
                   <Field k="desc"     label={sub.description} type="textarea" full                vals={vals} set={set} />
                   <Field k="services" label={sub.services} type="textarea" full                   vals={vals} set={set} />
                   <div className="full">
-                    <div className="upload">
+                    <label className="upload" style={{ cursor: "pointer", display: "block" }}>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={(e) => setLogoName(e.target.files?.[0]?.name ?? null)}
+                      />
                       <div className="ico"><Upload size={24} /></div>
-                      <div className="lbl">{sub.uploadLabel}</div>
+                      <div className="lbl">{logoName ?? sub.uploadLabel}</div>
                       <div className="sub">{sub.uploadSub}</div>
-                    </div>
+                    </label>
                   </div>
                   <Field k="notes" label={sub.notes} type="textarea" full                        vals={vals} set={set} />
                 </div>

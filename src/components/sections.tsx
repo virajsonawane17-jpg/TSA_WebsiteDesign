@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import { Counter } from "@/components/counter";
@@ -8,6 +9,7 @@ import { TAMPA_RESOURCES } from "@/lib/resources";
 import type { CommunityEventWithSource } from "@/lib/resources";
 import type { TampaGovNewsItem } from "@/lib/tampa-api";
 import { useLanguage } from "@/contexts/language-context";
+import { translateItemList } from "@/lib/translate";
 import {
   ArrowRight, Plus, Utensils, Heart, Home, Book,
   Users, Activity, Briefcase, ShieldAlert, MapPin, Clock,

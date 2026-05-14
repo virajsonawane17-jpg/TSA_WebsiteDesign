@@ -1,4 +1,4 @@
-import { Navbar, Footer, EmergencyBanner } from "@/components/layout-elements";
+import { Navbar, Footer } from "@/components/layout-elements";
 import { getResourceById, getResources } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { motion } from "framer-motion";
@@ -39,7 +39,6 @@ export default async function ResourceDetailPage({ params }: PageProps) {
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F7F9FB]">
-      <EmergencyBanner />
       <Navbar />
       
       <main className="flex-grow">

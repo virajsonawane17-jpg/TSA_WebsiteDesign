@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Navbar, Footer, EmergencyBanner } from "@/components/layout-elements";
+import { Navbar, Footer } from "@/components/layout-elements";
 import type { CommunityEventWithSource } from "@/lib/resources";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -15,6 +15,8 @@ import {
   Waves,
 } from "lucide-react";
 import Link from "next/link";
+import { useLanguage } from "@/contexts/language-context";
+import { translateItemList } from "@/lib/translate";
 
 /* ─── Wave divider (local) ─── */
 function WaveDivider({ fill = "#ffffff" }: { fill?: string }) {
@@ -106,6 +108,8 @@ function DateBadge({ dateStr }: { dateStr: string }) {
 
 /* ─── Single event card ─── */
 function EventCard({ event, idx }: { event: CommunityEventWithSource; idx: number }) {
+  const { s, lang } = useLanguage();
+  const ev = s.events;
   const isFeatured = event.featured;
   const isTampaGov = event.source === "tampa_gov";
 
@@ -137,20 +141,20 @@ function EventCard({ event, idx }: { event: CommunityEventWithSource; idx: numbe
             className="absolute bottom-3 left-3 text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full text-white"
             style={{ backgroundColor: "oklch(0.49 0.118 212 / 0.85)", backdropFilter: "blur(4px)" }}
           >
-            {event.category}
+            {(s.catMap as Record<string,string>)[event.category] ?? event.category}
           </span>
 
           {/* Source badge — top-right */}
           {isTampaGov ? (
             <span className="absolute top-3 right-3 flex items-center gap-1 text-[10px] font-semibold bg-white/90 backdrop-blur-sm text-primary rounded-full px-2.5 py-1">
               <Building2 className="w-3 h-3" />
-              City of Tampa
+              {ev.cityOfTampa}
             </span>
           ) : (
             <span className="absolute top-3 right-3 flex items-center gap-1 text-[10px] font-semibold bg-white/90 backdrop-blur-sm rounded-full px-2.5 py-1"
               style={{ color: "oklch(0.655 0.197 10)" }}>
               <Ticket className="w-3 h-3" />
-              Free / Open
+              {ev.freeOpen}
             </span>
           )}
 
@@ -158,7 +162,7 @@ function EventCard({ event, idx }: { event: CommunityEventWithSource; idx: numbe
           {isFeatured && (
             <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full text-white"
               style={{ backgroundColor: "oklch(0.655 0.197 10)" }}>
-              ★ Featured
+              ★ {ev.featured}
             </span>
           )}
         </div>
@@ -178,7 +182,7 @@ function EventCard({ event, idx }: { event: CommunityEventWithSource; idx: numbe
           <div className="space-y-2 mb-4">
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <Clock className="w-4 h-4 text-secondary shrink-0" />
-              <span>{event.time || "See event page for time"}</span>
+              <span>{event.time || ev.seeEventTime}</span>
             </div>
             <div className="flex items-start gap-2 text-sm text-gray-500">
               <MapPin className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
@@ -201,7 +205,7 @@ function EventCard({ event, idx }: { event: CommunityEventWithSource; idx: numbe
             className="inline-flex items-center justify-center gap-2 w-full py-3 rounded-xl font-semibold text-sm text-white transition-all duration-300 hover:opacity-90 hover:shadow-md mt-auto"
             style={{ backgroundColor: "oklch(0.235 0.068 213)" }}
           >
-            View Event Details
+            {ev.viewDetails}
             <ExternalLink className="w-4 h-4" />
           </a>
         </div>
@@ -250,6 +254,18 @@ type SourceFilter = "all" | "tampa_gov" | "community";
 export function EventsContent({ events }: { events: CommunityEventWithSource[] }) {
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterSource, setFilterSource] = useState<SourceFilter>("all");
+  const { s, lang } = useLanguage();
+  const ev = s.events;
+  const [txEvents, setTxEvents] = useState<CommunityEventWithSource[]>(events);
+
+  useEffect(() => {
+    if (lang !== "es") { setTxEvents(events); return; }
+    let cancelled = false;
+    translateItemList(events, ["title", "description"] as (keyof CommunityEventWithSource)[], "es")
+      .then((result) => { if (!cancelled) setTxEvents(result); });
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang, events]);
 
   const categories = useMemo(
     () => Array.from(new Set(events.map((e) => e.category).filter(Boolean))).sort(),
@@ -257,16 +273,15 @@ export function EventsContent({ events }: { events: CommunityEventWithSource[] }
   );
 
   const filtered = useMemo(() => {
-    let list = [...events];
+    let list = [...txEvents];
     if (filterCategory !== "all") list = list.filter((e) => e.category === filterCategory);
     if (filterSource === "tampa_gov") list = list.filter((e) => e.source === "tampa_gov");
     else if (filterSource === "community") list = list.filter((e) => e.source !== "tampa_gov");
     return list;
-  }, [events, filterCategory, filterSource]);
+  }, [txEvents, filterCategory, filterSource]);
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
-      <EmergencyBanner />
       <Navbar />
 
       <main className="flex-grow">
@@ -280,7 +295,7 @@ export function EventsContent({ events }: { events: CommunityEventWithSource[] }
             {/* Label */}
             <div className="inline-flex items-center gap-2 text-white/60 text-sm mb-6">
               <Waves className="w-4 h-4" />
-              <span className="font-medium tracking-wide">Tampa Bay Community Calendar</span>
+              <span className="font-medium tracking-wide">{ev.calendarLabel}</span>
             </div>
 
             {/* Heading */}
@@ -288,9 +303,9 @@ export function EventsContent({ events }: { events: CommunityEventWithSource[] }
               className="font-black text-white leading-tight mb-4"
               style={{ fontSize: "clamp(2.5rem, 7vw, 5rem)", letterSpacing: "-0.025em" }}
             >
-              Community
+              {lang === "es" ? "Comunidad" : "Community"}
               <span style={{ color: "oklch(0.655 0.197 10)" }}>*</span>
-              Events
+              {lang === "es" ? "Eventos" : "Events"}
             </h1>
 
             {/* Animated script underline */}
@@ -310,19 +325,18 @@ export function EventsContent({ events }: { events: CommunityEventWithSource[] }
             </div>
 
             <p className="text-white/60 max-w-xl mx-auto text-base mb-4">
-              Workshops, festivals, job fairs, and neighborhood gatherings — including official
-              City of Tampa events, all in one place.
+              {ev.headerSub}
             </p>
 
             {/* Stats chips */}
             <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
               <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-white/80 bg-white/10 backdrop-blur-sm border border-white/15 px-3 py-1.5 rounded-full">
                 <Calendar className="w-3.5 h-3.5" />
-                {events.length} upcoming events
+                {events.length} {ev.countSuffix}
               </span>
               <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-white/80 bg-white/10 backdrop-blur-sm border border-white/15 px-3 py-1.5 rounded-full">
                 <Building2 className="w-3.5 h-3.5" />
-                {events.filter((e) => e.source === "tampa_gov").length} from City of Tampa
+                {events.filter((e) => e.source === "tampa_gov").length} {ev.fromCity}
               </span>
             </div>
           </div>
@@ -336,7 +350,7 @@ export function EventsContent({ events }: { events: CommunityEventWithSource[] }
             {/* Category pills */}
             <div className="flex flex-wrap gap-2 items-center">
               <PillBtn active={filterCategory === "all"} onClick={() => setFilterCategory("all")}>
-                All Categories
+                {ev.allCategories}
               </PillBtn>
               {categories.map((cat) => (
                 <PillBtn
@@ -344,7 +358,7 @@ export function EventsContent({ events }: { events: CommunityEventWithSource[] }
                   active={filterCategory === cat}
                   onClick={() => setFilterCategory(cat)}
                 >
-                  {cat}
+                  {(s.catMap as Record<string,string>)[cat] ?? cat}
                 </PillBtn>
               ))}
             </div>
@@ -354,9 +368,9 @@ export function EventsContent({ events }: { events: CommunityEventWithSource[] }
               <div className="flex gap-2">
                 {(
                   [
-                    { v: "all", label: "All Sources" },
-                    { v: "tampa_gov", label: "City of Tampa" },
-                    { v: "community", label: "Community" },
+                    { v: "all", label: ev.allSources },
+                    { v: "tampa_gov", label: ev.cityOfTampa },
+                    { v: "community", label: ev.community },
                   ] as { v: SourceFilter; label: string }[]
                 ).map(({ v, label }) => (
                   <PillBtn
@@ -370,7 +384,7 @@ export function EventsContent({ events }: { events: CommunityEventWithSource[] }
                 ))}
               </div>
               <p className="text-sm text-gray-400 font-medium">
-                {filtered.length} event{filtered.length !== 1 ? "s" : ""}
+                {filtered.length} {filtered.length !== 1 ? ev.eventsSuffix : ev.eventSuffix}
               </p>
             </div>
           </div>
@@ -381,15 +395,15 @@ export function EventsContent({ events }: { events: CommunityEventWithSource[] }
           {filtered.length === 0 ? (
             <div className="py-20 text-center rounded-3xl border-2 border-dashed border-gray-200">
               <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-gray-700 mb-2">No events match your filters</h3>
+              <h3 className="text-lg font-bold text-gray-700 mb-2">{ev.noMatch}</h3>
               <p className="text-gray-400 text-sm mb-6 max-w-sm mx-auto">
-                Try a different category or source to see more upcoming events.
+                {ev.tryFilters}
               </p>
               <button
                 onClick={() => { setFilterCategory("all"); setFilterSource("all"); }}
                 className="px-6 py-2.5 rounded-full text-sm font-semibold bg-primary text-white hover:opacity-90 transition-opacity"
               >
-                Clear filters
+                {s.directory.clearFilters}
               </button>
             </div>
           ) : (
@@ -415,18 +429,17 @@ export function EventsContent({ events }: { events: CommunityEventWithSource[] }
                 className="font-black text-white mb-4"
                 style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)", letterSpacing: "-0.02em" }}
               >
-                Hosting a Community Event?
+                {ev.ctaTitle}
               </h2>
               <p className="text-white/65 text-lg mb-8 leading-relaxed">
-                Organizing a resource fair, workshop, or neighborhood gathering? Add it to our
-                calendar and reach thousands of Tampa Bay residents.
+                {ev.ctaSub}
               </p>
               <Link
                 href="/submit"
                 className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-bold text-white transition-all duration-300 hover:scale-105 hover:shadow-xl"
                 style={{ backgroundColor: "oklch(0.655 0.197 10)" }}
               >
-                Submit an Event
+                {ev.ctaBtn}
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
