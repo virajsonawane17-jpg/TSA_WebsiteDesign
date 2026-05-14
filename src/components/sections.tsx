@@ -21,21 +21,21 @@ const RESOURCE_COUNT = TAMPA_RESOURCES.length;
 const CATEGORY_COUNT = new Set(TAMPA_RESOURCES.map((r) => r.category)).size;
 
 /* ─── Helpers ─── */
-function fmtPubDate(pubDate: string): string {
+function fmtPubDate(pubDate: string, locale = "en-US"): string {
   if (!pubDate) return "";
   try {
     const d = new Date(pubDate);
     if (isNaN(d.getTime())) return pubDate.slice(0, 12);
-    return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    return d.toLocaleDateString(locale, { month: "short", day: "numeric" });
   } catch { return ""; }
 }
 
-function parseEvtDate(dateStr: string): { m: string; d: string; y: string } {
+function parseEvtDate(dateStr: string, locale = "en-US"): { m: string; d: string; y: string } {
   try {
     const d = new Date(dateStr);
     if (!isNaN(d.getTime())) {
       return {
-        m: d.toLocaleDateString("en-US", { month: "short" }),
+        m: d.toLocaleDateString(locale, { month: "short" }),
         d: String(d.getDate()),
         y: String(d.getFullYear()),
       };
@@ -280,8 +280,9 @@ export function Categories() {
 
 /* ─── News Preview ─── */
 export function NewsTeaser({ news }: { news?: TampaGovNewsItem[] }) {
-  const { s } = useLanguage();
+  const { lang, s } = useLanguage();
   const n = s.news;
+  const locale = lang === "es" ? "es-ES" : "en-US";
 
   const staticNewsItems = [
     { tag: n.tag_community, date: "May 10", title: n.item1_title, desc: n.item1_desc, link: "/news", imgUrl: COMMUNITY_FALLBACKS[0] },
@@ -289,10 +290,10 @@ export function NewsTeaser({ news }: { news?: TampaGovNewsItem[] }) {
     { tag: n.tag_wellness,  date: "May 6",  title: n.item3_title, desc: n.item3_desc, link: "/news", imgUrl: COMMUNITY_FALLBACKS[2] },
   ];
 
-  const items = news && news.length > 0
+  const items = (news && news.length > 0 && lang !== "es")
     ? news.slice(0, 3).map((item, i) => ({
-        tag: "City News",
-        date: fmtPubDate(item.pubDate),
+        tag: n.tag_cityNews,
+        date: fmtPubDate(item.pubDate, locale),
         title: item.title,
         desc: item.description || "",
         link: item.link || "/news",
@@ -343,8 +344,9 @@ const eventBgs = ["var(--coral-soft)", "var(--teal-soft)", "#fdf3da"];
 const eventTextColors = ["var(--coral)", "var(--teal)", "#b07a14"];
 
 export function EventsTeaser({ events }: { events?: CommunityEventWithSource[] }) {
-  const { s } = useLanguage();
+  const { lang, s } = useLanguage();
   const e = s.eventsTeaser;
+  const locale = lang === "es" ? "es-ES" : "en-US";
 
   const staticEvents = [
     { date: "May 17, 2026", title: e.staticEv1, location: "Curtis Hixon Park",  category: "Family",   time: "10:00 AM – 4:00 PM" },
@@ -353,7 +355,7 @@ export function EventsTeaser({ events }: { events?: CommunityEventWithSource[] }
   ] as Pick<CommunityEventWithSource, "date" | "title" | "location" | "category" | "time">[];
 
   const upcoming = (events ?? []).filter((ev) => isFutureOrToday(ev.date));
-  const items = upcoming.length > 0 ? upcoming.slice(0, 3) : staticEvents;
+  const items = (upcoming.length > 0 && lang !== "es") ? upcoming.slice(0, 3) : staticEvents;
 
   return (
     <section className="section events-teaser-section">
@@ -374,7 +376,7 @@ export function EventsTeaser({ events }: { events?: CommunityEventWithSource[] }
       </Reveal>
       <div className="event-stack">
         {items.map((ev, i) => {
-          const { m, d, y } = parseEvtDate(ev.date);
+          const { m, d, y } = parseEvtDate(ev.date, locale);
           const accent = eventAccents[i % eventAccents.length];
           const bg = eventBgs[i % eventBgs.length];
           const textColor = eventTextColors[i % eventTextColors.length];

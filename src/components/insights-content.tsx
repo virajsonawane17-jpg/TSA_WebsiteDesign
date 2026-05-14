@@ -204,8 +204,13 @@ export function InsightsContent({
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                 {featuredPartners.slice(0, 4).map((p, i) => (
                   <div key={p.id} style={{ display: "grid", gridTemplateColumns: "40px 1fr auto", gap: 14, alignItems: "center", padding: "10px 0", borderTop: i ? "1px solid var(--line)" : "none" }}>
-                    <div style={{ width: 40, height: 40, borderRadius: 12, background: "var(--sand)", border: "1px solid var(--line)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--serif)", fontStyle: "italic", fontSize: 20, color: "var(--coral)" }}>
-                      {p.name.charAt(0)}
+                    <div style={{ width: 40, height: 40, borderRadius: 12, background: "#fff", border: "1px solid var(--line)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0 }}>
+                      {p.logoUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={p.logoUrl} alt={p.name} style={{ width: 36, height: 36, objectFit: "contain" }} />
+                      ) : (
+                        <span style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: 20, color: "var(--coral)" }}>{p.name.charAt(0)}</span>
+                      )}
                     </div>
                     <div>
                       <div style={{ fontSize: 14.5, fontWeight: 500 }}>{p.name}</div>
