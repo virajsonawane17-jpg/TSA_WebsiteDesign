@@ -65,6 +65,8 @@ function ResourceCard({
   const d = s.directory;
   const initial = r.name.charAt(0).toUpperCase();
   const tone = CAT_TONE[r.category] ?? "";
+  const [logoFailed, setLogoFailed] = useState(false);
+  const logoSrc = r.logoUrl ?? "";
   const catLabel = s.catMap[r.category] ?? r.category;
   const desc = lang === "es" ? (r.descriptionEs || r.description) : r.description;
   const longDesc = lang === "es" ? (r.longDescriptionEs || r.longDescription || r.description) : (r.longDescription || r.description);
@@ -93,7 +95,16 @@ function ResourceCard({
       style={selected ? { outline: "2px solid var(--coral)", outlineOffset: 2 } : undefined}
     >
       <div className="res-head">
-        <div className="logo" style={{ cursor: "pointer" }} onClick={onSelect}>{initial}</div>
+        <div className="logo" style={{ cursor: "pointer", overflow: "hidden", padding: logoSrc && !logoFailed ? 10 : 0 }} onClick={onSelect}>
+          {logoSrc && !logoFailed ? (
+            <img
+              src={logoSrc}
+              alt={r.name}
+              onError={() => setLogoFailed(true)}
+              style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", borderRadius: 4 }}
+            />
+          ) : initial}
+        </div>
         <div className="info">
           <h3 className="name">{r.name}</h3>
           <div className="meta">

@@ -35,6 +35,7 @@ export interface Resource {
   phone: string;
   email?: string;
   website: string;
+  logoUrl?: string;
   featured?: boolean;
   /** Set when loaded from DB; used for "Recently Added" on insights. */
   created_at?: string;
@@ -87,6 +88,7 @@ export const TAMPA_RESOURCES: Resource[] = [
     lng: -82.4170,
     phone: "(813) 254-1190",
     website: "https://feedingtampabay.org",
+    logoUrl: "https://www.google.com/s2/favicons?domain=feedingtampabay.org&sz=128",
     featured: true
   },
   {
@@ -103,6 +105,7 @@ export const TAMPA_RESOURCES: Resource[] = [
     lng: -82.4595,
     phone: "(813) 209-1000",
     website: "https://www.metromin.org",
+    logoUrl: "https://www.metromin.org/wp-content/uploads/2022/11/MM_Primary_Blue_LowRes-300x300.jpg",
     featured: true
   },
   {
@@ -119,6 +122,7 @@ export const TAMPA_RESOURCES: Resource[] = [
     lng: -82.4350,
     phone: "(813) 272-2244",
     website: "https://ibishealthcare.org",
+    logoUrl: "https://ibishealthcare.org/wp-content/uploads/2025/06/ibis-healthcare-horizontal-color.png",
     featured: true
   },
   {
@@ -135,6 +139,7 @@ export const TAMPA_RESOURCES: Resource[] = [
     lng: -82.4150,
     phone: "(813) 415-8002",
     website: "https://www.ccdosp.org/tampa-hope",
+    logoUrl: "https://www.ccdosp.org/wp-content/uploads/Catholic-Charities-Logo_LG-02-350x130.png",
     featured: true
   },
   {
@@ -151,6 +156,7 @@ export const TAMPA_RESOURCES: Resource[] = [
     lng: -82.4770,
     phone: "2-1-1 or (813) 964-1964",
     website: "https://www.crisiscenter.com",
+    logoUrl: "https://www.google.com/s2/favicons?domain=crisiscenter.com&sz=128",
     featured: true
   },
   {
@@ -165,6 +171,7 @@ export const TAMPA_RESOURCES: Resource[] = [
     lng: -82.4862,
     phone: "(813) 769-7530",
     website: "https://www.bgctampa.org",
+    logoUrl: "https://static.wixstatic.com/media/2306aa_3530b86e90f2424da8979146e17b55de~mv2.png",
     featured: true
   },
   {
@@ -181,6 +188,7 @@ export const TAMPA_RESOURCES: Resource[] = [
     lng: -82.4200,
     phone: "(813) 555-0123",
     website: "https://g3lifeapps.org",
+    logoUrl: "/logos/g3-life.png",
     featured: true
   },
   {
@@ -197,6 +205,7 @@ export const TAMPA_RESOURCES: Resource[] = [
     lng: -82.4600,
     phone: "(813) 555-0199",
     website: "https://ourhopechest.org",
+    logoUrl: "/logos/hopechest.png",
     featured: true
   },
   {
@@ -211,6 +220,7 @@ export const TAMPA_RESOURCES: Resource[] = [
     lng: -82.4550,
     phone: "(813) 555-0245",
     website: "https://aacetoempower.org",
+    logoUrl: "/logos/aace.png",
     featured: true
   },
   {
@@ -224,7 +234,8 @@ export const TAMPA_RESOURCES: Resource[] = [
     lat: 27.9750,
     lng: -82.4350,
     phone: "(813) 272-5220",
-    website: "https://hcfl.gov/residents/human-services/help-me-hillsborough"
+    website: "https://hcfl.gov/residents/human-services/help-me-hillsborough",
+    logoUrl: "/logos/help-me-hillsborough.png"
   },
   {
     id: "11",
@@ -237,7 +248,8 @@ export const TAMPA_RESOURCES: Resource[] = [
     lat: 27.9880,
     lng: -82.4595,
     phone: "(813) 490-9443",
-    website: "https://www.wheelsofsuccess.org"
+    website: "https://www.wheelsofsuccess.org",
+    logoUrl: "https://wheelsofsuccess.org/wp-content/uploads/2022/10/logo-wheels-of-success.png"
   },
   {
     id: "12",
@@ -250,7 +262,8 @@ export const TAMPA_RESOURCES: Resource[] = [
     lat: 27.9585,
     lng: -82.4375,
     phone: "(813) 232-1343",
-    website: "https://bals.org"
+    website: "https://bals.org",
+    logoUrl: "https://bals.org/themes/custom/bals2019/logo.svg"
   }
 ];
 
